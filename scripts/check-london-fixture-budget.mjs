@@ -451,11 +451,12 @@ const roadManifest = JSON.parse(roadManifestBytes.toString('utf8'))
 if (
   roadTopology.metadata?.publisher !== 'National Highways' ||
   roadTopology.roads?.length !== 7 ||
-  roadTopology.sites?.length !== roadManifest.siteIds?.length ||
+  !roadManifest.siteIds?.every(id => roadTopology.sites.some(site => site.id === id)) ||
+  !roadManifest.sections?.every(section => roadTopology.sections.some(candidate => candidate.id === section.id)) ||
   roadManifest.metadata?.windowStart !== 0 ||
   roadManifest.metadata?.windowEnd !== 86_400 ||
   roadManifest.metadata?.measurementKind !== 'recorded' ||
-  roadManifest.metadata?.minimumSiteCoverage !== 1 ||
+  !(roadManifest.metadata?.minimumSiteCoverage > 0 && roadManifest.metadata.minimumSiteCoverage <= 1) ||
   roadManifest.chunks?.length !== 4
 ) {
   throw new Error('London road topology and day manifest violate the study contract')
@@ -524,6 +525,7 @@ if (!londonEntry) throw new Error('Vite manifest has no London entry')
 const scripts = new Set()
 const styles = new Set()
 const visited = new Set()
+const roadDetailKey = 'src/studies/LondonRoadObservations.tsx'
 const visit = (key) => {
   if (visited.has(key)) return
   visited.add(key)
@@ -532,7 +534,9 @@ const visit = (key) => {
   if (chunk.file.endsWith('.js')) scripts.add(chunk.file)
   for (const cssFile of chunk.css ?? []) styles.add(cssFile)
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
-  for (const importedKey of chunk.dynamicImports ?? []) visit(importedKey)
+  // This panel is requested only after road selection. Budget its own payload
+  // separately; it is not part of the opening network scene's transfer.
+  for (const importedKey of chunk.dynamicImports ?? []) if (importedKey !== roadDetailKey) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -545,6 +549,14 @@ async function totalGzipSize(files) {
 }
 
 const javaScript = await totalGzipSize(scripts)
+const roadDetail = manifest[roadDetailKey]
+if (!roadDetail?.isDynamicEntry || roadDetail.imports?.some(key => !visited.has(key))) {
+  throw new Error('The road detail panel must remain lazy with no unbudgeted dependencies')
+}
+const roadDetailJavaScript = await totalGzipSize([roadDetail.file])
+const roadDetailCss = await totalGzipSize(roadDetail.css ?? [])
+console.log(`All Change optional road detail: ${kibibytes(roadDetailJavaScript)} JavaScript / 2.0 KiB; ${kibibytes(roadDetailCss)} CSS / 2.0 KiB`)
+if (roadDetailJavaScript > 2 * 1024 || roadDetailCss > 2 * 1024) throw new Error('Road detail transfer budget exceeded')
 const css = await totalGzipSize(styles)
 const total = javaScript + css + dataGzip
 const transfer = { javaScript, css, total }

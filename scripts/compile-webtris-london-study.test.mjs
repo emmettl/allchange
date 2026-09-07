@@ -54,6 +54,27 @@ function row(siteName, interval = 0) {
 }
 
 describe('London WebTRIS compiler', () => {
+  it('keeps missing readings missing, while retaining genuine zero readings', () => {
+    for (const missing of ['', '  ', null, undefined, -1, 'NaN']) {
+      expect(reportValue({ ...row('M1/2100A'), 'Avg mph': missing })).toBeUndefined()
+      expect(reportValue({ ...row('M1/2100A'), '0 - 520 cm': missing })).toBeUndefined()
+    }
+    expect(reportValue({ ...row('M1/2100A'), 'Avg mph': '0', '0 - 520 cm': '0', '521 - 660 cm': '0', '661 - 1160 cm': '0', '1160+ cm': '0' })?.value).toEqual([0, 0, 0, 0])
+    expect(reportValue({ ...row('M1/2100A'), 'Time Interval': '96' })).toBeUndefined()
+  })
+
+  it('excludes blank sites and does not join sections across missing detectors', () => {
+    const eligible = motorwaySites(sites, roads)
+    const topology = buildLondonRoadTopology(eligible, eligible, roads, '2025-09-05')
+    const rows = eligible.map(site => ({ ...row(site.Description), ...(site.Id === '2' ? { 'Avg mph': '' } : {}) }))
+    const study = compileLondonRoadStudy(topology, rows, '2025-09-05')
+    expect(study.siteIds).not.toContain('2')
+    expect(study.sections.filter(section => section.direction === 'positive')).toEqual([])
+    expect(study.metadata.candidateSites).toBe(5)
+    expect(study.metadata.excludedRows).toBe(1)
+    expect(() => compileLondonRoadStudy(topology, [...rows, rows[0]], '2025-09-05')).toThrow('Duplicate WebTRIS')
+  })
+
   it('keeps active A/B sites and samples at configured chainage spacing', () => {
     const eligible = motorwaySites(sites, roads)
     expect(sampledMotorwaySites(eligible, roads).map(({ Id }) => Id)).toEqual([

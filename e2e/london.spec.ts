@@ -29,6 +29,7 @@ test('boots as a separate edition without loading Swiss network data', async ({
   expect(resources.some((url) => url.includes('all-change-diagram.json'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-air-'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-road-'))).toBe(false)
+  expect(resources.some((url) => url.includes('LondonRoadObservations'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-surface-'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-bus-'))).toBe(false)
   expect(resources.some((url) => url.includes('swiss-rail-morning.json'))).toBe(false)
@@ -618,6 +619,13 @@ test('motorway search loads observed flow lazily and enters ROAD isolation', asy
   await expect(experience).toHaveClass(/has-road-category/)
   await expect(experience).toHaveAttribute('data-selected-road', 'M25')
   await expect(search).toHaveValue('M25 · London Orbital')
+  const conditions = page.getByRole('region', { name: 'Recorded motorway conditions' })
+  await expect(conditions).toBeVisible()
+  await expect(conditions).toContainText('Mean speed')
+  await expect(conditions).toContainText('Mean detector flow')
+  await expect(conditions).toContainText(/\d+\/161 detectors reporting/)
+  await expect(conditions).toContainText('recorded interval')
+  await expect(conditions.locator('.london-road-speed-key')).toBeVisible()
   await expect(page.locator('.london-status-card')).toContainText('M25')
   await expect(page.locator('.london-status-card')).toContainText(
     'vehicles reconstructed',

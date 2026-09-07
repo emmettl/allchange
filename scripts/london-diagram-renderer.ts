@@ -14,9 +14,12 @@ export function londonDiagramRenderer(): Plugin {
       if (moduleId.endsWith('/@motionstudies/three/RoadTrafficLayer.js')) {
         const hook = 'topology && (_jsx(RoadTopology, { snapshot: topology, projection: projection, subdued: subdued, selectedRoadId: selectedRoadId }))'
         if (source.split(hook).length !== 2) throw new Error('The London road label adapter needs review for this renderer version')
+        const selectedAxis = 'color: "#fff1cf", transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending'
+        if (source.split(selectedAxis).length !== 2) throw new Error('The London road speed context adapter needs review')
         return {
-          code: 'import { LondonRoadLabels } from "/src/studies/LondonRoadLabels.tsx";\n'
-            + source.replace(hook, `${hook}, topology && _jsx(LondonRoadLabels, { topology, projection, subdued, selectedRoadId })`),
+          code: 'import { LondonRoadLabels } from "/src/studies/LondonRoadLabels.tsx";\nimport { LondonRoadSpeeds } from "/src/studies/LondonRoadSpeeds.tsx";\n'
+            + source.replace(selectedAxis, 'color: "#a0a6b2", transparent: true, opacity: 0.25, blending: THREE.AdditiveBlending')
+              .replace(hook, `${hook}, topology && _jsx(LondonRoadLabels, { topology, projection, subdued, selectedRoadId }), topology && _jsx(LondonRoadSpeeds, { topology, snapshot: nationalSnapshot, projection, subdued, selectedRoadId })`),
           map: null,
         }
       }

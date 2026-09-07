@@ -247,8 +247,10 @@ export function buildLondonRoadTopology(allSites, measuredSites, roads, sourceDa
 }
 
 function number(row, key) {
-  const value = Number(row[key])
-  return Number.isFinite(value) ? value : undefined
+  const raw = row[key]
+  if (raw === null || raw === undefined || (typeof raw === 'string' && !raw.trim())) return undefined
+  const value = Number(raw)
+  return Number.isFinite(value) && value >= 0 ? value : undefined
 }
 
 export function reportValue(row) {
@@ -264,7 +266,7 @@ export function reportValue(row) {
     medium === undefined ||
     long === undefined ||
     longest === undefined ||
-    interval === undefined
+    interval === undefined || !Number.isInteger(interval) || interval > 95
   ) return undefined
   const time = Math.min(86_400, (interval + 1) * SAMPLE_INTERVAL_SECONDS)
   const speedKmh = Math.round(speedMph * 1.60934 * 10) / 10
@@ -319,12 +321,13 @@ export function compileLondonRoadStudy(topology, rows, serviceDate) {
     const report = reportValue(row)
     if (!target || !report) continue
     seenSites.add(target.site.id)
-    const values = byTime.get(report.time) ?? []
-    values.push([target.index, ...report.value])
+    const values = byTime.get(report.time) ?? new Map()
+    if (values.has(target.index)) throw new Error(`Duplicate WebTRIS observation for ${target.site.id} at ${report.time}`)
+    values.set(target.index, [target.index, ...report.value])
     byTime.set(report.time, values)
   }
   const minutes = [...byTime.entries()]
-    .map(([time, values]) => [time, values.sort((a, b) => a[0] - b[0])])
+    .map(([time, values]) => [time, [...values.values()].sort((a, b) => a[0] - b[0])])
     .sort((a, b) => a[0] - b[0])
   if (!minutes.length) throw new Error('WebTRIS returned no usable observations')
   const acceptedSites = topology.sites.filter((site) => seenSites.has(site.id))
@@ -367,6 +370,8 @@ export function compileLondonRoadStudy(topology, rows, serviceDate) {
       model: '15-minute motorway traffic-flow reconstruction / no vehicle tracking',
       sampleIntervalSeconds: SAMPLE_INTERVAL_SECONDS,
       acceptedSites: acceptedSites.length,
+      candidateSites: topology.sites.length,
+      excludedRows: rows.length - remappedMinutes.reduce((total, [, values]) => total + values.length, 0),
       sections: sections.length,
       minimumSiteCoverage: Math.round(
         Math.min(...remappedMinutes.map(([, values]) => values.length / acceptedSites.length)) * 1000,
@@ -438,13 +443,10 @@ async function main() {
     serviceDate,
   )
   const study = compileLondonRoadStudy(provisionalTopology, rows, serviceDate)
-  const accepted = new Set(study.siteIds)
-  const topology = buildLondonRoadTopology(
-    allSites,
-    sampledSites.filter((site) => accepted.has(site.Id)),
-    roads,
-    serviceDate,
-  )
+  // Keep the candidate topology to expose unobserved coverage. The study only
+  // contains original neighbouring sections with two observed endpoints;
+  // rebuilding after dropping missing sites would bridge the resulting gaps.
+  const topology = provisionalTopology
   const split = splitLondonRoadStudy(study)
   await mkdir(dirname(topologyPath), { recursive: true })
   await writeFile(topologyPath, `${JSON.stringify(topology)}\n`)

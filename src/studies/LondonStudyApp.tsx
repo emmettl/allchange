@@ -57,6 +57,7 @@ import {
   projectOperationsOntoNetwork,
 } from '@motionstudies/core/domain/operations'
 import { reconstructedNationalVehicleCount } from '@motionstudies/core/domain/road-day'
+import { observedRoadSnapshot } from '../data/road-observations.ts'
 import type { RoadTopologySnapshot } from '@motionstudies/core/domain/road'
 import {
   spatialLayoutCoverage,
@@ -112,6 +113,7 @@ import { LondonNationalRailBoard } from './LondonNationalRailBoard.tsx'
 import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
 import '../styles/london-quiet-map.css'
 
+const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
 const NationalNetworkScene = lazy(() =>
   import('@motionstudies/three/NationalNetworkScene').then(
     ({ NationalNetworkScene: Scene }) => ({ default: Scene as ComponentType<NationalNetworkSceneProps & NationalRailSceneExtension & QuietMapSceneExtension> }),
@@ -855,16 +857,21 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     !airLoadError &&
     !airDay.error &&
     (studyWindow === 'day' ? airDay.loading : !morningAir)
+  const roadIntervalTime = Math.floor(time / 900) * 900
+  const activeRoadSnapshot = useMemo(
+    () => observedRoadSnapshot(roadDay.snapshot, roadIntervalTime),
+    [roadDay.snapshot, roadIntervalTime],
+  )
   const reconstructedRoadVehicleCount = useMemo(
     () =>
-      roadEnabled && roadDay.snapshot
+      roadEnabled && activeRoadSnapshot
         ? reconstructedNationalVehicleCount(
-            roadDay.snapshot,
+            activeRoadSnapshot,
             time,
             selectedRoad?.id,
           )
         : 0,
-    [roadDay.snapshot, roadEnabled, selectedRoad?.id, time],
+    [activeRoadSnapshot, roadEnabled, selectedRoad?.id, time],
   )
   const roadLoading =
     roadEnabled &&
@@ -1501,7 +1508,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               onSelectAirTrack={selectAirTrack}
               roadTopology={roadEnabled ? roadTopology : undefined}
               nationalRoadSnapshot={
-                roadEnabled ? roadDay.snapshot : undefined
+                roadEnabled ? activeRoadSnapshot : undefined
               }
               roadCategorySelected={roadCategorySelected}
               selectedRoadId={selectedRoad?.id}
@@ -1925,6 +1932,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                 ? `${Math.round(selectedAirTelemetry.altitudeFeet / 100) * 100} ft · ${Math.round(selectedAirTelemetry.groundSpeedKnots)} kt · ${selectedDescription}`
                 : selectedDescription ?? (airCategorySelected ? `${activeAircraftCount.toLocaleString('en-GB')} active at ${formatServiceTime(time)}` : `${scheduledJourneyCount?.toLocaleString('en-GB')} scheduled journeys`)}
             </small>
+            {!pulseHub && (selectedRoad || roadCategorySelected) && <Suspense fallback={null}><LondonRoadObservations snapshot={roadDay.snapshot} topology={roadTopology} time={roadIntervalTime} road={selectedRoad?.id} date={roadObservationDate} /></Suspense>}
             {pulseHub?.nationalRail && (
               <small className="london-pulse-rail" role="status">
                 {nationalRail ? `GWR · ${nationalRailPulseCount} National Rail calls · published times` : nationalRailError ? <>
