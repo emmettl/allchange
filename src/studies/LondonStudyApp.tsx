@@ -205,18 +205,16 @@ function formatStudyDate(serviceDate?: string): string {
   }).format(new Date(`${serviceDate}T12:00:00Z`))
 }
 
-function searchChoices(
+function searchNetworkChoices(
   query: string,
   snapshot: NetworkSnapshot,
   stations: readonly StationIndexEntry[],
   routes: readonly NetworkRouteIndexEntry[],
   airports: readonly StudyAirport[],
   roads: readonly LondonMotorway[],
-  aircraft: readonly AirSearchTrack[],
-  time: number,
-): readonly SearchChoice[] {
+): { readonly places: readonly SearchChoice[]; readonly services: readonly SearchChoice[] } {
   const folded = foldSearchText(query.trim())
-  if (!folded) return []
+  if (!folded) return { places: [], services: [] }
   const serviceQuery = folded.replace(/^(?:route|line)\s+/, '')
 
   const airportMatches = searchAirports(airports, query, 4).map(
@@ -241,18 +239,10 @@ function searchChoices(
     .filter((train) => trainSearchText(train, snapshot).includes(serviceQuery))
     .slice(0, 5)
     .map((value): SearchChoice => ({ kind: 'train', value }))
-  const airMatches = searchAirTracks(aircraft, query, time, 5).map(
-    (value): SearchChoice => ({ kind: 'air', value }),
-  )
-
-  return [
-    ...airportMatches,
-    ...roadMatches,
-    ...airMatches,
-    ...stationMatches,
-    ...routeMatches,
-    ...trainMatches,
-  ].slice(0, 9)
+  return {
+    places: [...airportMatches, ...roadMatches],
+    services: [...stationMatches, ...routeMatches, ...trainMatches],
+  }
 }
 
 export function LondonStudyApp({ edition }: { readonly edition: LondonEdition }) {
@@ -332,9 +322,12 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     edition.data.operations.latest,
     operationsMode === 'observed' || operationsRequested,
   )
-  const observedServiceTime = observedOperations.snapshot
-    ? operationsServiceTime(observedOperations.snapshot, edition.timezone)
-    : undefined
+  const observedServiceTime = useMemo(
+    () => observedOperations.snapshot
+      ? operationsServiceTime(observedOperations.snapshot, edition.timezone)
+      : undefined,
+    [observedOperations.snapshot, edition.timezone],
+  )
   const sceneTime =
     operationsMode === 'observed' && observedServiceTime !== undefined
       ? observedServiceTime
@@ -420,12 +413,13 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const operationsAge = observedOperations.snapshot
     ? operationsAgeSeconds(observedOperations.snapshot)
     : Number.POSITIVE_INFINITY
+  const operationsFresh = operationsAge <= 180
   const operationsProjection = useMemo(
     () =>
       operationsMode === 'observed' &&
       network &&
       observedOperations.snapshot &&
-      operationsAge <= 180
+      operationsFresh
         ? projectOperationsOntoNetwork(
             network,
             observedOperations.snapshot,
@@ -435,7 +429,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     [
       network,
       observedOperations.snapshot,
-      operationsAge,
+      operationsFresh,
       operationsMode,
       sceneTime,
     ],
@@ -698,22 +692,34 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         : (activeAirSnapshot?.tracks ?? []),
     [activeAirSnapshot, airDay.manifest, studyWindow],
   )
-  const choices = useMemo(
+  // Timetable search does not depend on the scene clock. Keep its string work
+  // out of playback updates, including after a result closes the search panel.
+  const networkChoices = useMemo(
     () =>
-      sceneNetwork
-        ? searchChoices(
+      searchOpen && sceneNetwork
+        ? searchNetworkChoices(
             query,
             sceneNetwork,
             stations,
             routes,
             LONDON_AIRPORTS,
             LONDON_MOTORWAYS,
-            airEnabled ? searchableAircraft : [],
-            sceneTime,
           )
-        : [],
-    [airEnabled, query, routes, sceneNetwork, searchableAircraft, stations, sceneTime],
+        : { places: [], services: [] },
+    [searchOpen, query, routes, sceneNetwork, stations],
   )
+  const choices = useMemo(() => {
+    const airMatches = searchOpen && airEnabled && query.trim()
+      ? searchAirTracks(searchableAircraft, query, sceneTime, 5).map(
+          (value): SearchChoice => ({ kind: 'air', value }),
+        )
+      : []
+    return [
+      ...networkChoices.places,
+      ...airMatches,
+      ...networkChoices.services,
+    ].slice(0, 9)
+  }, [networkChoices, searchOpen, airEnabled, query, searchableAircraft, sceneTime])
   const selectedAirTrack = useMemo<AirTrack | undefined>(
     () =>
       activeAirSnapshot?.tracks.find(

@@ -135,6 +135,7 @@ test('station search selects and reveals a London interchange', async ({ page })
 test('observed operations stay distinct from the planned timetable', async ({
   page,
 }) => {
+  await page.clock.setFixedTime(new Date('2099-09-07T07:45:03.000Z'))
   let releaseObservation!: () => void
   const observationReady = new Promise<void>((resolve) => {
     releaseObservation = resolve
@@ -219,6 +220,38 @@ test('observed operations stay distinct from the planned timetable', async ({
   await expect(page.locator('.london-status-card')).toContainText('1 matched')
   await expect(page.locator('.london-footer')).toContainText('not GPS')
   await expect(page.locator('.london-transport input[type="range"]')).toBeDisabled()
+
+  // Camera interactions after the age changes must reuse the observation scene.
+  await page.evaluate(() => {
+    const browser = globalThis as unknown as {
+      WebGL2RenderingContext: { prototype: { createBuffer(): unknown } }
+      createdBuffers: number
+    }
+    browser.createdBuffers = 0
+    const prototype = browser.WebGL2RenderingContext.prototype
+    const createBuffer = prototype.createBuffer
+    prototype.createBuffer = function () {
+      browser.createdBuffers += 1
+      return createBuffer.call(this)
+    }
+  })
+  await page.clock.setFixedTime(new Date('2099-09-07T07:45:12.000Z'))
+  await page.getByRole('button', { name: 'Zoom in', exact: true }).click()
+  await expect(page.locator('.london-status-card')).toContainText('10s old')
+  expect(await page.evaluate(() => new Promise<number>((resolve) => {
+    const browser = globalThis as unknown as {
+      createdBuffers: number
+      requestAnimationFrame(callback: () => void): number
+    }
+    browser.requestAnimationFrame(() => browser.requestAnimationFrame(() =>
+      resolve(browser.createdBuffers),
+    ))
+  }))).toBe(0)
+
+  // Crossing the freshness boundary still replaces observations with the plan.
+  await page.clock.setFixedTime(new Date('2099-09-07T07:48:03.000Z'))
+  await page.getByRole('button', { name: 'Zoom out', exact: true }).click()
+  await expect(experience).toHaveAttribute('data-operations-ready', 'false')
 
   await page.getByRole('button', { name: 'Return to planned timetable' }).click()
   await expect(experience).toHaveAttribute('data-operations-mode', 'plan')
