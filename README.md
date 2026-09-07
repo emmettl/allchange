@@ -30,7 +30,7 @@ The diagram uses the authored station anchors and corridor sequences in `fixture
 
 `fixtures/tfl/` retains the authored TfL timetable, transport catalogues and map layout; `public/data/` contains the committed air and road observations. Existing `data:london:*` commands retain their explicit source dates and provenance. Use them deliberately to refresh data; CI builds the reviewed fixtures. PDF timetable ingestion requires `pdftotext` on the host.
 
-CI checks and uploads a preview artifact. Pages deployment is manual (`Deploy Pages`) and reruns the edition checks before publishing https://emmettl.github.io/allchange/. GitHub Pages uses Actions. The existing observation worker and R2 bucket are referenced for compatibility; no worker is deployed by this repository's workflows.
+Pull requests run the edition checks and upload a preview artifact. Every push to `main` runs `Deploy Pages`, which calls the same checks and publishes their build to https://emmettl.github.io/allchange/ only after they pass. Manual deployment remains available through `workflow_dispatch`. GitHub Pages uses Actions. The existing observation worker and R2 bucket are referenced for compatibility; no worker is deployed by this repository's workflows.
 
 The [London Worker guide](docs/CLOUDFLARE.md) covers configuration, deployment and recorded-day export.
 
