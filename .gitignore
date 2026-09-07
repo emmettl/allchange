@@ -15,6 +15,7 @@ public/data/all-change-day-manifest.json
 public/data/all-change-day-chunks/
 public/data/all-change-bus-day-manifest.json
 public/data/all-change-bus-day-chunks/
+public/data/all-change-national-rail-paddington.json
 fixtures/tfl/all-change-unified-day.json
 fixtures/tfl/all-change-pdf-day.json
 fixtures/tfl/all-change-rail-led-day.json

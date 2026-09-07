@@ -1,12 +1,24 @@
 import type { HubDefinition } from '@motionstudies/core/domain/hub'
 
-export type LondonHubId = 'kings-cross' | 'bank' | 'waterloo' | 'stratford'
+export type LondonHubId = 'kings-cross' | 'bank' | 'waterloo' | 'stratford' | 'paddington'
+
+export interface LondonPulseHub extends HubDefinition<LondonHubId> {
+  readonly nationalRail?: boolean
+}
 
 /** Charing Cross gives the radial/orbital comparison a stable London datum. */
 export const LONDON_PULSE_CENTRE = [-0.1278, 51.5074] as const
 
 /** Contrasting interchanges, chosen for network character rather than rank. */
-export const LONDON_HUBS: readonly HubDefinition<LondonHubId>[] = [
+export const LONDON_HUBS: readonly LondonPulseHub[] = [
+  {
+    id: 'paddington',
+    name: 'Paddington',
+    aliases: ['London Paddington', 'Paddington (H&C Line)-Underground'],
+    displayName: 'Paddington',
+    character: 'western gateway / mainline and cross-city rail',
+    nationalRail: true,
+  },
   {
     id: 'kings-cross',
     name: "King's Cross St. Pancras",

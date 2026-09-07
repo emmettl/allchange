@@ -36,6 +36,18 @@ Pull requests run the edition checks and upload a preview artifact. Every push t
 
 The [London Worker guide](docs/CLOUDFLARE.md) covers configuration, deployment and recorded-day export.
 
+## National Rail corridor proof
+
+The optional **National Rail** layer adds GWR services on the Paddington–Reading corridor, with a Paddington arrivals/departures board. It shares the morning and full-day playback clocks. Selecting a board entry highlights the service; **Show movement** seeks to its departure or approach. The board can be collapsed to leave the map clear, and starts collapsed on mobile. This geographic layer is unavailable in the diagram and switches off when entering observed operations.
+
+The **Paddington pulse** includes GWR arrivals and departures alongside Tube and Elizabeth line calls, whether or not the map layer is enabled. Calls share the selected morning/full-day clock and radial/orbital lenses. Terminal arrivals end at the hub and departures begin there; the pulse does not invent a return movement. Entering Pulse from the enabled National Rail map layer opens Paddington. Other hubs retain their existing coverage.
+
+`npm run data:london:national-rail` compiles GWR’s published May–December 2026 TS and T10 PDFs for Friday 4 September. It requires `pdftotext`; `node scripts/compile-national-rail.mjs --cache <directory>` reuses `TS.pdf` and `T10.pdf`. PDF word coordinates preserve the original columns. Source hashes, page/block/column references, weekday/date exceptions and exclusions are retained in `fixtures/national-rail/paddington.json`. T10’s intermediate calls take precedence over duplicate TS entries. The artifact loads when its map layer is enabled or a matching pulse is opened, and is staged by the normal build.
+
+This is a bounded timetable proof, not complete National Rail coverage or recorded operation. Services without paired Paddington/Reading timings, connecting alternatives and services outside the calendar window are excluded explicitly. Engineering alterations are not applied. Arrivals are described as **via Reading**, since the source corridor table does not establish every train’s full origin. Published onward destinations are retained where available. Departure-only intermediate calls have no invented dwell.
+
+Geometry reuses connected Elizabeth line railway corridors from the reviewed TfL fixture, including Paddington’s mainline stop, rather than resolving individual fast/slow tracks. Times interpolate along those paths. Trains, trails and the new track overlay remain visible inside the GLA polygon and smoothly fade through a four-kilometre outer fringe. Fade samples are prepared at intervals of at most 100 metres; playback does not scan the boundary polygon per frame. The optional overlay uses the existing map projection without extending the camera bounds. A guarded Vite scene-slot adapter leaves the installed shared renderer untouched.
+
 ## Provenance
 
 Extracted from [Gleislicht bdb1f3a](https://github.com/emmettl/gleislicht/commit/bdb1f3a48db1cc6ec0bcf3858765004ee7e6d147), retaining Git history for the selected London paths via a path-filtered fast export/import. The extraction narrows the catalogue and uses a root HTML entry; the edition now consumes published npm packages. The previous Gleislicht-hosted London URL redirects to the independent site.

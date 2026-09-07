@@ -1,8 +1,9 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { londonDiagramRenderer } from './scripts/london-diagram-renderer.ts'
+import { londonNationalRailRenderer } from './scripts/london-national-rail-renderer.ts'
 export default defineConfig({
-  plugins: [londonDiagramRenderer(), react()],
+  plugins: [londonDiagramRenderer(), londonNationalRailRenderer(), react()],
   optimizeDeps: {
     exclude: ['@motionstudies/three'],
     include: ['@react-three/fiber', 'three'],

@@ -12,3 +12,4 @@ for (const file of files) {
   await copyFile(resolve('fixtures/tfl', file), output)
 }
 console.log(`Staged ${files.size} All Change artifacts.`)
+await copyFile(resolve('fixtures/national-rail/paddington.json'), resolve('public/data/all-change-national-rail-paddington.json'))

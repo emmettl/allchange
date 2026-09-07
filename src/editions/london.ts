@@ -49,6 +49,7 @@ export const ALL_CHANGE_ROUTE_COLORS: Readonly<Record<string, string>> = {
 }
 
 export interface LondonDataCatalog extends EditionDataCatalog {
+  readonly nationalRail: { readonly day: string }
   readonly opening: {
     readonly network: string
     readonly geography: string
@@ -104,6 +105,7 @@ export const LONDON_EDITION: LondonEdition = {
   },
   theme: ALL_CHANGE_THEME,
   data: {
+    nationalRail: { day: 'all-change-national-rail-paddington.json' },
     opening: {
       network: 'all-change-rail-led-morning.json',
       geography: 'all-change-geography.json',
