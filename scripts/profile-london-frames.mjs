@@ -13,6 +13,7 @@ const { values } = parseArgs({ options: {
   fps: { type: 'string', default: '60' },
   output: { type: 'string' },
   buses: { type: 'boolean', default: false },
+  rail: { type: 'boolean', default: false },
   angle: { type: 'string' },
   'cpu-throttle': { type: 'string', default: '1' },
 } })
@@ -89,7 +90,14 @@ try {
     })
   }
   await sample('opening')
-  if (values.buses) {
+  if (values.rail) {
+    await page.getByRole('button', { name: 'Show National Rail', exact: true }).click()
+    await page.getByRole('button', { name: 'Hide National Rail', exact: true }).and(page.locator('[aria-busy="false"]')).waitFor()
+    await sample('all-national-rail')
+    await page.getByRole('button', { name: 'Interchange pulse', exact: true }).click()
+    await page.getByRole('combobox', { name: 'Pulse interchange' }).selectOption('london-bridge')
+    await sample('london-bridge-pulse')
+  } else if (values.buses) {
     await page.getByRole('button', { name: 'Show London buses' }).click()
     await page.locator('.london-experience[data-bus-loading="false"]').waitFor({ timeout: 90_000 })
     await sample('all-buses')
@@ -122,7 +130,7 @@ try {
     platform: process.platform,
     browserVersion: browser.version(),
     settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless,
-      angle: values.angle ?? 'default', buses: values.buses },
+      angle: values.angle ?? 'default', buses: values.buses, rail: values.rail },
     environment,
     scenarios,
   }, null, 2)

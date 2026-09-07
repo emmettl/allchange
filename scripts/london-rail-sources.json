@@ -1,0 +1,154 @@
+{
+  "archiveUrl": "https://www.networkrail.co.uk/wp-content/uploads/2025/02/01.-June-2026-December-2026-Working-timetable-documents.zip",
+  "tables": [
+    {
+      "table": "CG01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/CG/CG01/CG01 - MARYLEBONE TO AYLESBURY AND BANBURY.xlsx"
+    },
+    {
+      "table": "LC01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/LC/LC01/LC01 - FENCHURCH STREET AND LIVERPOOL STREET TO TILBURY-SOUTHEND AND SHOEBURYNESS.xlsx"
+    },
+    {
+      "table": "LB01A",
+      "member": "01. June 2026 - December 2026 Working timetable documents/LB/LB01A/LB01A - LIVERPOOL STREET TO HORNSEY E..M.U.D. CHINGFORD-ENFIELD TOWN-HERTFORD EAST-ROYDON.xlsx"
+    },
+    {
+      "table": "LB01B",
+      "member": "01. June 2026 - December 2026 Working timetable documents/LB/LB01B/LB01B - ROYDON TO BISHOPS STORTFORD AND STANSTED AIRPORT.xlsx"
+    },
+    {
+      "table": "WC01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WC/WC01/WC01 - CHARING CROSS TO ORPINGTON.xlsx"
+    },
+    {
+      "table": "WC03",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WC/WC03/WC03 - DARTFORD TO PADDOCK WOOD AND GILLINGHAM.xlsx"
+    },
+    {
+      "table": "WC02",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WC/WC02/WC02 - LONDON BRIDGE TO DARTFORD.xlsx"
+    },
+    {
+      "table": "WB02",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WB/WB02/WB02 - CLAPHAM JUNCTION TO KENSAL GREEN TURNBACK.xlsx"
+    },
+    {
+      "table": "WB01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WB/WB01/WB01 - VICTORIA TO FAWKHAM JN AND ORPINGTON.xlsx"
+    },
+    {
+      "table": "YA01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/YA/YA01/YA01 - KINGS CROSS AND MOORGATE TO HERTFORD NORTH AND WELWYN GARDEN CITY.xlsx"
+    },
+    {
+      "table": "PA01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/PA/PA01/PA01 - LONDON PADDINGTON TO GREENFORD AND HEATHROW AIRPORT.xlsx"
+    },
+    {
+      "table": "PA02",
+      "member": "01. June 2026 - December 2026 Working timetable documents/PA/PA02/PA02 - HEATHROW AIRPORT JN TO READING.xlsx"
+    },
+    {
+      "table": "CJ01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/CJ/CJ01/CJ01 - ST PANCRAS TO BEDFORD.xlsx"
+    },
+    {
+      "table": "CB01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/CB/CB01/CB01 - EUSTON TO WATFORD JUNCTION (MAIN LINE).xlsx"
+    },
+    {
+      "table": "CB02",
+      "member": "01. June 2026 - December 2026 Working timetable documents/CB/CB02/CB02 - WATFORD JUNCTION TO RUGBY.xlsx"
+    },
+    {
+      "table": "LA01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/LA/LA01/LA01 - LIVERPOOL STREET TO SOUTHMINSTER AND SOUTHEND VICTORIA.xlsx"
+    },
+    {
+      "table": "WG02",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WG/WG02/WG02 - SURBITON TO WOKING AND ALTON.xlsx"
+    },
+    {
+      "table": "WA07",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WA/WA07/WA07 - ST PANCRAS TO EUROTUNNEL BOUNDARY.xlsx"
+    },
+    {
+      "table": "WF02",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WF/WF02/WF02 - LONDON BRIDGE TO SUTTON AND HORSHAM .xlsx"
+    },
+    {
+      "table": "WF03",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WF/WF03/WF03 - BALHAM AND CRYSTAL PALACE TO BECKENHAM JN-UCKFIELD AND EAST GRINSTEAD .xlsx"
+    },
+    {
+      "table": "WF01B",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WF/WF01B/WF01B - EAST CROYDON TO STOATS NEST JN. .xlsx"
+    },
+    {
+      "table": "WF01A",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WF/WF01A/WF01A - LONDON VICTORIA TO EAST CROYDON .xlsx"
+    },
+    {
+      "table": "WH03",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WH/WH03/WH03 - FELTHAM TO WINDSOR-WEYBRIDGE AND READING-GUILDFORD TO WOKINGHAM.xlsx"
+    },
+    {
+      "table": "WH02",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WH/WH02/WH02 - WATERLOO TO FELTHAM.xlsx"
+    },
+    {
+      "table": "WH01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WH/WH01/WH01 - WATERLOO TO CHESSINGTON-DORKING-SHEPPERTON-HAMPTON COURT AND GUILDFORD.xlsx"
+    },
+    {
+      "table": "WH02A",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WH/WH02A/WH02A - EAST PUTNEY - WIMBLEDON LUL (BOTH DIRECTIONS).xlsx"
+    },
+    {
+      "table": "WE01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WE/WE01/WE01 - EAST CROYDON TO TONBRIDGE-GUILDFORD AND BRIGHTON .xlsx"
+    },
+    {
+      "table": "WA01A",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WA/WA01A/WA01A - OTFORD TO SEVENOAKS.xlsx"
+    },
+    {
+      "table": "WA03",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WA/WA03/WA03 - SWANLEY TO ASHFORD.xlsx"
+    },
+    {
+      "table": "WA04",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WA/WA04/WA04 - SWANLEY TO MARGATE.xlsx"
+    },
+    {
+      "table": "WA01",
+      "member": "01. June 2026 - December 2026 Working timetable documents/WA/WA01/WA01 - ORPINGTON AND REDHILL TO ASHFORD.xlsx"
+    }
+  ],
+  "geometry": {
+    "nw": "[out:json][timeout:90];(way[railway~\"^(rail|subway)$\"][service!~\"yard|siding|spur\"](51.5,-0.72,51.86,-0.08);node[railway=station](51.5,-0.72,51.86,-0.08););out body;>;out skel qt;",
+    "ne": "[out:json][timeout:90];(way[railway~\"^(rail|subway)$\"][service!~\"yard|siding|spur\"](51.5,-0.08,51.86,0.4);node[railway=station](51.5,-0.08,51.86,0.4););out body;>;out skel qt;",
+    "sw": "[out:json][timeout:90];(way[railway~\"^(rail|subway)$\"][service!~\"yard|siding|spur\"](51.2,-0.72,51.5,-0.08);node[railway=station](51.2,-0.72,51.5,-0.08););out body;>;out skel qt;",
+    "se": "[out:json][timeout:90];(way[railway~\"^(rail|subway)$\"][service!~\"yard|siding|spur\"](51.2,-0.08,51.5,0.4);node[railway=station](51.2,-0.08,51.5,0.4););out body;>;out skel qt;",
+    "east": "[out:json][timeout:90];(way[railway~\"^(rail|subway)$\"][service!~\"yard|siding|spur\"](51.43,0.3,51.68,0.53);node[railway=station](51.43,0.3,51.68,0.53););out body;>;out skel qt;",
+    "west": "[out:json][timeout:90];(way[railway~\"^(rail|subway)$\"][service!~\"yard|siding|spur\"](51.5,-0.85,51.86,-0.68);node[railway=station](51.5,-0.85,51.86,-0.68););out body;>;out skel qt;",
+    "south": "[out:json][timeout:25];(way[railway=rail][service!~\"yard|siding|spur\"](51.14,-0.19,51.24,-0.11);node[railway=station](51.14,-0.19,51.24,-0.11););out body;>;out skel qt;",
+    "junctions": "[out:json][timeout:30];nwr[name~\"Ebbsfleet|Southfleet|Wennington\",i][railway](51.42,0.15,51.55,0.38);out center;"
+  },
+  "passengerTables": {
+    "014": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Anglia%20Route/Table%20014.pdf",
+    "051": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/East%20Midlands%20Route/Table%20051.pdf",
+    "181": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Kent%20Route/Table%20181.pdf",
+    "182": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Kent%20Route/Table%20182.pdf",
+    "183": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Kent%20Route/Table%20183.pdf",
+    "184": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Kent%20Route/Table%20184.pdf",
+    "185": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Kent%20Route/Table%20185.pdf",
+    "186": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Kent%20Route/Table%20186.pdf",
+    "161": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Wessex%20Route/Table%20161.pdf",
+    "180": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Kent%20Route/Table%20180.pdf",
+    "189": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Kent%20Route/Table%20189.pdf",
+    "190": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Kent%20Route/Table%20190.pdf",
+    "191": "https://sacuksprodnrdigital0001.blob.core.windows.net/electronic-national-rail-timetable/electronic%20National%20Rail%20Timetable/01.%20May%202026%20timetable%20documents/Kent%20Route/Table%20191.pdf"
+  }
+}

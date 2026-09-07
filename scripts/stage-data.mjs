@@ -13,3 +13,9 @@ for (const file of files) {
 }
 console.log(`Staged ${files.size} All Change artifacts.`)
 await copyFile(resolve('fixtures/national-rail/paddington.json'), resolve('public/data/all-change-national-rail-paddington.json'))
+await copyFile(resolve('fixtures/national-rail/waterloo.json'), resolve('public/data/all-change-national-rail-waterloo.json'))
+await copyFile(resolve('fixtures/national-rail/kings-cross.json'), resolve('public/data/all-change-national-rail-kings-cross.json'))
+
+const railCatalogue = JSON.parse(await readFile('fixtures/national-rail/catalogue.json', 'utf8'))
+await copyFile('fixtures/national-rail/catalogue.json', 'public/data/all-change-national-rail-catalogue.json')
+for (const corridor of railCatalogue.corridors) await copyFile(`fixtures/national-rail/network-${corridor.id}.json`, `public/data/${corridor.file}`)

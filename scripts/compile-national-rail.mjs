@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto'
 import { readFile, mkdir, writeFile, mkdtemp, rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
+import { assembleRailCorridor } from './national-rail-corridor.mjs'
 import { extractPdfText, fetchBytes } from './ingest-tfl-pdf-timetable.mjs'
 
 export const SOURCES = [
@@ -188,23 +189,14 @@ export async function compile(cache) {
   const geometryBytes = await readFile('fixtures/tfl/all-change-rail-led-morning.json')
   const reference = JSON.parse(geometryBytes)
   const geometry = corridorGeometry(reference)
-  const pathIndexes = new Map(), paths = []
-  const trains = [...unique.values()].map(train => ({ ...train, pathSegments: train.stops.slice(1).map(([to], index) => {
-    const from = train.stops[index][0], key = `${from}:${to}`
-    if (pathIndexes.has(key)) return pathIndexes.get(key)
-    const path = geometry.paths.slice(Math.min(from, to), Math.max(from, to)).flatMap((points, i) => i ? points.slice(1) : points)
-    const pathIndex = paths.length
-    paths.push(from < to ? path : [...path].reverse()); pathIndexes.set(key, pathIndex)
-    return pathIndex
-  }) })).sort((a, b) => a.start - b.start)
-  const snapshot = {
+  const trains = [...unique.values()]
+  const snapshot = assembleRailCorridor({ journeys: trains, geometry, excluded,
     metadata: { publisher: 'Great Western Railway', feedVersion: 'gwr-paddington-proof-v1', serviceDate: '2026-09-04', windowStart: 0, windowEnd: 86400, focusTime: 27900, sourceUrl: 'https://www.gwr.com/travel-information/train-times', retrievedAt: new Date().toISOString(), model: 'Published recurring Friday timetable interpolation / not observed operations', note: 'Paddington–Reading corridor proof. TS services without a paired Reading time are excluded; this is not all GWR or National Rail. Engineering alterations are not applied. Single departure-only calls have no invented dwell. Corridor geometry is shared with Elizabeth line and does not identify individual fast/slow tracks.', modes: ['national-rail'], sources, geometry: { ...reference.metadata.geometry, sourceSha256: hash(geometryBytes), model: 'Shortest connected Elizabeth line corridor paths, Paddington mainline to Reading' }, coverage: { corridor: 'London Paddington – Reading', includedJourneys: trains.length, excluded } },
-    bounds: reference.bounds, stops: geometry.stops, paths, edges: [], trains,
-    corridorPaths: geometry.paths, fadeKilometres: 4,
-  }
+    bounds: reference.bounds,
+  })
   await mkdir('fixtures/national-rail', { recursive: true })
   await writeFile('fixtures/national-rail/paddington.json', JSON.stringify(snapshot))
-  console.log(`National Rail: ${trains.length} journeys, ${excluded.length} audited exclusions, ${paths.length} paths`)
+  console.log(`National Rail: ${trains.length} journeys, ${excluded.length} audited exclusions, ${snapshot.paths.length} paths`)
   return snapshot
 }
 

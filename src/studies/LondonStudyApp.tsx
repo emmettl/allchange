@@ -79,7 +79,7 @@ import { LONDON_AIRPORTS } from '../editions/london-airports.ts'
 import { londonInfrastructureSnapshot } from '../editions/london-infrastructure.ts'
 import { londonStationLabels } from '../editions/london-station-labels.ts'
 import {
-  LONDON_HUBS,
+  railPulseHubs,
   LONDON_PULSE_CENTRE,
   type LondonHubId,
 } from '../editions/london-hubs.ts'
@@ -107,14 +107,15 @@ import {
 import { useBusDay } from '../data/use-bus-day.ts'
 import { useProgressiveRoadStudy } from '@motionstudies/web/use-progressive-road-study'
 import { useObservedOperations } from '@motionstudies/web/use-observed-operations'
-import { validateNationalRail, type NationalRailSnapshot } from '../data/national-rail.ts'
+import { useNationalRail, useRailCatalogue } from '../data/use-national-rail.ts'
+import { LONDON_RAIL_CORRIDORS, type RailBoardStation, type RailBoardStationId } from '../editions/london-national-rail.ts'
+const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
 import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
-import { LondonNationalRailBoard } from './LondonNationalRailBoard.tsx'
+const LondonNationalRailBoard = lazy(() => import('./LondonNationalRailBoard.tsx').then(module => ({ default: module.LondonNationalRailBoard })))
 import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
 import type { MapSelectionSceneExtension } from './LondonMapSelection.tsx'
 import '../styles/london-quiet-map.css'
 
-const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
 const NationalNetworkScene = lazy(() =>
   import('@motionstudies/three/NationalNetworkScene').then(
     ({ NationalNetworkScene: Scene }) => ({ default: Scene as ComponentType<NationalNetworkSceneProps & NationalRailSceneExtension & QuietMapSceneExtension & MapSelectionSceneExtension> }),
@@ -157,7 +158,7 @@ const LONDON_CATEGORIES: readonly {
     label: 'Elizabeth · Overground',
     detail: 'Cross-city and orbital rail',
   },
-  { id: 'intercity', label: 'National Rail', detail: 'GWR mainline services' },
+  { id: 'intercity', label: 'National Rail', detail: 'London passenger mainline services' },
   { id: 'tram', label: 'Tramlink', detail: 'South London tram services' },
   { id: 'bus', label: 'Buses', detail: 'London bus routes and night services' },
   { id: 'ferry', label: 'River', detail: 'Scheduled Thames river services' },
@@ -165,6 +166,8 @@ const LONDON_CATEGORIES: readonly {
 ]
 
 type SearchChoice =
+  | { readonly kind: 'rail-station'; readonly value: RailBoardStation }
+  | { readonly kind: 'rail-train'; readonly value: NetworkTrain }
   | { readonly kind: 'airport'; readonly value: StudyAirport }
   | { readonly kind: 'road'; readonly value: LondonMotorway }
   | { readonly kind: 'station'; readonly value: StationIndexEntry }
@@ -310,21 +313,29 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const [surfaceLoadError, setSurfaceLoadError] = useState(false)
   const [busEnabled, setBusEnabled] = useState(false)
   const [nationalRailEnabled, setNationalRailEnabled] = useState(false)
-  const [nationalRail, setNationalRail] = useState<NationalRailSnapshot>()
-  const [nationalRailError, setNationalRailError] = useState(false)
-  const [nationalRailAttempt, setNationalRailAttempt] = useState(0)
+  const [nationalRailStationId, setNationalRailStationId] = useState<RailBoardStationId>('paddington')
   const [nationalRailSelectedId, setNationalRailSelectedId] = useState<string>()
   const [trainLabelMode, setTrainLabelMode] = useState<TrainLabelMode>('auto')
   const [limitedChrome, setLimitedChrome] = useState(false)
   const [mobileControlsOpen, setMobileControlsOpen] = useState(false)
-  const [pulseHubId, setPulseHubId] = useState<LondonHubId>()
-  const pulseHub = pulseHubId
-    ? LONDON_HUBS.find((hub) => hub.id === pulseHubId)
-    : undefined
-  const nationalRailRequested = nationalRailEnabled || Boolean(pulseHub?.nationalRail)
-  const [pulseLens, setPulseLens] = useState<HubFlowLens>('all')
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
+  const [pulseHubId, setPulseHubId] = useState<LondonHubId>()
+  const railCatalogue = useRailCatalogue(nationalRailEnabled || Boolean(pulseHubId) || searchOpen, morningNetwork?.metadata.serviceDate)
+  const railStations = railCatalogue.stations
+  const pulseHubs = useMemo(() => railPulseHubs(railStations), [railStations])
+  const pulseHub = pulseHubs.find(hub => hub.id === pulseHubId)
+  const railFeed = useNationalRail(edition.data.nationalRail,
+    nationalRailEnabled || (searchOpen && query.trim().length >= 2) ? LONDON_RAIL_CORRIDORS.map(corridor => corridor.id) : pulseHub?.nationalRail ?? [],
+    morningNetwork?.metadata.serviceDate,
+  )
+  const nationalRail = railFeed.snapshot
+  const nationalRailError = railFeed.error
+  const railStation = railStations.find(station => station.id === nationalRailStationId) ?? railStations[0]
+  const railBoardSnapshot = railStation.corridors.some(id => railFeed.snapshots[id]) ? nationalRail : undefined
+  const pulseRailSnapshot = pulseHub?.nationalRail?.some(id => railFeed.snapshots[id]) ? nationalRail : undefined
+  const pulseRailOperator = pulseHub?.nationalRail?.filter(id => railFeed.snapshots[id]).map(id => LONDON_RAIL_CORRIDORS.find(corridor => corridor.id === id)!.operator).join(' · ')
+  const [pulseLens, setPulseLens] = useState<HubFlowLens>('all')
   const [activeSearchIndex, setActiveSearchIndex] = useState(0)
   const [layout, setLayout] = useState<SpatialLayoutId>('geographic')
   const [spatialLayout, setSpatialLayout] = useState<SpatialLayoutSnapshot>()
@@ -399,22 +410,6 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       })
     return () => controller.abort()
   }, [edition.data.opening.geography, edition.data.opening.network])
-
-  useEffect(() => {
-    if (!nationalRailRequested || nationalRail || !morningNetwork) return
-    const controller = new AbortController()
-    fetch(editionDataUrl(edition.data.nationalRail.day), { signal: controller.signal })
-      .then(response => {
-        if (!response.ok) throw new Error('National Rail unavailable')
-        return response.json() as Promise<NationalRailSnapshot>
-      })
-      .then(value => setNationalRail(validateNationalRail(value, morningNetwork.metadata.serviceDate)))
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === 'AbortError') return
-        setNationalRailError(true)
-      })
-    return () => controller.abort()
-  }, [edition.data.nationalRail.day, morningNetwork, nationalRail, nationalRailRequested, nationalRailAttempt])
 
   const dayChunkDescriptor = useMemo(
     () => (dayManifest ? dayChunkForTime(dayManifest, sceneTime) : undefined),
@@ -787,6 +782,13 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         : { places: [], services: [] },
     [searchOpen, query, routes, sceneNetwork, stations],
   )
+  const railChoices = useMemo<readonly SearchChoice[]>(() => {
+    const folded = foldSearchText(query.trim())
+    if (!searchOpen || !folded) return []
+    const matches: SearchChoice[] = railStations.filter(station => foldSearchText(`${station.name} ${station.code}`).includes(folded)).slice(0, 4).map(value => ({ kind: 'rail-station', value }))
+    const trains = nationalRail?.trains.filter(train => foldSearchText(`${train.route} ${train.shortName} ${train.origin} ${train.headsign}`).includes(folded)).slice(0, 4).map((value): SearchChoice => ({ kind: 'rail-train', value })) ?? []
+    return [...matches, ...trains]
+  }, [query, searchOpen, railStations, nationalRail])
   const choices = useMemo(() => {
     const airMatches = searchOpen && airEnabled && query.trim()
       ? searchAirTracks(searchableAircraft, query, sceneTime, 5).map(
@@ -796,9 +798,10 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     return [
       ...networkChoices.places,
       ...airMatches,
+      ...railChoices,
       ...networkChoices.services,
     ].slice(0, 9)
-  }, [networkChoices, searchOpen, airEnabled, query, searchableAircraft, sceneTime])
+  }, [networkChoices, railChoices, searchOpen, airEnabled, query, searchableAircraft, sceneTime])
   const selectedAirTrack = useMemo<AirTrack | undefined>(
     () =>
       activeAirSnapshot?.tracks.find(
@@ -1147,7 +1150,20 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const activateChoice = useCallback(
     (choice: SearchChoice) => {
       setPulseHubId(undefined)
-      if (choice.kind === 'airport') {
+      if (choice.kind === 'rail-station' || choice.kind === 'rail-train') {
+        clearSelection()
+        setOperationsRequested(false)
+        setOperationsTransitionNetwork(undefined)
+        setOperationsMode('plan')
+        setNationalRailEnabled(true)
+        activateLayout('geographic')
+        const train = choice.kind === 'rail-train' ? choice.value : undefined
+        const station = choice.kind === 'rail-station' ? choice.value : railStations.find(station => train?.stops.some(([index]) => nationalRail?.stops[index][4] === `crs:${station.code}`))
+        if (station) { setNationalRailStationId(station.id); moveCamera('focus-location', station.focus, 0.25) }
+        if (train) { setNationalRailSelectedId(train.id); setStudyWindow('day'); setTime(Math.max(0, Math.min(86399, train.start + 60))); setIsPlaying(false) }
+        setQuery(train ? `${train.route} ${train.shortName}` : station?.name ?? '')
+        setSearchOpen(false)
+      } else if (choice.kind === 'airport') {
         const airport = choice.value
         setSelectedAirport(airport)
         setAirEnabled(true)
@@ -1232,7 +1248,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         setIsPlaying(true)
       }
     },
-    [activateLayout, moveCamera, selectStation],
+    [activateLayout, clearSelection, moveCamera, selectStation, railStations, nationalRail],
   )
 
   const toggleTflLayer = useCallback(() => {
@@ -1339,13 +1355,13 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     setOperationsRequested(false)
     setOperationsTransitionNetwork(undefined)
     setOperationsMode('plan')
-    setNationalRailError(false)
+    railFeed.retry()
     setNationalRailEnabled(value => !value)
     if (!nationalRailEnabled) {
       activateLayout('geographic')
-      moveCamera('focus-location', [-0.34, 51.51], 0.6)
+      moveCamera('reset')
     }
-  }, [activateLayout, clearSelection, moveCamera, nationalRailEnabled])
+  }, [activateLayout, clearSelection, moveCamera, nationalRailEnabled, railFeed])
 
   const togglePulse = useCallback(() => {
     clearSelection()
@@ -1354,8 +1370,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     setOperationsTransitionNetwork(undefined)
     setOperationsMode('plan')
     setPulseLens('all')
-    setPulseHubId(nationalRailEnabled ? 'paddington' : 'kings-cross')
-  }, [clearSelection, pulseHubId, nationalRailEnabled])
+    setPulseHubId(nationalRailEnabled ? nationalRailStationId : 'kings-cross')
+  }, [clearSelection, pulseHubId, nationalRailEnabled, nationalRailStationId])
 
   const onSearchKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     event.stopPropagation()
@@ -1749,15 +1765,15 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           type="button"
           aria-label={nationalRailEnabled ? 'Hide National Rail' : 'Show National Rail'}
           aria-pressed={nationalRailEnabled}
-          aria-busy={nationalRailEnabled && !nationalRail && !nationalRailError}
-          data-tooltip="GWR arrivals and departures · Paddington corridor proof"
+          aria-busy={nationalRailEnabled && railFeed.loading}
+          data-tooltip="Passenger arrivals and departures · London rail network"
           onClick={toggleNationalRailLayer}
         >
           <span className="london-wide-label">National Rail</span>
           <span className="london-mobile-label">NR</span>
         </button>
         {nationalRailEnabled && nationalRailError && <span className="london-layout-status" role="status">National Rail unavailable · toggle to retry</span>}
-        {nationalRailEnabled && !nationalRail && !nationalRailError && <span className="london-layout-status" role="status">Loading National Rail…</span>}
+        {nationalRailEnabled && railFeed.loading && <span className="london-layout-status" role="status">Loading National Rail…</span>}
         {layoutError && (
           <span className="london-layout-status" role="status">
             Diagram unavailable
@@ -1952,7 +1968,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                     ? roadCorridorSearchValue(choice.value)
                   : choice.kind === 'air'
                   ? choice.value.callsign
-                  : choice.kind === 'station'
+                  : (choice.kind === 'station' || choice.kind === 'rail-station')
                   ? choice.value.name
                   : choice.kind === 'route'
                     ? choice.value.name
@@ -1964,6 +1980,10 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                     ? 'MOTORWAY · OBSERVED FLOW'
                   : choice.kind === 'air'
                   ? `AIR · ${(choice.value.icaoAddress ?? choice.value.id).toUpperCase()}`
+                  : choice.kind === 'rail-station'
+                  ? `NATIONAL RAIL · ${choice.value.code} · board & pulse`
+                  : choice.kind === 'rail-train'
+                  ? `NATIONAL RAIL · ${choice.value.headsign}`
                   : choice.kind === 'station'
                   ? `${choice.value.routes.length} lines`
                   : choice.kind === 'route'
@@ -2009,7 +2029,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                   setPulseHubId(event.target.value as LondonHubId)
                 }}
               >
-                {LONDON_HUBS.map((hub) => (
+                {pulseHubs.map((hub) => (
                   <option key={hub.id} value={hub.id}>
                     {hub.displayName}
                   </option>
@@ -2094,12 +2114,12 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
             {!pulseHub && (selectedRoad || roadCategorySelected) && <Suspense fallback={null}><LondonRoadObservations snapshot={roadDay.snapshot} topology={roadTopology} time={roadIntervalTime} road={selectedRoad?.id} date={roadObservationDate} /></Suspense>}
             {pulseHub?.nationalRail && (
               <small className="london-pulse-rail" role="status">
-                {nationalRail ? `GWR · ${nationalRailPulseCount} National Rail calls · published times` : nationalRailError ? <>
+                {pulseRailSnapshot && `${pulseRailOperator} · ${nationalRailPulseCount} National Rail calls · published times`}
+                {nationalRailError ? <>
                   National Rail unavailable · <button type="button" onClick={() => {
-                    setNationalRailError(false)
-                    setNationalRailAttempt(attempt => attempt + 1)
+                    railFeed.retry()
                   }}>Retry National Rail</button>
-                </> : 'Loading National Rail…'}
+                </> : railFeed.loading ? ' · Loading National Rail…' : null}
               </small>
             )}
             {pulseHub && upcomingPulseCall && (
@@ -2179,17 +2199,40 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         </section>
       )}
 
-      {nationalRailEnabled && nationalRail && !pulseHub && network && (
-        <LondonNationalRailBoard
-          snapshot={nationalRail} time={time} windowEnd={network.metadata.windowEnd}
+      {(nationalRailEnabled || pulseHub || searchOpen) && railCatalogue.error && <p className="london-layout-status" role="status">Rail station list unavailable · <button type="button" onClick={railCatalogue.retry}>Retry station list</button></p>}
+      {nationalRailEnabled && !railBoardSnapshot && !pulseHub && (
+        <section className="london-national-rail-board" aria-label="National Rail loading">
+          <label className="london-rail-station-picker">Station
+            <select aria-label="National Rail station" value={nationalRailStationId} onChange={event => setNationalRailStationId(event.target.value as RailBoardStationId)}>
+              {railStations.map(station => <option key={station.id} value={station.id}>{station.name}</option>)}
+            </select>
+          </label>
+          <p>{railStation.corridors.some(id => railFeed.errors[id]) ? 'Corridor unavailable' : 'Loading corridor…'}</p>
+          {railStation.corridors.some(id => railFeed.errors[id]) && <button type="button" onClick={railFeed.retry}>Retry National Rail</button>}
+        </section>
+      )}
+      {nationalRailEnabled && railBoardSnapshot && !pulseHub && network && (
+        <Suspense fallback={<span className="london-layout-status" role="status">Loading rail board…</span>}><LondonNationalRailBoard
+          snapshot={railBoardSnapshot} stations={railStations} stationId={nationalRailStationId} time={time} windowEnd={network.metadata.windowEnd}
+          onStation={id => {
+            clearSelection()
+            setNationalRailStationId(id)
+            const station = railStations.find(value => value.id === id)!
+            moveCamera('focus-location', station.focus, 0.25)
+          }}
+          onPulse={() => {
+            clearSelection()
+            setPulseLens('all')
+            setPulseHubId(nationalRailStationId)
+          }}
           selectedId={nationalRailSelectedId}
           onSelect={id => { clearSelection(); setNationalRailSelectedId(id) }}
           onSeek={nextTime => {
             setTime(Math.max(network.metadata.windowStart, Math.min(network.metadata.windowEnd - 1, nextTime)))
             setIsPlaying(false)
-            moveCamera('focus-location', [-0.34, 51.51], 0.6)
+            moveCamera('focus-location', railStation.focus, 0.25)
           }}
-        />
+        /></Suspense>
       )}
       <footer className="london-footer">
         <span>
@@ -2197,7 +2240,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
             ? 'TfL arrival predictions · route interpolation · not GPS'
             : 'TfL timetable · ADS-B + WebTRIS observation · not realtime'}
         </span>
-        <span>GLA boundary + Thames · OGL v3.0</span>
+        <span>GLA boundary + Thames · OGL v3.0{nationalRailEnabled && <> · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">Rail © OpenStreetMap</a></>}</span>
       </footer>
     </main>
   )

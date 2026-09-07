@@ -526,6 +526,8 @@ const scripts = new Set()
 const styles = new Set()
 const visited = new Set()
 const roadDetailKey = 'src/studies/LondonRoadObservations.tsx'
+const railBoardKey = 'src/studies/LondonNationalRailBoard.tsx'
+const railLayerKey = 'src/studies/LondonNationalRailLayer.tsx'
 const visit = (key) => {
   if (visited.has(key)) return
   visited.add(key)
@@ -536,7 +538,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // This panel is requested only after road selection. Budget its own payload
   // separately; it is not part of the opening network scene's transfer.
-  for (const importedKey of chunk.dynamicImports ?? []) if (importedKey !== roadDetailKey) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (importedKey !== roadDetailKey && importedKey !== railBoardKey && importedKey !== railLayerKey) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -557,6 +559,25 @@ const roadDetailJavaScript = await totalGzipSize([roadDetail.file])
 const roadDetailCss = await totalGzipSize(roadDetail.css ?? [])
 console.log(`All Change optional road detail: ${kibibytes(roadDetailJavaScript)} JavaScript / 2.0 KiB; ${kibibytes(roadDetailCss)} CSS / 2.0 KiB`)
 if (roadDetailJavaScript > 2 * 1024 || roadDetailCss > 2 * 1024) throw new Error('Road detail transfer budget exceeded')
+const railLayer = manifest[railLayerKey]
+if (!railLayer?.isDynamicEntry || railLayer.imports?.some(key => !visited.has(key))) throw new Error('The optional rail renderer must stay lazy with budgeted dependencies')
+const railLayerSize = await totalGzipSize([railLayer.file])
+console.log(`All Change optional rail renderer: ${kibibytes(railLayerSize)} / 6.0 KiB`)
+if (railLayerSize > 6 * 1024) throw new Error('Rail renderer transfer budget exceeded')
+const railBoard = manifest[railBoardKey]
+if (!railBoard?.isDynamicEntry || railBoard.imports?.some(key => !visited.has(key))) throw new Error('The optional rail board must stay lazy with budgeted dependencies')
+const railBoardSize = await totalGzipSize([railBoard.file])
+console.log(`All Change optional rail board: ${kibibytes(railBoardSize)} / 4.0 KiB`)
+if (railBoardSize > 4 * 1024) throw new Error('Rail board transfer budget exceeded')
+const railCatalogue = JSON.parse(await readFile('fixtures/national-rail/catalogue.json', 'utf8'))
+let railTotal = 0, railLargest = 0
+for (const { file } of railCatalogue.corridors) {
+  const compressed = gzipSync(await readFile(resolve('public/data', file)), { level: 9 }).byteLength
+  railTotal += compressed; railLargest = Math.max(railLargest, compressed)
+}
+const railCatalogueSize = gzipSync(await readFile('fixtures/national-rail/catalogue.json'), { level: 9 }).byteLength
+console.log(`All Change optional rail data: ${kibibytes(railCatalogueSize)} catalogue / 12.0 KiB; ${kibibytes(railLargest)} largest family / 500.0 KiB; ${kibibytes(railTotal)} network / 3000.0 KiB`)
+if (railCatalogueSize > 12 * 1024 || railLargest > 500 * 1024 || railTotal > 3000 * 1024) throw new Error('Optional rail data transfer budget exceeded')
 const css = await totalGzipSize(styles)
 const total = javaScript + css + dataGzip
 const transfer = { javaScript, css, total }

@@ -1040,3 +1040,9 @@
     transition: none;
   }
 }
+
+.london-rail-station-picker { display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.london-rail-station-picker select { min-width: 0; flex: 1; min-height: 32px; padding: 4px; color: #ffe3b8; background: #111021; border: 1px solid rgba(255, 211, 146, 0.25); font: inherit; }
+.london-national-rail-board .london-rail-pulse-link { color: #ffe3b8; border-color: rgba(255, 211, 146, 0.25); min-height: 32px; padding: 4px 8px; margin-top: 6px; }
+
+.london-national-rail-board .london-rail-attribution { display: block; margin-top: 6px; }

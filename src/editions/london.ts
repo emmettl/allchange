@@ -1,3 +1,4 @@
+import { LONDON_RAIL_CORRIDORS, type RailCorridorId } from './london-national-rail.ts'
 import type {
   EditionDataCatalog,
   MotionStudyEdition,
@@ -49,7 +50,7 @@ export const ALL_CHANGE_ROUTE_COLORS: Readonly<Record<string, string>> = {
 }
 
 export interface LondonDataCatalog extends EditionDataCatalog {
-  readonly nationalRail: { readonly day: string }
+  readonly nationalRail: Readonly<Record<RailCorridorId, string>>
   readonly opening: {
     readonly network: string
     readonly geography: string
@@ -105,7 +106,7 @@ export const LONDON_EDITION: LondonEdition = {
   },
   theme: ALL_CHANGE_THEME,
   data: {
-    nationalRail: { day: 'all-change-national-rail-paddington.json' },
+    nationalRail: Object.fromEntries(LONDON_RAIL_CORRIDORS.map(({ id }) => [id, `all-change-national-rail-network-${id}.json`])) as Record<RailCorridorId, string>,
     opening: {
       network: 'all-change-rail-led-morning.json',
       geography: 'all-change-geography.json',
