@@ -1371,6 +1371,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               snapshot={sceneNetwork}
               referenceSnapshot={infrastructureNetwork ?? network}
               stations={stations}
+              stationLabelSettleSeconds={0.04}
               trainLabelMode={trainLabelMode}
               isPlaying={isPlaying}
               time={sceneTime}

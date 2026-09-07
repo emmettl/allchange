@@ -49,6 +49,18 @@ export function londonDiagramRenderer(): Plugin {
         throw new Error('The London station label tier adapter needs review for this renderer version')
       }
       code = code.replace(stationRankHook, 'const rankLimit = londonStationLabelRankLimit(semanticHeight);')
+      // Camera damping can keep resetting the settle timer long after a wheel
+      // event. Refresh at least every 100 ms during motion; retained labels
+      // still win collision checks, and layout morphs retain their own gate.
+      for (const [before, after] of [
+        ['const cameraStableSeconds = useRef(Number.POSITIVE_INFINITY);',
+          'const cameraStableSeconds = useRef(Number.POSITIVE_INFINITY);\n    const labelRefreshSeconds = useRef(0);'],
+        ['const canRepopulate = stationLabelsCanRepopulate(cameraStableSeconds.current, settleSeconds);',
+          'labelRefreshSeconds.current += delta;\n        const canRepopulate = stationLabelsCanRepopulate(cameraStableSeconds.current, settleSeconds) || labelRefreshSeconds.current >= 0.1;\n        if (canRepopulate) labelRefreshSeconds.current = 0;'],
+      ]) {
+        if (code.split(before).length !== 2) throw new Error(`London station label refresh hook needs review: ${before}`)
+        code = code.replace(before, after)
+      }
       // Tube and DLR share the metro category. Require close zoom (about 4×
       // home) even for focused services and the explicit label-on mode.
       const labelHook = 'const arrivalOpacity = trainLabelArrivalOpacity(localTime.current, train.end, playbackRate);'
