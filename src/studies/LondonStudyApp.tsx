@@ -76,6 +76,7 @@ import {
   type LondonEdition,
 } from '../editions/london.ts'
 import { LONDON_AIRPORTS } from '../editions/london-airports.ts'
+import { londonInfrastructureSnapshot } from '../editions/london-infrastructure.ts'
 import {
   LONDON_HUBS,
   LONDON_PULSE_CENTRE,
@@ -438,6 +439,12 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     operationsMode === 'observed'
       ? (operationsProjection?.snapshot ?? network)
       : network
+  const infrastructureNetwork = useMemo(
+    () => sceneNetwork && morningNetwork
+      ? londonInfrastructureSnapshot(sceneNetwork, morningNetwork)
+      : sceneNetwork,
+    [sceneNetwork, morningNetwork],
+  )
 
   const pulseHub = pulseHubId
     ? LONDON_HUBS.find((hub) => hub.id === pulseHubId)
@@ -639,8 +646,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   )
 
   const stations = useMemo(
-    () => (sceneNetwork ? buildStationIndex(sceneNetwork) : []),
-    [sceneNetwork],
+    () => (infrastructureNetwork ? buildStationIndex(infrastructureNetwork) : []),
+    [infrastructureNetwork],
   )
   const routes = useMemo(
     () => (sceneNetwork ? buildRouteIndex(sceneNetwork) : []),
@@ -1361,7 +1368,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               boundary={boundary}
               lakes={water}
               snapshot={sceneNetwork}
-              referenceSnapshot={network}
+              referenceSnapshot={infrastructureNetwork ?? network}
               stations={stations}
               trainLabelMode={trainLabelMode}
               isPlaying={isPlaying}
@@ -1885,7 +1892,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         <button type="button" aria-label="Reset map" onClick={() => moveCamera('reset')}>↺</button>
         <button
           type="button"
-              data-tooltip={trainLabelMode === 'auto' ? 'Show all vehicle labels (L)' : trainLabelMode === 'on' ? 'Hide vehicle labels (L)' : 'Show vehicle labels automatically at useful zoom levels (L)'} aria-label={`Vehicle labels ${trainLabelMode}`}
+              data-tooltip={trainLabelMode === 'auto' ? 'Show vehicle labels (Tube and DLR at close zoom) (L)' : trainLabelMode === 'on' ? 'Hide vehicle labels (L)' : 'Show vehicle labels automatically at useful zoom levels (L)'} aria-label={`Vehicle labels ${trainLabelMode}`}
           onClick={() => setTrainLabelMode((value) => LABEL_MODES[value])}
         >
           L·{trainLabelMode.slice(0, 1).toUpperCase()}

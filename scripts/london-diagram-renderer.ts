@@ -1,5 +1,6 @@
 // A narrow compatibility adapter for the pinned alpha.2 renderer, which has
-// no public station-marker slot yet. Transform at build time; never modify or
+// no public station-marker slot or per-category label zoom setting yet.
+// Transform at build time; never modify or
 // vendor the installed package. Fail closed when an upstream release changes
 // the expected hook so upgrades cannot silently lose the London treatment.
 import type { Plugin } from 'vite'
@@ -15,6 +16,24 @@ export function londonDiagramRenderer(): Plugin {
       const from = source.indexOf(start), to = source.indexOf(end, from)
       if (from < 0 || to < 0) throw new Error('The London diagram marker adapter needs review for this renderer version')
       let code = source.slice(0, from) + 'lineMapStyle && _jsx(LondonDiagramStations, { snapshot, projectedStops, projectedPaths, routeColors, opacity: routeColorMix * (subdued ? 0.48 : 0.98) }), ' + source.slice(to)
+      // Timetable chunks contain only nearby journeys. Use the complete route
+      // reference for infrastructure so overnight service gaps cannot erase it.
+      // Traffic, vehicle playback and vehicle labels still use the live chunk.
+      for (const [before, after] of [
+        ['function RailGraph({ snapshot,', 'function RailGraph({ snapshot, infrastructureSnapshot = snapshot,'],
+        ['_jsx(RailGraph, { snapshot: props.snapshot,', '_jsx(RailGraph, { snapshot: props.snapshot, infrastructureSnapshot: props.referenceSnapshot,'],
+        ['_jsx(RouteIdentityLayer, { snapshot: snapshot,', '_jsx(RouteIdentityLayer, { snapshot: infrastructureSnapshot,'],
+        ['_jsx(LondonDiagramStations, { snapshot,', '_jsx(LondonDiagramStations, { snapshot: infrastructureSnapshot,'],
+      ]) {
+        if (code.split(before).length !== 2) throw new Error(`London infrastructure hook needs review: ${before}`)
+        code = code.replace(before, after)
+      }
+      const markersStart = code.indexOf('const diagramStationGeometries = useMemo(')
+      const markersEnd = code.indexOf('}, [projectedStops, snapshot.stops, snapshot.trains]);', markersStart)
+      if (markersStart < 0 || markersEnd < 0) throw new Error('The London infrastructure station hook needs review')
+      code = code.slice(0, markersStart)
+        + code.slice(markersStart, markersEnd).replaceAll('snapshot.trains', 'infrastructureSnapshot.trains')
+        + code.slice(markersEnd).replace('}, [projectedStops, snapshot.stops, snapshot.trains]);', '}, [projectedStops, snapshot.stops, infrastructureSnapshot.trains]);')
       const identityStart = code.indexOf('function RouteIdentityLayer(')
       const identityEnd = code.indexOf('function TrafficFlowLayer(', identityStart)
       if (identityStart < 0 || identityEnd < 0 || code.slice(identityStart, identityEnd).split('const key = routeSegmentKey(train, index - 1);').length !== 3) {
@@ -25,6 +44,29 @@ export function londonDiagramRenderer(): Plugin {
           'const key = lineMapStyle ? londonDiagramSegmentKey(train, index - 1, projectedStops) : routeSegmentKey(train, index - 1);')
         .replace('offsetProjectedPath(points, laneOffset)', 'offsetProjectedPath(lineMapStyle ? londonDiagramOrderedPoints(points) : points, laneOffset)')
       code = code.slice(0, identityStart) + identity + code.slice(identityEnd)
+      // Tube and DLR share the metro category. Require close zoom (about 4×
+      // home) even for focused services and the explicit label-on mode.
+      const labelHook = 'const arrivalOpacity = trainLabelArrivalOpacity(localTime.current, train.end, playbackRate);'
+      if (code.split(labelHook).length !== 2) {
+        throw new Error('The London train label zoom adapter needs review for this renderer version')
+      }
+      code = code.replace(labelHook,
+        `if (train.category === 'metro' && semanticCameraHeight >= 10) continue;\n            ${labelHook}`)
+      // Keep vehicles just above the diagram track cores (y = 0.078),
+      // reducing close-zoom parallax in Geography as well. Cover path,
+      // detour and straight-line interpolation, including selected markers.
+      const vehicleStart = code.indexOf('function projectedTrainPosition(')
+      const vehicleEnd = code.indexOf('function NationalGround(', vehicleStart)
+      const vehiclePosition = code.slice(vehicleStart, vehicleEnd)
+      if (vehicleStart < 0 || vehicleEnd < 0 || vehiclePosition.split('0.2,').length !== 4) {
+        throw new Error('The London vehicle height adapter needs review for this renderer version')
+      }
+      code = code.slice(0, vehicleStart) + vehiclePosition.replaceAll('0.2,', '0.085,') + code.slice(vehicleEnd)
+      const trailHook = 'position: [0, -0.035, 0], children:'
+      if (code.split(trailHook).length !== 2) {
+        throw new Error('The London vehicle trail height adapter needs review for this renderer version')
+      }
+      code = code.replace(trailHook, 'position: [0, -0.005, 0], children:')
       // Opacity zero still submits geometry to WebGL. Keep these resources
       // mounted for a smooth return to Geography, but cull fully faded layers.
       for (const [before, after] of [

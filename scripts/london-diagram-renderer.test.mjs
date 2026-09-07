@@ -15,4 +15,11 @@ describe('London renderer compatibility', () => {
   it('requires explicit review if the installed renderer hooks change', () => {
     expect(() => londonDiagramRenderer().transform('export function NationalNetworkScene() {}', id)).toThrow('needs review')
   })
+  it('uses the full reference only for infrastructure, retaining timetable-driven traffic', () => {
+    const { code } = londonDiagramRenderer().transform(source, id)
+    expect(code).toContain('_jsx(RouteIdentityLayer, { snapshot: infrastructureSnapshot,')
+    expect(code).toContain('_jsx(LondonDiagramStations, { snapshot: infrastructureSnapshot,')
+    expect(code).toContain('_jsx(TrafficFlowLayer, { snapshot: snapshot,')
+    expect(code).toContain('buildTrainTimeIndex(props.snapshot.trains,')
+  })
 })
