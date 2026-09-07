@@ -315,6 +315,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const [nationalRailSelectedId, setNationalRailSelectedId] = useState<string>()
   const [trainLabelMode, setTrainLabelMode] = useState<TrainLabelMode>('auto')
   const [limitedChrome, setLimitedChrome] = useState(false)
+  const [mobileControlsOpen, setMobileControlsOpen] = useState(false)
   const [pulseHubId, setPulseHubId] = useState<LondonHubId>()
   const pulseHub = pulseHubId
     ? LONDON_HUBS.find((hub) => hub.id === pulseHubId)
@@ -1385,7 +1386,10 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         setLimitedChrome((value) => !value)
       } else if (event.key === 'Escape') {
         if (limitedChrome) setLimitedChrome(false)
-        else clearSelection()
+        else if (mobileControlsOpen) {
+          setMobileControlsOpen(false)
+          document.getElementById('london-controls-toggle')?.focus()
+        } else clearSelection()
       }
     }
     window.addEventListener('keydown', onKeyDown)
@@ -1395,6 +1399,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     clearSelection,
     edition.data.opening.layouts,
     limitedChrome,
+    mobileControlsOpen,
     togglePulse,
     nationalRailEnabled,
     busEnabled,
@@ -1541,6 +1546,40 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         </div>
       </header>
 
+      <button
+        className={`london-spatial-cta${mobileControlsOpen ? ' is-obscured' : ''}`}
+        type="button"
+        aria-label={layout === 'diagram' ? 'Geography layout' : 'Diagram layout'}
+        aria-busy={layoutLoading}
+        disabled={!network || layoutLoading || (layout !== 'diagram' && (surfaceEnabled || busEnabled || nationalRailEnabled))}
+        onClick={() => {
+          const nextLayout = layout === 'diagram' ? 'geographic' : 'diagram'
+          const option = edition.data.opening.layouts.find((value) => value.id === nextLayout)
+          activateLayout(nextLayout, option && 'artifact' in option ? option.artifact : undefined)
+        }}
+      >
+        <span aria-hidden="true">↔</span>
+        {layoutLoading ? 'Drawing diagram…' : layout === 'diagram' ? 'Back to geography' : 'Try diagram'}
+      </button>
+
+      <button
+        id="london-controls-toggle"
+        className="london-controls-toggle"
+        type="button"
+        aria-expanded={mobileControlsOpen}
+        aria-controls="london-controls-panel"
+        onClick={() => {
+          setMobileControlsOpen((value) => !value)
+          setSearchOpen(false)
+        }}
+      >
+        {mobileControlsOpen ? 'Close' : 'Controls'}
+        <span aria-hidden="true">{mobileControlsOpen ? '×' : '+'}</span>
+      </button>
+      <div
+        id="london-controls-panel"
+        className={`london-controls-panel${mobileControlsOpen ? ' is-open' : ''}`}
+      >
       <section className="london-layout-switch" aria-label="Spatial layout">
         {edition.data.opening.layouts.map((option) => {
           const artifact = 'artifact' in option ? option.artifact : undefined
@@ -1551,6 +1590,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           return (
             <button
               key={option.id}
+              className={option.id === 'diagram' ? 'london-diagram-toggle' : undefined}
               type="button"
               aria-label={`${option.label} layout`}
               aria-pressed={!pulseHub && layout === option.id}
@@ -1561,6 +1601,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               onClick={() => available && activateLayout(option.id, artifact)}
             >
               <span className="london-wide-label">{option.label}</span>
+              {option.id === 'diagram' && <span className="london-transition-symbol" aria-hidden="true">↔</span>}
               <span className="london-mobile-label">
                 {option.id === 'geographic' ? 'Geo' : 'Map'}
               </span>
@@ -1738,6 +1779,104 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           )}
       </section>
 
+      {sceneNetwork && (
+        <section
+          className={`london-service-legend service-legend${selectedCategory || airCategorySelected || roadCategorySelected ? ' has-filter' : ''}`}
+          aria-label="Transport layers"
+        >
+          {availableCategories.map((category) => (
+            <button
+              key={category.id}
+              type="button"
+              aria-pressed={selectedCategory === category.id}
+              data-tooltip={`${selectedCategory === category.id ? 'Restore all services' : 'Focus on this service group'} · ${category.detail}`}
+              style={
+                {
+                  '--service-accent': SERVICE_COLORS[category.id],
+                } as CSSProperties
+              }
+              onClick={() => {
+                setSelectedCategory((value) =>
+                  value === category.id ? undefined : category.id,
+                )
+                setSelectedStation(undefined)
+                setSelectedRoute(undefined)
+                setSelectedTrain(undefined)
+                setSelectedAirTrackId(undefined)
+                setSelectedAirport(undefined)
+                setSelectedRoad(undefined)
+                setAirCategorySelected(false)
+                setRoadCategorySelected(false)
+              }}
+            >
+              <i style={{ backgroundColor: SERVICE_COLORS[category.id] }} />
+              {category.label}
+            </button>
+          ))}
+          {airEnabled && (
+            <button
+              className="london-air-category"
+              type="button"
+              aria-pressed={airCategorySelected}
+              data-tooltip={airCategorySelected ? 'Restore the other transport layers' : 'Isolate observed aircraft and attenuate the other transport layers'}
+              style={{ '--service-accent': edition.theme.air } as CSSProperties}
+              onClick={() => {
+                setAirCategorySelected((value) => !value)
+                setSelectedCategory(undefined)
+                setSelectedStation(undefined)
+                setSelectedRoute(undefined)
+                setSelectedTrain(undefined)
+                setSelectedAirTrackId(undefined)
+                setSelectedAirport(undefined)
+                setSelectedRoad(undefined)
+                setRoadCategorySelected(false)
+              }}
+            >
+              <i style={{ backgroundColor: edition.theme.air }} />
+              AIR
+            </button>
+          )}
+          {roadEnabled && (
+            <button
+              className="london-road-category"
+              type="button"
+              aria-pressed={roadCategorySelected}
+              data-tooltip={roadCategorySelected ? 'Restore the other transport layers' : 'Isolate reconstructed motorway traffic and attenuate the other layers'}
+              style={{ '--service-accent': edition.theme.roadHeavy } as CSSProperties}
+              onClick={() => {
+                setRoadCategorySelected((value) => !value)
+                setSelectedCategory(undefined)
+                setSelectedStation(undefined)
+                setSelectedRoute(undefined)
+                setSelectedTrain(undefined)
+                setSelectedAirTrackId(undefined)
+                setSelectedAirport(undefined)
+                setSelectedRoad(undefined)
+                setAirCategorySelected(false)
+              }}
+            >
+              <i style={{ backgroundColor: edition.theme.roadHeavy }} />
+              ROAD
+            </button>
+          )}
+        </section>
+      )}
+
+      {!pulseHub && <aside className="london-map-tools" aria-label="Map controls">
+        <button type="button" aria-label="Zoom in" onClick={() => moveCamera('zoom-in')}>+</button>
+        <button type="button" aria-label="Zoom out" onClick={() => moveCamera('zoom-out')}>−</button>
+        <button type="button" aria-label="Reset map" onClick={() => moveCamera('reset')}>↺</button>
+        <button
+          type="button"
+              data-tooltip={trainLabelMode === 'auto' ? 'Show vehicle labels (Tube and DLR at close zoom) (L)' : trainLabelMode === 'on' ? 'Hide vehicle labels (L)' : 'Show vehicle labels automatically at useful zoom levels (L)'} aria-label={`Vehicle labels ${trainLabelMode}`}
+          onClick={() => setTrainLabelMode((value) => LABEL_MODES[value])}
+        >
+          L·{trainLabelMode.slice(0, 1).toUpperCase()}
+        </button>
+      </aside>}
+
+      </div>
+
       <section className="london-search train-search">
         <form
           role="search"
@@ -1758,7 +1897,10 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               autoComplete="off"
               aria-controls="london-search-results"
               aria-expanded={searchOpen && choices.length > 0}
-              onFocus={() => setSearchOpen(true)}
+              onFocus={() => {
+                setSearchOpen(true)
+                setMobileControlsOpen(false)
+              }}
               onChange={(event) => {
                 setQuery(event.target.value)
                 setActiveSearchIndex(0)
@@ -1954,102 +2096,6 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           <p>Drawing London…</p>
         )}
       </section>
-
-      {sceneNetwork && (
-        <section
-          className={`london-service-legend service-legend${selectedCategory || airCategorySelected || roadCategorySelected ? ' has-filter' : ''}`}
-          aria-label="Transport layers"
-        >
-          {availableCategories.map((category) => (
-            <button
-              key={category.id}
-              type="button"
-              aria-pressed={selectedCategory === category.id}
-              data-tooltip={`${selectedCategory === category.id ? 'Restore all services' : 'Focus on this service group'} · ${category.detail}`}
-              style={
-                {
-                  '--service-accent': SERVICE_COLORS[category.id],
-                } as CSSProperties
-              }
-              onClick={() => {
-                setSelectedCategory((value) =>
-                  value === category.id ? undefined : category.id,
-                )
-                setSelectedStation(undefined)
-                setSelectedRoute(undefined)
-                setSelectedTrain(undefined)
-                setSelectedAirTrackId(undefined)
-                setSelectedAirport(undefined)
-                setSelectedRoad(undefined)
-                setAirCategorySelected(false)
-                setRoadCategorySelected(false)
-              }}
-            >
-              <i style={{ backgroundColor: SERVICE_COLORS[category.id] }} />
-              {category.label}
-            </button>
-          ))}
-          {airEnabled && (
-            <button
-              className="london-air-category"
-              type="button"
-              aria-pressed={airCategorySelected}
-              data-tooltip={airCategorySelected ? 'Restore the other transport layers' : 'Isolate observed aircraft and attenuate the other transport layers'}
-              style={{ '--service-accent': edition.theme.air } as CSSProperties}
-              onClick={() => {
-                setAirCategorySelected((value) => !value)
-                setSelectedCategory(undefined)
-                setSelectedStation(undefined)
-                setSelectedRoute(undefined)
-                setSelectedTrain(undefined)
-                setSelectedAirTrackId(undefined)
-                setSelectedAirport(undefined)
-                setSelectedRoad(undefined)
-                setRoadCategorySelected(false)
-              }}
-            >
-              <i style={{ backgroundColor: edition.theme.air }} />
-              AIR
-            </button>
-          )}
-          {roadEnabled && (
-            <button
-              className="london-road-category"
-              type="button"
-              aria-pressed={roadCategorySelected}
-              data-tooltip={roadCategorySelected ? 'Restore the other transport layers' : 'Isolate reconstructed motorway traffic and attenuate the other layers'}
-              style={{ '--service-accent': edition.theme.roadHeavy } as CSSProperties}
-              onClick={() => {
-                setRoadCategorySelected((value) => !value)
-                setSelectedCategory(undefined)
-                setSelectedStation(undefined)
-                setSelectedRoute(undefined)
-                setSelectedTrain(undefined)
-                setSelectedAirTrackId(undefined)
-                setSelectedAirport(undefined)
-                setSelectedRoad(undefined)
-                setAirCategorySelected(false)
-              }}
-            >
-              <i style={{ backgroundColor: edition.theme.roadHeavy }} />
-              ROAD
-            </button>
-          )}
-        </section>
-      )}
-
-      {!pulseHub && <aside className="london-map-tools" aria-label="Map controls">
-        <button type="button" aria-label="Zoom in" onClick={() => moveCamera('zoom-in')}>+</button>
-        <button type="button" aria-label="Zoom out" onClick={() => moveCamera('zoom-out')}>−</button>
-        <button type="button" aria-label="Reset map" onClick={() => moveCamera('reset')}>↺</button>
-        <button
-          type="button"
-              data-tooltip={trainLabelMode === 'auto' ? 'Show vehicle labels (Tube and DLR at close zoom) (L)' : trainLabelMode === 'on' ? 'Hide vehicle labels (L)' : 'Show vehicle labels automatically at useful zoom levels (L)'} aria-label={`Vehicle labels ${trainLabelMode}`}
-          onClick={() => setTrainLabelMode((value) => LABEL_MODES[value])}
-        >
-          L·{trainLabelMode.slice(0, 1).toUpperCase()}
-        </button>
-      </aside>}
 
       {sceneNetwork && (
         <section className="london-transport" aria-label="Playback controls">

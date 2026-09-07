@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { setMobileControls } from './mobile-controls.ts'
 import { installWebGLDrawCounters, sampleWebGLDraws } from './webgl-draws.ts'
 
 const runningInCi = Boolean(
@@ -9,6 +10,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('All Change')
   await expect(page.locator('.scene canvas')).toBeVisible()
+  await setMobileControls(page, true)
 })
 
 test('boots as a separate edition without loading Swiss network data', async ({
@@ -63,6 +65,7 @@ test('River Bus and cable car load as a separate 24-hour surface study', async (
   await search.fill('RB6')
   await expect(page.getByRole('option', { name: /RB6/ }).first()).toBeVisible()
 
+  await setMobileControls(page, true)
   await page.getByRole('button', { name: 'Morning study' }).click()
   await expect(experience).toHaveAttribute('data-study-window', 'morning')
   await expect(experience).toHaveAttribute('data-surface-enabled', 'false')
@@ -135,6 +138,7 @@ test('London buses load progressively with route search and time scrubbing', asy
   await page.getByRole('option').first().click()
   await expect(page.locator('.london-status-card')).toContainText('N26')
 
+  await setMobileControls(page, true)
   const morningStudy = page.getByRole('button', { name: 'Morning study' })
   await morningStudy.focus()
   await page.keyboard.press('Enter')
@@ -397,6 +401,7 @@ test('diagram geometry loads lazily and preserves the current station', async ({
   const diagramResponse = page.waitForResponse((response) =>
     response.url().includes('all-change-diagram.json'),
   )
+  await setMobileControls(page, true)
   await page.getByRole('button', { name: /Diagram/ }).click()
   expect((await diagramResponse).ok()).toBe(true)
 
@@ -426,6 +431,7 @@ test('diagram geometry loads lazily and preserves the current station', async ({
 test('resolved diagram skips fully transparent geometry and restores geography', async ({ page }) => {
   await page.addInitScript(installWebGLDrawCounters)
   await page.reload()
+  await setMobileControls(page, true)
   await page.getByRole('button', { name: 'Diagram layout' }).click()
   await expect(page.locator('.london-experience')).toHaveAttribute('data-layout-mix', '1.000')
   const diagram = await page.evaluate(sampleWebGLDraws)
@@ -444,6 +450,7 @@ test('reduced motion changes spatial layout without a sweep', async ({ page }) =
   const diagramResponse = page.waitForResponse((response) =>
     response.url().includes('all-change-diagram.json'),
   )
+  await setMobileControls(page, true)
   await page.getByRole('button', { name: /Diagram/ }).click()
   expect((await diagramResponse).ok()).toBe(true)
   await expect(page.locator('.london-experience')).toHaveAttribute(
@@ -489,14 +496,17 @@ test('interchange pulse preserves the shared clock and switches character', asyn
   await expect(page.locator('.london-status-card')).toContainText(
     'movements in orbit',
   )
+  await setMobileControls(page, false)
   await page.getByRole('button', { name: 'radial movements' }).click()
   await expect(experience).toHaveAttribute('data-pulse-lens', 'radial')
   await expect(page.locator('.london-status-card')).toContainText(
     'radial movements',
   )
+  await setMobileControls(page, true)
   await expect(page.getByRole('button', { name: 'Exit interchange pulse' })).toBeVisible()
   await expect(page.locator('.london-map-tools')).not.toBeVisible()
 
+  await setMobileControls(page, false)
   await page.getByRole('combobox', { name: 'Pulse interchange' }).selectOption(
     'stratford',
   )
@@ -517,6 +527,7 @@ test('interchange pulse preserves the shared clock and switches character', asyn
     }),
   ).toBeLessThanOrEqual(1)
 
+  await setMobileControls(page, true)
   await page.getByRole('button', { name: 'Exit interchange pulse' }).click()
   await expect(experience).not.toHaveClass(/is-pulse-study/)
 })
@@ -550,6 +561,7 @@ test('observed aircraft load lazily, join category emphasis and are searchable b
   await expect(page.locator('.london-status-card')).toContainText('BAW925')
   await expect(page.locator('.london-status-card')).toContainText(/ft · \d+ kt/)
 
+  await setMobileControls(page, true)
   await page.getByRole('button', { name: 'Diagram layout' }).click()
   await expect(experience).not.toHaveClass(/has-air-layer/)
   await expect(
@@ -585,6 +597,7 @@ test('airport search enters air-only mode and isolates its observed flights', as
   await expect(page.locator('.london-status-card')).toContainText(
     'airport movements',
   )
+  await setMobileControls(page, true)
   await expect(page.getByRole('button', { name: 'Hide observed aircraft' })).toHaveAttribute(
     'aria-pressed',
     'true',
@@ -633,6 +646,7 @@ test('motorway search loads observed flow lazily and enters ROAD isolation', asy
   await expect(page.locator('.london-status-card')).toContainText(
     /observed 05 Sep(?:t)? 2025/,
   )
+  await setMobileControls(page, true)
   await expect(
     page.getByRole('button', { name: 'Hide reconstructed motorway traffic' }),
   ).toHaveAttribute('aria-pressed', 'true')
@@ -648,6 +662,7 @@ test('motorway search loads observed flow lazily and enters ROAD isolation', asy
     }),
   ).toBeLessThanOrEqual(1)
 
+  await setMobileControls(page, true)
   await page.getByRole('button', { name: 'Diagram layout' }).click()
   await expect(experience).not.toHaveClass(/has-road-layer/)
   await expect(
@@ -678,6 +693,7 @@ test(
   { tag: '@frame-cadence' },
   async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== 'iphone-webkit')
+    await setMobileControls(page, true)
     await page.getByRole('button', { name: /Diagram/ }).click()
     await expect(page.locator('.london-experience')).toHaveAttribute(
       'data-layout-mix',

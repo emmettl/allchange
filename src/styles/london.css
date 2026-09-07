@@ -7,6 +7,10 @@
   --london-gutter: clamp(20px, 3.4vw, 52px);
 }
 
+.london-controls-toggle { display: none; }
+.london-controls-panel { display: contents; }
+.london-spatial-cta { display: none; }
+
 .london-experience .atmosphere {
   background:
     radial-gradient(circle at 48% 50%, transparent 0 30%, rgba(4, 4, 13, 0.22) 68%, #04040d 118%),
@@ -105,6 +109,37 @@
 .london-layout-switch button:disabled {
   opacity: 0.42;
 }
+
+/* The spatial transformation is an invitation, even before it is selected. */
+.london-layout-switch .london-diagram-toggle,
+.london-spatial-cta {
+  border: 1px solid #f291df;
+  background: linear-gradient(120deg, #62345f, #3e3268);
+  color: #fff0fc;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), 0 0 18px rgba(255, 99, 207, 0.18);
+}
+
+.london-layout-switch .london-diagram-toggle[aria-pressed='true'] {
+  border-color: #ffb8ed;
+  background: linear-gradient(120deg, #804375, #55438a);
+  box-shadow: inset 0 -2px 0 #ffb8ed, 0 0 20px rgba(255, 99, 207, 0.22);
+}
+
+.london-layout-switch .london-diagram-toggle:not(:disabled):hover,
+.london-spatial-cta:not(:disabled):hover {
+  border-color: #ffe0f7;
+  background: linear-gradient(120deg, #804375, #55438a);
+  transform: none;
+}
+
+.london-layout-switch .london-diagram-toggle:focus-visible,
+.london-spatial-cta:focus-visible {
+  outline: 2px solid #ffe0f7;
+  outline-offset: 3px;
+}
+
+.london-transition-symbol { font-size: 1rem; }
+.london-spatial-cta:disabled { opacity: 0.42; box-shadow: none; }
 
 .london-national-rail-toggle[aria-pressed='true'] {
   color: #ffe3b8 !important;
@@ -614,6 +649,14 @@
   pointer-events: none;
 }
 
+.london-experience.is-limited-chrome .london-controls-toggle,
+.london-experience.is-limited-chrome .london-spatial-cta,
+.london-experience.is-limited-chrome .london-controls-panel {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .london-experience.is-limited-chrome .london-transport {
   background: rgba(6, 5, 17, 0.64);
 }
@@ -629,10 +672,6 @@
 }
 
 @media (max-width: 700px) {
-  .london-layout-switch .london-tfl-toggle {
-    display: none;
-  }
-
   .london-experience {
     --london-gutter: calc(12px + env(safe-area-inset-left));
   }
@@ -661,17 +700,23 @@
   }
 
   .london-layout-switch {
-    top: calc(54px + env(safe-area-inset-top));
-    right: calc(12px + env(safe-area-inset-right));
-    left: calc(12px + env(safe-area-inset-left));
-    justify-content: space-between;
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 0;
+    border: 0;
+    background: none;
+    backdrop-filter: none;
   }
 
   .london-layout-switch button {
-    min-width: 30px;
-    min-height: 34px;
-    padding: 0 3px;
-    font-size: 0.48rem;
+    min-width: 0;
+    min-height: 44px;
+    padding: 0 6px;
+    border-color: rgba(210, 200, 232, 0.18);
+    font-size: 0.68rem;
+    letter-spacing: 0;
   }
 
   .london-wide-label {
@@ -680,6 +725,69 @@
 
   .london-mobile-label {
     display: inline;
+  }
+
+  .london-layout-switch .london-wide-label { display: inline; }
+  .london-layout-switch .london-mobile-label,
+  .london-switch-divider { display: none; }
+
+  .london-controls-toggle {
+    position: absolute;
+    top: calc(8px + env(safe-area-inset-top));
+    right: calc(12px + env(safe-area-inset-right));
+    z-index: 9;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+    padding: 0 12px;
+    border: 1px solid rgba(210, 200, 232, 0.25);
+    background: rgba(7, 6, 19, 0.9);
+    color: var(--cyan);
+    font: 500 0.65rem/1 'DM Mono', ui-monospace, monospace;
+  }
+
+  .london-controls-panel { display: none; }
+
+  .london-spatial-cta {
+    position: absolute;
+    right: calc(12px + env(safe-area-inset-right));
+    bottom: calc(126px + env(safe-area-inset-bottom));
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 0 15px;
+    font: 500 0.75rem/1 'DM Mono', ui-monospace, monospace;
+  }
+
+  .london-spatial-cta > span { font-size: 1.1rem; }
+  .london-spatial-cta.is-obscured { display: none; }
+
+  .london-controls-panel.is-open {
+    position: absolute;
+    top: calc(112px + env(safe-area-inset-top));
+    right: calc(12px + env(safe-area-inset-right));
+    left: calc(12px + env(safe-area-inset-left));
+    z-index: 8;
+    display: grid;
+    gap: 16px;
+    max-height: calc(100dvh - 250px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 12px;
+    border: 1px solid rgba(210, 200, 232, 0.25);
+    background: #090817;
+    backdrop-filter: blur(18px);
+  }
+
+  .london-controls-panel [role='status'] {
+    position: static;
+    grid-column: 1 / -1;
+    width: auto;
   }
 
   .london-layout-switch button small {
@@ -696,7 +804,7 @@
   }
 
   .london-search.train-search {
-    top: calc(108px + env(safe-area-inset-top));
+    top: calc(60px + env(safe-area-inset-top));
     right: calc(12px + env(safe-area-inset-right));
     left: calc(12px + env(safe-area-inset-left));
     width: auto;
@@ -704,7 +812,7 @@
   }
 
   .london-search.train-search input[type='search'] {
-    font-size: 0.88rem;
+    font-size: 16px;
   }
 
   .london-search .search-results {
@@ -721,7 +829,7 @@
   }
 
   .london-status-card {
-    top: calc(162px + env(safe-area-inset-top));
+    top: calc(118px + env(safe-area-inset-top));
     left: calc(12px + env(safe-area-inset-left));
     width: max-content;
     max-width: calc(100vw - 84px);
@@ -750,13 +858,13 @@
   }
 
   .london-status-card.is-air-selection {
-    top: calc(166px + env(safe-area-inset-top));
+    top: calc(118px + env(safe-area-inset-top));
     max-width: calc(100vw - 64px);
     padding: 8px 10px;
   }
 
   .london-status-card.is-pulse-selection {
-    top: calc(162px + env(safe-area-inset-top));
+    top: calc(118px + env(safe-area-inset-top));
     width: min(244px, calc(100vw - 68px));
     max-width: none;
     padding: 8px 10px;
@@ -792,7 +900,7 @@
   }
 
   .london-status-card.is-road-selection {
-    top: calc(166px + env(safe-area-inset-top));
+    top: calc(118px + env(safe-area-inset-top));
     max-width: calc(100vw - 64px);
     padding: 8px 10px;
   }
@@ -830,33 +938,30 @@
   }
 
   .london-map-tools {
-    top: calc(162px + env(safe-area-inset-top));
-    right: calc(12px + env(safe-area-inset-right));
-    grid-template-columns: repeat(4, 38px);
-    gap: 3px;
+    position: static;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
     transform: none;
   }
 
   .london-map-tools button {
-    min-width: 38px;
-    min-height: 38px;
+    min-width: 44px;
+    min-height: 44px;
     background: rgba(6, 5, 17, 0.76);
   }
 
   .london-service-legend.service-legend {
-    right: 12px;
-    bottom: calc(142px + env(safe-area-inset-bottom));
-    left: 12px;
+    position: static;
     display: flex;
     justify-content: flex-start;
     gap: 4px;
-    overflow-x: auto;
-    font-size: 0.56rem;
+    flex-wrap: wrap;
+    font-size: 0.65rem;
     scrollbar-width: none;
   }
 
   .london-service-legend.service-legend button {
-    min-height: 36px;
+    min-height: 44px;
     flex: 0 0 auto;
     padding: 0 7px;
     background: rgba(6, 5, 17, 0.72);
@@ -886,7 +991,7 @@
 
   .london-playback-actions button,
   .london-playback-actions select {
-    min-height: 38px;
+    min-height: 44px;
   }
 
   .london-playback-actions .london-cinema-toggle {
