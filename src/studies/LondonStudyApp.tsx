@@ -671,16 +671,24 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         : undefined,
     [routes, selectedRoute],
   )
+  const countableTrains = useMemo(() => {
+    const stationTrainIds = selectedStation
+      ? new Set(stations.find((station) => station.name === selectedStation.name)?.trainIds ?? [])
+      : undefined
+    return sceneNetwork?.trains.filter((train) =>
+      (!selectedCategory || train.category === selectedCategory) &&
+      (!stationTrainIds || stationTrainIds.has(train.id)) &&
+      (!selectedRoute || (train.route === selectedRoute.name && train.category === selectedRoute.category)),
+    ) ?? []
+  }, [sceneNetwork, selectedCategory, selectedRoute, selectedStation, stations])
   const activeTrainCount = useMemo(
     () =>
-      sceneNetwork
-        ? sceneNetwork.trains.reduce(
-            (count, train) =>
-              count + Number(Boolean(positionForTrain(train, sceneTime))),
-            0,
-          )
-        : 0,
-    [sceneNetwork, sceneTime],
+      countableTrains.reduce(
+        (count, train) =>
+          count + Number(Boolean(positionForTrain(train, sceneTime))),
+        0,
+      ),
+    [countableTrains, sceneTime],
   )
   const boundary = useMemo(
     () => (geography ? londonBoundary(geography) : undefined),

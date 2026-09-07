@@ -133,6 +133,39 @@ test('station search selects and reveals a London interchange', async ({ page })
   await expect(search).toHaveValue('Whitechapel')
 })
 
+test('vehicles in motion follows category and station selections', async ({ page }) => {
+  await page.getByRole('button', { name: 'Show River Bus and cable car' }).click()
+  await expect(page.getByRole('button', { name: 'River', exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Pause motion' }).click()
+  await page.locator('.london-transport input[type="range"]').fill('27900')
+  await expect(page.locator('.london-experience')).toHaveAttribute('data-day-loading', 'false')
+
+  const status = page.locator('.london-status-card')
+  const count = status.locator('strong').first()
+  const readCount = async () => Number((await count.innerText()).replaceAll(',', ''))
+  await expect(status).toContainText('vehicles in motion')
+  const total = await readCount()
+  expect(total).toBeGreaterThan(0)
+
+  const river = page.getByRole('button', { name: 'River', exact: true })
+  await river.click()
+  await expect.poll(readCount).toBeLessThan(total)
+  expect(await readCount()).toBeGreaterThan(0)
+  await river.click()
+  await expect.poll(readCount).toBe(total)
+
+  const search = page.getByRole('searchbox', {
+    name: 'Find a London station, line, service, airport, flight or motorway',
+  })
+  await search.fill('Whitechapel')
+  await page.getByRole('option', { name: /Whitechapel/ }).first().click()
+  await expect(status).toContainText('Whitechapel')
+  await expect.poll(readCount).toBeLessThan(total)
+  expect(await readCount()).toBeGreaterThan(0)
+  await page.getByRole('button', { name: 'Release', exact: true }).click()
+  await expect.poll(readCount).toBe(total)
+})
+
 test('observed operations stay distinct from the planned timetable', async ({
   page,
 }) => {
