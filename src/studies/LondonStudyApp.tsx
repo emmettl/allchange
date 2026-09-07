@@ -238,7 +238,13 @@ function searchNetworkChoices(
     .slice(0, 5)
     .map((value): SearchChoice => ({ kind: 'route', value }))
   const trainMatches = snapshot.trains
-    .filter((train) => trainSearchText(train, snapshot).includes(serviceQuery))
+    // Tube, DLR and Elizabeth line journeys have no useful public service
+    // identifier; line results provide the meaningful way to explore them.
+    .filter((train) =>
+      train.category !== 'metro' &&
+      train.mode !== 'elizabeth-line' &&
+      trainSearchText(train, snapshot).includes(serviceQuery),
+    )
     .slice(0, 5)
     .map((value): SearchChoice => ({ kind: 'train', value }))
   return {
@@ -1385,7 +1391,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               onSelectStation={selectStation}
               airSnapshot={airEnabled ? activeAirSnapshot : undefined}
               airCategorySelected={airCategorySelected}
-              airports={LONDON_AIRPORTS}
+              airports={airEnabled ? LONDON_AIRPORTS : undefined}
               selectedAirTrack={selectedAirTrack}
               selectedAirport={selectedAirport}
               onSelectAirTrack={selectAirTrack}

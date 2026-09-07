@@ -10,12 +10,41 @@ export function londonDiagramRenderer(): Plugin {
     name: 'all-change-diagram-renderer',
     enforce: 'pre',
     transform(source, id) {
-      if (!id.split('?')[0].replaceAll('\\', '/').endsWith('/@motionstudies/three/NationalNetworkScene.js')) return
+      const moduleId = id.split('?')[0].replaceAll('\\', '/')
+      if (moduleId.endsWith('/@motionstudies/three/AirTrafficLayer.js')) {
+        // Airport infrastructure belongs to the enabled Air layer, independently
+        // of flight loading, category isolation, selection or vehicle labels.
+        const markerStart = source.indexOf('function AirportMarker(')
+        const markerEnd = source.indexOf('export function AirTrafficLayer(', markerStart)
+        const airportMap = 'visibleAirports.map((airport) => (_jsx(AirportMarker, { airport: airport, projection: projection, showLabel: airportLabelsAreVisible(labelMode), selected: airport.id === selectedAirport?.id }, airport.id)))'
+        if (markerStart < 0 || markerEnd < 0 || source.split(airportMap).length !== 2) {
+          throw new Error('The London airport visibility adapter needs review for this renderer version')
+        }
+        const marker = source.slice(markerStart, markerEnd)
+        const labelOrder = 'ref: label, renderOrder: 20,'
+        if (marker.split(labelOrder).length !== 2) throw new Error('The London airport label priority hook needs review')
+        return {
+          code: (source.slice(0, markerStart) + marker
+            .replace('function AirportMarker(', 'export function AirportMarker(')
+            .replace(labelOrder, 'ref: label, renderOrder: 30,')
+            .replaceAll('depthTest: false, depthWrite: false', 'depthTest: false, depthWrite: false, fog: false')
+            + source.slice(markerEnd)).replace(airportMap, 'null'),
+          map: null,
+        }
+      }
+      if (!moduleId.endsWith('/@motionstudies/three/NationalNetworkScene.js')) return
       const start = 'lineMapStyle && (_jsxs(_Fragment, { children: [_jsx("points", { geometry: diagramStationGeometries.stops,'
       const end = '!lineMapStyle && (_jsx("points", { geometry: diagramStationGeometries.interchanges,'
       const from = source.indexOf(start), to = source.indexOf(end, from)
       if (from < 0 || to < 0) throw new Error('The London diagram marker adapter needs review for this renderer version')
       let code = source.slice(0, from) + 'lineMapStyle && _jsx(LondonDiagramStations, { snapshot, projectedStops, projectedPaths, routeColors, opacity: routeColorMix * (subdued ? 0.48 : 0.98) }), ' + source.slice(to)
+      for (const [before, after] of [
+        ["import { AirTrafficLayer } from './AirTrafficLayer.js';", "import { AirTrafficLayer, AirportMarker } from './AirTrafficLayer.js';"],
+        ['props.airSnapshot && (_jsx(AirTrafficLayer,', 'props.airports?.map((airport) => _jsx(AirportMarker, { airport, projection, showLabel: true, selected: airport.id === props.selectedAirport?.id }, airport.id)), props.airSnapshot && (_jsx(AirTrafficLayer,'],
+      ]) {
+        if (code.split(before).length !== 2) throw new Error(`London airport scene hook needs review: ${before}`)
+        code = code.replace(before, after)
+      }
       // Timetable chunks contain only nearby journeys. Use the complete route
       // reference for infrastructure so overnight service gaps cannot erase it.
       // Traffic, vehicle playback and vehicle labels still use the live chunk.
