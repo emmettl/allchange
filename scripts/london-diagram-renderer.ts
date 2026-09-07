@@ -25,6 +25,20 @@ export function londonDiagramRenderer(): Plugin {
           'const key = lineMapStyle ? londonDiagramSegmentKey(train, index - 1, projectedStops) : routeSegmentKey(train, index - 1);')
         .replace('offsetProjectedPath(points, laneOffset)', 'offsetProjectedPath(lineMapStyle ? londonDiagramOrderedPoints(points) : points, laneOffset)')
       code = code.slice(0, identityStart) + identity + code.slice(identityEnd)
+      // Opacity zero still submits geometry to WebGL. Keep these resources
+      // mounted for a smooth return to Geography, but cull fully faded layers.
+      for (const [before, after] of [
+        ['position: [0, -0.072, 0], children:', 'position: [0, -0.072, 0], visible: opacityScale > 0, children:'],
+        ['children: [geometry.ribbons.map', 'visible: opacity > 0, children: [geometry.ribbons.map'],
+        ['children: tubes.map(({ id, glow, core })', 'visible: opacityScale > 0, children: tubes.map(({ id, glow, core })'],
+        ['geometry: railGeometry.structural, children:', 'geometry: railGeometry.structural, visible: !lineMapStyle || routeColorMix < 1, children:'],
+        ['geometry: railGeometry.local, children:', 'geometry: railGeometry.local, visible: !lineMapStyle || routeColorMix < 1, children:'],
+        ['position: [0, 0.055, 0], children:', 'position: [0, 0.055, 0], visible: identityAttenuation > 0, children:'],
+        ['geometry: stationGeometry, position:', 'geometry: stationGeometry, visible: !lineMapStyle || routeColorMix < 1, position:'],
+      ]) {
+        if (code.split(before).length !== 2) throw new Error(`London layer visibility hook needs review: ${before}`)
+        code = code.replace(before, after)
+      }
       // Flat ribbons need no separate back/front transparency passes.
       // More track between junctions: slim cores and restrained parallel lanes.
       for (const [before, after] of [

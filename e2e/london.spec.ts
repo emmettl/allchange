@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { installWebGLDrawCounters, sampleWebGLDraws } from './webgl-draws.ts'
 
 const runningInCi = Boolean(
   (globalThis as { process?: { env?: { CI?: string } } }).process?.env?.CI,
@@ -348,6 +349,22 @@ test('diagram geometry loads lazily and preserves the current station', async ({
   await expect(experience).toHaveAttribute('data-layout-mix', '0.000', {
     timeout: 5_000,
   })
+})
+
+test('resolved diagram skips fully transparent geometry and restores geography', async ({ page }) => {
+  await page.addInitScript(installWebGLDrawCounters)
+  await page.reload()
+  await page.getByRole('button', { name: 'Diagram layout' }).click()
+  await expect(page.locator('.london-experience')).toHaveAttribute('data-layout-mix', '1.000')
+  const diagram = await page.evaluate(sampleWebGLDraws)
+  expect(diagram.draws).toBeGreaterThan(0)
+  expect(diagram.zeroOpacityDraws).toBe(0)
+
+  await page.getByRole('button', { name: 'Geography layout' }).click()
+  await expect(page.locator('.london-experience')).toHaveAttribute('data-layout-mix', '0.000')
+  const geographic = await page.evaluate(sampleWebGLDraws)
+  expect(geographic.draws).toBeGreaterThan(0)
+  expect(geographic.zeroOpacityDraws).toBe(0)
 })
 
 test('reduced motion changes spatial layout without a sweep', async ({ page }) => {
