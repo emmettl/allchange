@@ -16,7 +16,7 @@ Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run check:boundary`, `
 
 ## Package boundary
 
-The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-alpha.1`. The committed lockfile records registry URLs and integrity hashes. There are no shared source directories, workspace links, vendored packages, or sibling-repository imports here. `check:boundary` verifies the installed release versions and registry lock entries, rejects source links, and checks that imports use declared public exports.
+The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-alpha.2`. The committed lockfile records registry URLs and integrity hashes. There are no shared source directories, workspace links, vendored packages, or sibling-repository imports here. `check:boundary` verifies the installed release versions and registry lock entries, rejects source links, and checks that imports use declared public exports.
 
 ## Data and hosting
 

@@ -1425,7 +1425,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               aria-keyshortcuts={option.id === 'diagram' ? 'D' : 'G'}
               aria-busy={loading}
               disabled={!available || loading || !network}
-              title={available ? option.label : `${option.label} layout is unavailable`}
+              data-tooltip={!available ? 'The diagram is unavailable while Bus or Surface is enabled' : option.id === 'geographic' ? 'Place services at their geographic locations (G)' : 'Arrange the same services on a simplified network diagram (D)'}
               onClick={() => available && activateLayout(option.id, artifact)}
             >
               <span className="london-wide-label">{option.label}</span>
@@ -1439,7 +1439,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         <button
           className="london-pulse-toggle"
           type="button"
-          aria-label={pulseHub ? 'Exit interchange pulse' : 'Interchange pulse'}
+          data-tooltip={pulseHub ? 'Return to the network map (P)' : 'Explore arrivals and departures around an interchange (P)'} aria-label={pulseHub ? 'Exit interchange pulse' : 'Interchange pulse'}
           aria-pressed={Boolean(pulseHub)}
           aria-keyshortcuts="P"
           disabled={!network}
@@ -1460,7 +1460,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         <span className="london-switch-divider" aria-hidden="true" />
         <button
           type="button"
-          aria-label="Morning study"
+          data-tooltip="Replay the morning timetable from 06:45 to 08:45" aria-label="Morning study"
           aria-pressed={studyWindow === 'morning'}
           onClick={() => activateStudyWindow('morning')}
         >
@@ -1469,7 +1469,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         </button>
         <button
           type="button"
-          aria-label="24-hour study"
+          data-tooltip="Load the full Friday timetable and explore all 24 hours" aria-label="24-hour study"
           aria-pressed={studyWindow === 'day'}
           aria-busy={studyWindow === 'day' && dayLoading}
           onClick={() => activateStudyWindow('day')}
@@ -1714,7 +1714,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                 <button
                   key={lens}
                   type="button"
-                  aria-label={`${lens} movements`}
+                  data-tooltip={lens === 'all' ? 'Show all interchange movements' : lens === 'radial' ? 'Show movements towards or away from central London' : 'Show movements around central London'} aria-label={`${lens} movements`}
                   aria-pressed={pulseLens === lens}
                   disabled={pulseSummary[lens] === 0}
                   onClick={() => setPulseLens(lens)}
@@ -1800,7 +1800,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               key={category.id}
               type="button"
               aria-pressed={selectedCategory === category.id}
-              title={category.detail}
+              data-tooltip={`${selectedCategory === category.id ? 'Restore all services' : 'Focus on this service group'} · ${category.detail}`}
               style={
                 {
                   '--service-accent': SERVICE_COLORS[category.id],
@@ -1829,7 +1829,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               className="london-air-category"
               type="button"
               aria-pressed={airCategorySelected}
-              title="Observed aircraft and ephemeral trails"
+              data-tooltip={airCategorySelected ? 'Restore the other transport layers' : 'Isolate observed aircraft and attenuate the other transport layers'}
               style={{ '--service-accent': edition.theme.air } as CSSProperties}
               onClick={() => {
                 setAirCategorySelected((value) => !value)
@@ -1852,7 +1852,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               className="london-road-category"
               type="button"
               aria-pressed={roadCategorySelected}
-              title="Observed motorway flow reconstructed as synthetic traffic"
+              data-tooltip={roadCategorySelected ? 'Restore the other transport layers' : 'Isolate reconstructed motorway traffic and attenuate the other layers'}
               style={{ '--service-accent': edition.theme.roadHeavy } as CSSProperties}
               onClick={() => {
                 setRoadCategorySelected((value) => !value)
@@ -1879,7 +1879,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         <button type="button" aria-label="Reset map" onClick={() => moveCamera('reset')}>↺</button>
         <button
           type="button"
-              aria-label={`Vehicle labels ${trainLabelMode}`}
+              data-tooltip={trainLabelMode === 'auto' ? 'Show all vehicle labels (L)' : trainLabelMode === 'on' ? 'Hide vehicle labels (L)' : 'Show vehicle labels automatically at useful zoom levels (L)'} aria-label={`Vehicle labels ${trainLabelMode}`}
           onClick={() => setTrainLabelMode((value) => LABEL_MODES[value])}
         >
           L·{trainLabelMode.slice(0, 1).toUpperCase()}
@@ -1934,7 +1934,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               aria-label={limitedChrome ? 'Exit limited chrome' : 'Enter limited chrome'}
               aria-pressed={limitedChrome}
               aria-keyshortcuts="F"
-              title={limitedChrome ? 'Restore interface (F)' : 'Limited chrome (F)'}
+              data-tooltip={limitedChrome ? 'Restore the panels and controls (F)' : 'Hide the panels to focus on the map (F)'}
               onClick={() => setLimitedChrome((value) => !value)}
             >
               <span className="london-wide-label">
@@ -1945,7 +1945,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               </span>
             </button>
             {(selectedStation || selectedRoute || selectedTrain || selectedAirTrackId || selectedAirport || selectedRoad || selectedCategory || airCategorySelected || roadCategorySelected) && (
-              <button type="button" onClick={clearSelection}>Release</button>
+              <button type="button" data-tooltip="Clear the selection and stop following it to explore the map freely" onClick={clearSelection}>Release</button>
             )}
           </div>
         </section>
