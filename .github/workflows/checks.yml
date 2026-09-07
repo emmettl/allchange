@@ -18,7 +18,33 @@ jobs:
       - run: npm run check:boundary && npm run typecheck && npm run lint && npm test
       - run: npm run worker:check && npm run worker:build
       - run: npx playwright install --with-deps chromium webkit
-      - run: npm run test:e2e:ci
+      - name: E2E tests
+        id: e2e
+        env:
+          E2E_SUITE: functional
+        run: npx playwright test --grep-invert @frame-cadence
+      - name: E2E frame cadence
+        if: ${{ !cancelled() && (steps.e2e.outcome == 'success' || steps.e2e.outcome == 'failure') }}
+        env:
+          E2E_SUITE: frame-cadence
+        run: npx playwright test --grep @frame-cadence --workers=1
+      - name: Upload E2E report, screenshots and traces
+        id: e2e-report
+        if: ${{ !cancelled() && (steps.e2e.outcome == 'success' || steps.e2e.outcome == 'failure') }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Link E2E report in run summary
+        if: ${{ !cancelled() && steps.e2e-report.outputs.artifact-url != '' }}
+        env:
+          REPORT_URL: ${{ steps.e2e-report.outputs.artifact-url }}
+        run: |
+          printf '\n[Download E2E reports, screenshots and traces](%s)\n' "$REPORT_URL" >> "$GITHUB_STEP_SUMMARY"
       - run: npm run build && npm run check:bundle
       - uses: actions/upload-artifact@v7
         with:

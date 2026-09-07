@@ -1,8 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const runningInCi = Boolean(
-  (globalThis as { process?: { env?: { CI?: string } } }).process?.env?.CI,
-)
+const environment = (globalThis as { process?: { env?: { CI?: string; E2E_SUITE?: string } } }).process?.env
+const runningInCi = Boolean(environment?.CI)
+const suiteName = (globalThis as { process?: { env?: { E2E_SUITE?: string } } })
+  .process?.env?.E2E_SUITE || 'all'
 
 export default defineConfig({
   testDir: './e2e',
@@ -18,7 +19,15 @@ export default defineConfig({
   // animation loop on the shared CI runner. Keep local feedback parallel, but
   // make the publication gate deterministic.
   workers: runningInCi ? 1 : 2,
-  reporter: 'list',
+  reporter: runningInCi
+    ? [
+        ['list'],
+        ['github'],
+        ['html', { outputFolder: `playwright-report/${suiteName}`, open: 'never' }],
+        ['./scripts/playwright-summary-reporter.mjs'],
+      ]
+    : 'list',
+  outputDir: runningInCi ? `test-results/${suiteName}` : 'test-results',
   use: {
     baseURL: 'http://127.0.0.1:4177',
     colorScheme: 'dark',
