@@ -1,5 +1,9 @@
 # All Change
 
+**[Open All Change](https://emmettl.github.io/allchange/)** · [Motion Studies catalogue](https://emmettl.github.io/motionstudies/)
+
+[Study brief](https://github.com/emmettl/motionstudies/blob/main/docs/LONDON.md) · [Project goals](https://github.com/emmettl/motionstudies/blob/main/docs/VISION.md) · [Roadmap](https://github.com/emmettl/motionstudies/blob/main/ROADMAP.md)
+
 London, geographically and otherwise. Motion Studies 006.
 
 This is the independent London edition. It owns the London application, styles, timetable and geography fixtures, source-specific ingestion commands, observation worker and browser/payload checks. Shared runtime and Node tooling come from [Motion Studies](https://github.com/emmettl/motionstudies).
@@ -18,11 +22,13 @@ The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-al
 
 `fixtures/tfl/` retains the authored TfL timetable, transport catalogues and map layout; `public/data/` contains the committed air and road observations. Existing `data:london:*` commands retain their explicit source dates and provenance. Use them deliberately to refresh data; CI builds the reviewed fixtures. PDF timetable ingestion requires `pdftotext` on the host.
 
-CI checks and uploads a preview artifact. Pages deployment is manual (`Deploy Pages`) and reruns the edition checks before publishing https://emmettl.github.io/allchange/. GitHub Pages uses Actions. The existing observation worker and R2 bucket are referenced for compatibility; no worker is deployed by this repository's workflows. Update catalogue links only after the new site passes its publication check.
+CI checks and uploads a preview artifact. Pages deployment is manual (`Deploy Pages`) and reruns the edition checks before publishing https://emmettl.github.io/allchange/. GitHub Pages uses Actions. The existing observation worker and R2 bucket are referenced for compatibility; no worker is deployed by this repository's workflows.
+
+The [London Worker guide](docs/CLOUDFLARE.md) covers configuration, deployment and recorded-day export.
 
 ## Provenance
 
-Extracted from [Gleislicht bdb1f3a](https://github.com/emmettl/gleislicht/commit/bdb1f3a48db1cc6ec0bcf3858765004ee7e6d147), retaining Git history for the selected London paths via a path-filtered fast export/import. The extraction narrows the catalogue and uses a root HTML entry; the edition now consumes published npm packages. The previous Gleislicht-hosted London URL is retained as a redirect after the independent deployment is verified.
+Extracted from [Gleislicht bdb1f3a](https://github.com/emmettl/gleislicht/commit/bdb1f3a48db1cc6ec0bcf3858765004ee7e6d147), retaining Git history for the selected London paths via a path-filtered fast export/import. The extraction narrows the catalogue and uses a root HTML entry; the edition now consumes published npm packages. The previous Gleislicht-hosted London URL redirects to the independent site.
 
 ## Local validation
 
