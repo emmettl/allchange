@@ -44,5 +44,5 @@ async function visit(directory) {
     }
   }
 }
-for (const directory of ['src', 'scripts', 'london-worker']) await visit(directory)
+for (const directory of ['src', 'scripts', 'london-worker', 'london-road-worker']) await visit(directory)
 console.log('All Change uses pinned npm releases and declared public imports.')

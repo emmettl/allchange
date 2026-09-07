@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "motionstudies-london-roads",
+  "main": "london-road-worker/index.ts",
+  "compatibility_date": "2026-09-05",
+  "workers_dev": true,
+  "preview_urls": false,
+  "r2_buckets": [
+    { "binding": "OBSERVATIONS", "bucket_name": "gleislicht-observations" }
+  ],
+  "vars": { "CAPTURE_ENABLED": "false" }
+}

@@ -1,5 +1,7 @@
 # London observation worker
 
+For the separate NTIS motorway push receiver and subscriber setup, see [Live motorway observations](LIVE-ROADS.md).
+
 The `motionstudies-london-operations` Worker samples TfL predictions for the Victoria, Jubilee and Elizabeth lines once per minute. It serves `/operations.json` and `/health`, and archives observations below `london/tfl-operations/<UTC date>/` in the existing private `gleislicht-observations` R2 bucket. GitHub Pages serves the static edition; repository workflows do not deploy this Worker.
 
 These commands run from the All Change checkout. The series thesis and evidence model live in the [London brief](https://github.com/emmettl/motionstudies/blob/main/docs/LONDON.md).

@@ -48,8 +48,10 @@
     "profile:frames": "node scripts/profile-london-frames.mjs",
     "check:bundle": "node scripts/check-london-fixture-budget.mjs",
     "check:boundary": "node scripts/check-boundary.mjs",
-    "worker:check": "tsc -p london-worker/tsconfig.json",
-    "worker:build": "wrangler deploy --config wrangler.london.jsonc --dry-run --outdir .worker-dist/london"
+    "worker:check": "tsc -p london-worker/tsconfig.json && npm run worker:roads:check",
+    "worker:build": "wrangler deploy --config wrangler.london.jsonc --dry-run --outdir .worker-dist/london && npm run worker:roads:build",
+    "worker:roads:check": "tsc -p london-road-worker/tsconfig.json",
+    "worker:roads:build": "wrangler deploy --config wrangler.london-roads.jsonc --dry-run --outdir .worker-dist/london-roads"
   },
   "dependencies": {
     "@motionstudies/core": "0.1.0-alpha.4",
