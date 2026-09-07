@@ -56,11 +56,26 @@ export function buildLondonDiagram(network, overrides) {
     if (point.length !== 2 || !point.every(Number.isFinite)) throw new Error(`Invalid diagram anchor: ${name}`)
     positions.set(key, point)
   }
-  const corridors = overrides.corridors.map(corridor => corridor.map(name => {
-    const key = keyFor(name)
-    if (!available.has(key)) throw new Error(`Unknown corridor station: ${name}`)
-    return key
-  }))
+  const routeGraphs = new Map()
+  const corridors = overrides.corridors.map(corridor => {
+    const stations = (Array.isArray(corridor) ? corridor : corridor.stops).map(name => {
+      const key = keyFor(name)
+      if (!available.has(key)) throw new Error(`Unknown corridor station: ${name}`)
+      return key
+    })
+    if (corridor.route) {
+      const graph = routeGraphs.get(corridor.route) ?? new Map()
+      stations.forEach((station, i) => {
+        const neighbours = graph.get(station) ?? new Set()
+        for (const neighbour of [stations[i - 1], stations[i + 1]]) {
+          if (neighbour !== undefined) neighbours.add(neighbour)
+        }
+        graph.set(station, neighbours)
+      })
+      routeGraphs.set(corridor.route, graph)
+    }
+    return stations
+  })
   for (const corridor of corridors) {
     const fixed = corridor.flatMap((name, index) => positions.has(name) ? [index] : [])
     if (fixed[0] !== 0 || fixed.at(-1) !== corridor.length - 1) throw new Error(`Corridor needs positioned ends: ${corridor.join(' / ')}`)
@@ -88,6 +103,34 @@ export function buildLondonDiagram(network, overrides) {
   network.edgePaths.forEach((pathIndex, index) => {
     if (pathIndex != null && !edges.has(pathIndex)) edges.set(pathIndex, network.edges[index])
   })
+  const pathRoutes = new Map()
+  for (const train of network.trains) {
+    if (!routeGraphs.has(train.route)) continue
+    for (const index of train.pathSegments ?? []) {
+      if (index != null) pathRoutes.set(index, train.route)
+    }
+  }
+  // Timetable calls are not track topology: an express service must follow
+  // the same corridor through skipped stations, including branch junctions.
+  const corridorPath = (route, from, to) => {
+    const graph = routeGraphs.get(route)
+    const previous = new Map([[from, null]])
+    const queue = [from]
+    for (const station of queue) {
+      if (station === to) break
+      for (const neighbour of graph.get(station) ?? []) {
+        if (previous.has(neighbour)) continue
+        previous.set(neighbour, station)
+        queue.push(neighbour)
+      }
+    }
+    if (!previous.has(to)) throw new Error(`No authored ${route} corridor: ${from} / ${to}`)
+    const sections = []
+    for (let station = to; previous.get(station) != null; station = previous.get(station)) {
+      sections.push(links.get(`${previous.get(station)}|${station}`))
+    }
+    return sections.reverse().flatMap((section, i) => i ? section.slice(1) : section)
+  }
   const nearest = point => {
     let best = 0, distance = Infinity
     network.stops.forEach((stop, index) => {
@@ -100,6 +143,8 @@ export function buildLondonDiagram(network, overrides) {
     const edge = edges.get(index)
     const fromIndex = edge?.[0] ?? nearest(path[0]), toIndex = edge?.[1] ?? nearest(path.at(-1))
     const from = names.get(network.stops[fromIndex][4]), to = names.get(network.stops[toIndex][4])
+    const route = pathRoutes.get(index)
+    if (route) return from === to ? [positions.get(from)] : corridorPath(route, from, to)
     return links.get(`${from}|${to}`) ?? octilinearPath(positions.get(from), positions.get(to))
   })
   const waterPaths = overrides.context?.waterPaths ?? []

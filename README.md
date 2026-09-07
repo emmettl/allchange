@@ -24,6 +24,8 @@ The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-al
 
 The diagram uses the authored station anchors and corridor sequences in `fixtures/tfl/all-change-diagram-overrides.json`. Run `npm run data:london:diagram` after editing them. Intermediate stations divide continuous horizontal, vertical and 45-degree runs; the compiler preserves source stop and path identities and rejects unplaced stations. Geometry checks cover path endpoints, unrelated station collisions and TfL-relative central orientation.
 
+Elizabeth line corridors carry a route name so timetable links that skip stops follow the complete authored railway through intermediate stations and branch junctions. Both directions reuse the same track geometry instead of drawing shortcuts between calls.
+
 `LondonDiagramStations` supplies perpendicular line-coloured ticks for ordinary stops and rings for interchanges and branches. Shared-track Tube stops retain ticks; changes between transport modes use rings. The pinned `@motionstudies/three` alpha.2 release has no marker extension point, so `scripts/london-diagram-renderer.ts` applies a narrow Vite transform for these markers, consistent parallel lanes, track width, double-sided track surfaces and visibility of fully faded layers. The diagram stops submitting invisible geographic boundaries, water, traffic and station geometry while keeping their resources mounted for the return transition. It leaves the installed package untouched and fails when expected renderer hooks change; review this adapter when upgrading the renderer, and replace it with a public extension point when available.
 
 ## Data and hosting

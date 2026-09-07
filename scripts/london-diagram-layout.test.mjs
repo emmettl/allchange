@@ -52,4 +52,53 @@ describe('London corridor diagram', () => {
     const extra = { ...network, stops: [...network.stops, [0, 0, 'Unplaced', '', 'unplaced']] }
     expect(() => buildLondonDiagram(extra, overrides)).toThrow('Stations need authored corridors: Unplaced')
   })
+  it('routes every Elizabeth service along the same track through skipped stations', () => {
+    const pointKey = point => point.map(v => v.toFixed(8)).join(',')
+    const segmentKey = (a, b) => [pointKey(a), pointKey(b)].sort().join('|')
+    const adjacent = new Set(overrides.corridors
+      .filter(corridor => corridor.route === 'Elizabeth line')
+      .flatMap(({ stops }) => stops.slice(1).map((name, i) => [stops[i], name].sort().join('|'))))
+    const services = network.trains.filter(train => train.route === 'Elizabeth line')
+    const track = new Set()
+    const calls = (train, i) => [train.stops[i][0], train.stops[i + 1][0]]
+      .map(index => canonicalStationName(network.stops[index][2])).sort().join('|')
+    for (const train of services) train.pathSegments.forEach((index, i) => {
+      if (!adjacent.has(calls(train, i))) return
+      const path = diagram.paths[index]
+      path.slice(1).forEach((point, j) => track.add(segmentKey(path[j], point)))
+    })
+    let expressLinks = 0
+    for (const train of services) train.pathSegments.forEach((index, i) => {
+      if (adjacent.has(calls(train, i))) return
+      expressLinks++
+      const path = diagram.paths[index]
+      path.slice(1).forEach((point, j) => expect(track.has(segmentKey(path[j], point)), calls(train, i)).toBe(true))
+    })
+    expect(expressLinks).toBeGreaterThan(0)
+  })
+  it.each([
+    ['Iver', 'Whitechapel', ['Ealing Broadway', 'Paddington', 'Bond Street', 'Farringdon', 'Liverpool Street']],
+    ['Farringdon', 'Stratford', ['Liverpool Street', 'Whitechapel']],
+    ['Farringdon', 'Custom House', ['Liverpool Street', 'Whitechapel', 'Canary Wharf']],
+  ])('keeps %s to %s on its branch in either direction', (from, to, via) => {
+    const stationIndex = name => network.stops.findIndex(s => canonicalStationName(s[2]) === name)
+    const a = stationIndex(from), b = stationIndex(to)
+    for (const [start, end] of [[a, b], [b, a]]) {
+      const index = network.paths.length
+      const fixture = {
+        ...network,
+        edges: [...network.edges, [start, end]], edgePaths: [...network.edgePaths, index],
+        paths: [...network.paths, [network.stops[start].slice(0, 2), network.stops[end].slice(0, 2)]],
+        trains: [...network.trains, { route: 'Elizabeth line', pathSegments: [index] }],
+      }
+      const path = buildLondonDiagram(fixture, overrides).paths[index]
+      const expected = (start === a ? via : [...via].reverse()).map(name => diagram.stops[stationIndex(name)].slice(1))
+      let previous = -1
+      for (const point of expected) {
+        const at = path.findIndex(p => Math.hypot(p[0] - point[0], p[1] - point[1]) < 1e-8)
+        expect(at).toBeGreaterThan(previous)
+        previous = at
+      }
+    }
+  })
 })

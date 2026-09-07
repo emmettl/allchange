@@ -1111,53 +1111,70 @@
       "Westferry",
       "West India Quay"
     ],
-    [
-      "Reading",
-      "Twyford",
-      "Maidenhead",
-      "Taplow",
-      "Burnham (Berks)",
-      "Slough",
-      "Langley (Berks)",
-      "Iver",
-      "West Drayton",
-      "Hayes & Harlington",
-      "Southall",
-      "Hanwell",
-      "West Ealing",
-      "Ealing Broadway",
-      "Acton Main Line",
-      "Paddington",
-      "Bond Street",
-      "Tottenham Court Road",
-      "Farringdon",
-      "Liverpool Street",
-      "Whitechapel",
-      "Canary Wharf",
-      "Custom House",
-      "Woolwich",
-      "Abbey Wood"
-    ],
-    [
-      "Hayes & Harlington",
-      "Heathrow Terminals 2 & 3"
-    ],
-    [
-      "Whitechapel",
-      "Stratford",
-      "Maryland",
-      "Forest Gate",
-      "Manor Park",
-      "Ilford",
-      "Seven Kings",
-      "Goodmayes",
-      "Chadwell Heath",
-      "Romford",
-      "Gidea Park",
-      "Harold Wood",
-      "Brentwood",
-      "Shenfield"
-    ],
+    {
+      "route": "Elizabeth line",
+      "stops": [
+        "Reading",
+        "Twyford",
+        "Maidenhead",
+        "Taplow",
+        "Burnham (Berks)",
+        "Slough",
+        "Langley (Berks)",
+        "Iver",
+        "West Drayton",
+        "Hayes & Harlington",
+        "Southall",
+        "Hanwell",
+        "West Ealing",
+        "Ealing Broadway",
+        "Acton Main Line",
+        "Paddington",
+        "Bond Street",
+        "Tottenham Court Road",
+        "Farringdon",
+        "Liverpool Street",
+        "Whitechapel",
+        "Canary Wharf",
+        "Custom House",
+        "Woolwich",
+        "Abbey Wood"
+      ]
+    },
+    {
+      "route": "Elizabeth line",
+      "stops": [
+        "Hayes & Harlington",
+        "Heathrow Terminals 2 & 3"
+      ]
+    },
+    {
+      "route": "Elizabeth line",
+      "stops": [
+        "Heathrow Terminal 4",
+        "Heathrow Terminals 2 & 3",
+        "Heathrow Terminal 5"
+      ]
+    },
+    {
+      "route": "Elizabeth line",
+      "stops": [
+        "Whitechapel",
+        "Stratford",
+        "Maryland",
+        "Forest Gate",
+        "Manor Park",
+        "Ilford",
+        "Seven Kings",
+        "Goodmayes",
+        "Chadwell Heath",
+        "Romford",
+        "Gidea Park",
+        "Harold Wood",
+        "Brentwood",
+        "Shenfield"
+      ]
+    },
     [
       "Romford",
       "Emerson Park",
