@@ -60,9 +60,9 @@ export function pickMapTarget(scene: THREE.Scene, camera: THREE.Camera,
       marker = { target, distance, order: object.renderOrder }
     }
   })
-  // An exact marker click wins over a label's transparent sprite padding.
-  // Otherwise respect the label that is visibly drawn on top.
-  return marker && marker.distance <= (touch ? 7 : 3) ? marker.target : label?.target ?? marker?.target
+  // Labels render above markers. A station dot underneath a label must not
+  // steal its click, even when that dot is exactly under the pointer.
+  return label?.target ?? marker?.target
 }
 
 /** Remember maximum travel, so a drag out and back can never become a click. */

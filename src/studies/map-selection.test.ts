@@ -84,6 +84,20 @@ describe('rendered map picking', () => {
     expect(pick(...screen(-2, 0.085, 0))).toEqual({ kind: 'station', value: station })
   })
 
+  it('selects the visible label instead of an unrelated marker directly underneath', () => {
+    const { scene, screen, pick } = setup()
+    const label = new THREE.Sprite(new THREE.SpriteMaterial())
+    label.userData.londonTarget = { kind: 'station', value: station }
+    label.position.set(0, 0.085, 0)
+    label.scale.set(2, 0.5, 1)
+    label.renderOrder = 20
+    scene.add(label)
+    scene.updateMatrixWorld()
+    expect(pick(...screen(0, 0.085, 0))).toEqual({ kind: 'station', value: station })
+    label.visible = false
+    expect(pick(...screen(0, 0.085, 0))).toEqual({ kind: 'train', value: train })
+  })
+
   it('selects National Rail and prefers a train drawn over a station marker', () => {
     const { scene, geometry, points, screen, pick } = setup()
     geometry.userData.londonRailIds = ['rail-123']
