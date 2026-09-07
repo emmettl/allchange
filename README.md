@@ -2,7 +2,7 @@
 
 London, geographically and otherwise. Motion Studies 006.
 
-This is the independent edition extraction rehearsal. It owns the London application, styles, timetable and geography fixtures, source-specific ingestion commands, observation worker and browser/payload checks. Shared runtime and Node tooling come from [Motion Studies](https://github.com/emmettl/motionstudies).
+This is the independent London edition. It owns the London application, styles, timetable and geography fixtures, source-specific ingestion commands, observation worker and browser/payload checks. Shared runtime and Node tooling come from [Motion Studies](https://github.com/emmettl/motionstudies).
 
 ## Run and check
 
@@ -12,19 +12,17 @@ Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run check:boundary`, `
 
 ## Package boundary
 
-The four `@motionstudies` dependencies are exact compiled candidate tarballs in `vendor/`, installed by the committed lockfile. There are no shared source directories, workspace links, or sibling-repository imports here. `vendor/manifest.json` records source provenance and SHA-256 hashes; `check:boundary` verifies them and rejects source leaks.
-
-These private `0.0.0` candidates let the independent build be exercised before registry/licensing decisions. Replace the four file dependencies with exact npm prerelease versions once Motion Studies publication is configured. They are not npm releases.
+The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-alpha.1`. The committed lockfile records registry URLs and integrity hashes. There are no shared source directories, workspace links, vendored packages, or sibling-repository imports here. `check:boundary` verifies the installed release versions and registry lock entries, rejects source links, and checks that imports use declared public exports.
 
 ## Data and hosting
 
 `fixtures/tfl/` retains the authored TfL timetable, transport catalogues and map layout; `public/data/` contains the committed air and road observations. Existing `data:london:*` commands retain their explicit source dates and provenance. Use them deliberately to refresh data; CI builds the reviewed fixtures. PDF timetable ingestion requires `pdftotext` on the host.
 
-CI checks and uploads a preview artifact. Pages deployment is manual (`Deploy Pages`) so creation of this repository does not cut over the existing edition. Configure GitHub Pages to use Actions before deploying. The existing observation worker and R2 bucket are referenced for compatibility; no worker is deployed by this repository's workflows. Update catalogue links only after the new site passes its publication check.
+CI checks and uploads a preview artifact. Pages deployment is manual (`Deploy Pages`) and reruns the edition checks before publishing https://emmettl.github.io/allchange/. GitHub Pages uses Actions. The existing observation worker and R2 bucket are referenced for compatibility; no worker is deployed by this repository's workflows. Update catalogue links only after the new site passes its publication check.
 
 ## Provenance
 
-Extracted from [Gleislicht bdb1f3a](https://github.com/emmettl/gleislicht/commit/bdb1f3a48db1cc6ec0bcf3858765004ee7e6d147), retaining Git history for the selected London paths via a path-filtered fast export/import. Bootstrap changes narrow the catalogue, use a root HTML entry and replace shared source imports with packed dependencies. The existing Gleislicht-hosted edition remains available during the rehearsal.
+Extracted from [Gleislicht bdb1f3a](https://github.com/emmettl/gleislicht/commit/bdb1f3a48db1cc6ec0bcf3858765004ee7e6d147), retaining Git history for the selected London paths via a path-filtered fast export/import. The extraction narrows the catalogue and uses a root HTML entry; the edition now consumes published npm packages. The previous Gleislicht-hosted London URL is retained as a redirect after the independent deployment is verified.
 
 ## Local validation
 

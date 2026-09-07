@@ -1,4 +1,3 @@
-import { createHash } from 'node:crypto'
 import { access, lstat, readFile, readdir, realpath } from 'node:fs/promises'
 import { builtinModules } from 'node:module'
 import { dirname, extname, relative, resolve, sep } from 'node:path'
@@ -6,20 +5,25 @@ import { moduleReferences } from './module-references.mjs'
 
 const root = resolve('.')
 const manifest = JSON.parse(await readFile('package.json', 'utf8'))
-const candidates = JSON.parse(await readFile('vendor/manifest.json', 'utf8'))
+const lock = JSON.parse(await readFile('package-lock.json', 'utf8'))
 const declared = { ...manifest.dependencies, ...manifest.devDependencies }
 if (manifest.workspaces) throw new Error('An edition must consume installed packages, not workspaces')
 try { await access('packages'); throw new Error('Shared package source belongs in Motion Studies') }
 catch (error) { if (error.code !== 'ENOENT') throw error }
 const exported = new Map()
-for (const [name, candidate] of Object.entries(candidates.packages)) {
-  if (declared[name] !== `file:vendor/${candidate.file}`) throw new Error(`Candidate dependency drift: ${name}`)
-  const bytes = await readFile(`vendor/${candidate.file}`)
-  if (createHash('sha256').update(bytes).digest('hex') !== candidate.sha256) throw new Error(`Candidate hash mismatch: ${name}`)
+for (const shortName of ['core', 'data', 'three', 'web']) {
+  const name = `@motionstudies/${shortName}`
+  const version = declared[name]
+  if (!/^\d+\.\d+\.\d+(?:-(?:alpha|beta|rc)\.\d+)?$/.test(version ?? '')) throw new Error(`Expected an exact registry version: ${name}`)
+  const locked = lock.packages[`node_modules/${name}`]
+  if (locked?.version !== version || !locked.resolved?.startsWith('https://registry.npmjs.org/') || !locked.integrity?.startsWith('sha512-') || locked.link) throw new Error(`Registry lock mismatch: ${name}`)
   const installed = resolve('node_modules', name)
   if ((await lstat(installed)).isSymbolicLink() || !(await realpath(installed)).startsWith(`${await realpath('node_modules')}${sep}`)) throw new Error(`Shared source link: ${name}`)
-  exported.set(name, JSON.parse(await readFile(`${installed}/package.json`, 'utf8')).exports)
+  const pkg = JSON.parse(await readFile(`${installed}/package.json`, 'utf8'))
+  if (pkg.version !== version || pkg.private !== false) throw new Error(`Installed release mismatch: ${name}`)
+  exported.set(name, pkg.exports)
 }
+
 async function visit(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     const file = resolve(directory, entry.name)
@@ -41,4 +45,4 @@ async function visit(directory) {
   }
 }
 for (const directory of ['src', 'scripts', 'london-worker']) await visit(directory)
-console.log('All Change uses verified compiled candidates and declared public imports.')
+console.log('All Change uses pinned npm releases and declared public imports.')
