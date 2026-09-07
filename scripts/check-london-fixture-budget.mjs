@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
+import { canonicalStationName as canonicalDiagramStationName } from './london-diagram-layout.mjs'
 
 const FILES = [
   'fixtures/tfl/all-change-rail-led-morning.json',
@@ -54,7 +55,7 @@ if (layout.metadata?.sourceSha256 !== expectedNetworkHash) {
 if (layout.metadata?.overridesSha256 !== expectedOverridesHash) {
   throw new Error('London diagram was not compiled with the current authored overrides')
 }
-if (Object.keys(overrides.stops ?? {}).length < 30) {
+if (Object.keys(overrides.anchors ?? {}).length < 30 || (overrides.corridors?.length ?? 0) < 40) {
   throw new Error('London diagram no longer has its authored central interchange field')
 }
 if (layout.stops?.length !== network.stops.length) {
@@ -65,16 +66,6 @@ if (new Set(layout.stops.map(([sourceId]) => sourceId)).size !== network.stops.l
 }
 if (layout.paths?.length !== network.paths.length) {
   throw new Error('London diagram path indexes do not match the opening network')
-}
-
-function canonicalDiagramStationName(name) {
-  return String(name)
-    .replace(/^London\s+/i, '')
-    .replace(/\s+\(London\)$/i, '')
-    .replace(/\s+\(H&C Line\)-Underground$/i, '')
-    .replace(/-Underground$/i, '')
-    .replace(/\s+/g, ' ')
-    .trim()
 }
 
 const diagramCellStations = new Map()
@@ -186,7 +177,10 @@ for (const path of layout.paths) {
     }
   }
 }
-if (directDiagramPaths / layout.paths.length < 0.9) {
+// Corridor bends may fall between stations. Preserve those bends instead of
+// requiring each station pair to be a single chord (which distorts the map).
+const diagramBends = layout.paths.reduce((sum, path) => sum + Math.max(0, path.length - 2), 0)
+if (directDiagramPaths / layout.paths.length < 0.6 || diagramBends / layout.paths.length > 0.65) {
   throw new Error('London diagram no longer maintains a predominantly direct octilinear network')
 }
 const SERVICE_CATEGORIES = new Set([

@@ -20,6 +20,12 @@ To investigate desktop frame budgets, build and start `npm run preview -- --port
 
 The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-alpha.2`. The committed lockfile records registry URLs and integrity hashes. There are no shared source directories, workspace links, vendored packages, or sibling-repository imports here. `check:boundary` verifies the installed release versions and registry lock entries, rejects source links, and checks that imports use declared public exports.
 
+## Diagram layout
+
+The diagram uses the authored station anchors and corridor sequences in `fixtures/tfl/all-change-diagram-overrides.json`. Run `npm run data:london:diagram` after editing them. Intermediate stations divide continuous horizontal, vertical and 45-degree runs; the compiler preserves source stop and path identities and rejects unplaced stations. Geometry checks cover path endpoints, unrelated station collisions and TfL-relative central orientation.
+
+`LondonDiagramStations` supplies perpendicular line-coloured ticks for ordinary stops and rings for interchanges and branches. Shared-track Tube stops retain ticks; changes between transport modes use rings. The pinned `@motionstudies/three` alpha.2 release has no marker extension point, so `scripts/london-diagram-renderer.ts` applies a narrow Vite transform for these markers, consistent parallel lanes, track width and double-sided track surfaces. It leaves the installed package untouched and fails when expected renderer hooks change; review this adapter when upgrading the renderer, and replace it with a public extension point when available.
+
 ## Data and hosting
 
 `fixtures/tfl/` retains the authored TfL timetable, transport catalogues and map layout; `public/data/` contains the committed air and road observations. Existing `data:london:*` commands retain their explicit source dates and provenance. Use them deliberately to refresh data; CI builds the reviewed fixtures. PDF timetable ingestion requires `pdftotext` on the host.
