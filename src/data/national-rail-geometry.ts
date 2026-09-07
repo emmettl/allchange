@@ -7,6 +7,19 @@ export interface RailPath {
   readonly distances: readonly number[]
 }
 
+const preparedBoundaries = new WeakMap<MapBoundary, WeakMap<NetworkPath, Map<number, RailPath>>>()
+
+/** Share prepared paths between the scene and its active-vehicle counter. */
+export function cachedRailPath(path: NetworkPath, boundary: MapBoundary, fringe: number): RailPath {
+  let paths = preparedBoundaries.get(boundary)
+  if (!paths) { paths = new WeakMap(); preparedBoundaries.set(boundary, paths) }
+  let fringes = paths.get(path)
+  if (!fringes) { fringes = new Map(); paths.set(path, fringes) }
+  let prepared = fringes.get(fringe)
+  if (!prepared) { prepared = prepareRailPath(path, boundary, fringe); fringes.set(fringe, prepared) }
+  return prepared
+}
+
 export function kilometres(a: readonly number[], b: readonly number[]) {
   return Math.hypot((a[0] - b[0]) * Math.cos((a[1] + b[1]) * Math.PI / 360), a[1] - b[1]) * 111.32
 }

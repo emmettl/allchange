@@ -58,6 +58,7 @@ import {
 } from '@motionstudies/core/domain/operations'
 import { reconstructedNationalVehicleCount } from '@motionstudies/core/domain/road-day'
 import { observedRoadSnapshot } from '../data/road-observations.ts'
+import { cachedRailPath, railPosition } from '../data/national-rail-geometry.ts'
 import type { RoadTopologySnapshot } from '@motionstudies/core/domain/road'
 import {
   spatialLayoutCoverage,
@@ -747,6 +748,19 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const water = useMemo(
     () => (geography ? londonWater(geography) : undefined),
     [geography],
+  )
+  const nationalRailPaths = useMemo(
+    () => nationalRailEnabled && nationalRail && boundary
+      ? nationalRail.paths?.map(path => cachedRailPath(path, boundary, nationalRail.fadeKilometres)) ?? []
+      : [],
+    [nationalRailEnabled, nationalRail, boundary],
+  )
+  const activeNationalRailCount = useMemo(
+    () => nationalRailEnabled && nationalRail
+      ? nationalRail.trains.reduce((count, train) =>
+          count + Number((railPosition(train, sceneTime, nationalRail, nationalRailPaths)?.[2] ?? 0) > 0.001), 0)
+      : 0,
+    [nationalRailEnabled, nationalRail, nationalRailPaths, sceneTime],
   )
   const availableCategories = useMemo(
     () =>
@@ -1468,6 +1482,22 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         (surfaceEnabled ? (surfaceNetwork?.trains.length ?? 0) : 0) +
         (busEnabled ? (busDay.manifest?.tripCount ?? 0) : 0)
       : network?.trains.length
+  const networkSelection = Boolean(selectedCategory || selectedStation || selectedRoute || selectedTrain)
+  const networkLayersEnabled = tflEnabled || surfaceEnabled || busEnabled || nationalRailEnabled
+  const airStatus = airCategorySelected || (airEnabled && !roadEnabled && !networkLayersEnabled)
+  const roadStatus = roadCategorySelected || (roadEnabled && !airEnabled && !networkLayersEnabled)
+  const activeVehicleCount = networkSelection
+    ? activeTrainCount
+    : activeTrainCount + activeNationalRailCount + activeAircraftCount + reconstructedRoadVehicleCount
+  const vehicleCountLabel = surfaceEnabled || busEnabled || (!networkSelection && (airEnabled || roadEnabled))
+    ? 'vehicles in motion'
+    : 'trains in motion'
+  const journeySummary = [
+    ...(tflEnabled || surfaceEnabled || busEnabled ? [`${scheduledJourneyCount?.toLocaleString('en-GB')} scheduled journeys`] : []),
+    ...(!networkSelection && nationalRailEnabled ? [`${activeNationalRailCount.toLocaleString('en-GB')} National Rail trains`] : []),
+    ...(!networkSelection && airEnabled ? [`${activeAircraftCount.toLocaleString('en-GB')} aircraft observed`] : []),
+    ...(!networkSelection && roadEnabled ? [`${reconstructedRoadVehicleCount.toLocaleString('en-GB')} vehicles reconstructed`] : []),
+  ].join(' · ')
 
   return (
     <main
@@ -2013,7 +2043,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       </section>
 
       <section
-        className={`london-status-card${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airCategorySelected ? ' is-air-selection' : ''}${selectedRoad || roadCategorySelected ? ' is-road-selection' : ''}`}
+        className={`london-status-card${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
         aria-live="polite"
       >
         {pulseHub && (
@@ -2071,17 +2101,17 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                     ? activeTrainCount.toLocaleString('en-GB')
                   : selectedRoad
                   ? selectedRoad.label
-                  : roadCategorySelected
+                  : roadStatus
                     ? reconstructedRoadVehicleCount.toLocaleString('en-GB')
                   : selectedAirport
                   ? selectedAirport.iata
                   : selectedAirIndexEntry
                   ? selectedAirIndexEntry.callsign
-                  : airCategorySelected
+                  : airStatus
                     ? activeAircraftCount.toLocaleString('en-GB')
-                    : activeTrainCount.toLocaleString('en-GB')}
+                    : activeVehicleCount.toLocaleString('en-GB')}
               </strong>
-              <span>{pulseHub ? pulseLens === 'all' ? 'movements in orbit' : `${pulseLens} movements` : operationsMode === 'observed' ? 'vehicles observed' : selectedRoad ? 'motorway selected' : roadCategorySelected ? 'vehicles reconstructed' : selectedAirport ? 'airport movements' : selectedAirIndexEntry || airCategorySelected ? 'aircraft observed' : surfaceEnabled || busEnabled ? 'vehicles in motion' : nationalRailEnabled ? 'TfL trains' : 'trains in motion'}</span>
+              <span>{pulseHub ? pulseLens === 'all' ? 'movements in orbit' : `${pulseLens} movements` : operationsMode === 'observed' ? 'vehicles observed' : selectedRoad ? 'motorway selected' : roadStatus ? 'vehicles reconstructed' : selectedAirport ? 'airport movements' : selectedAirIndexEntry || airStatus ? 'aircraft observed' : vehicleCountLabel}</span>
             </div>
             <p>
               {pulseHub
@@ -2092,26 +2122,26 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                     : 'Victoria · Jubilee · Elizabeth'
                 : selectedRoad
                 ? selectedRoad.description
-                : roadCategorySelected
+                : roadStatus
                   ? 'London motorway flow'
               : selectedAirport
                 ? selectedAirport.name
                 : selectedAirTelemetry
                 ? `Heading ${Math.round(selectedAirTelemetry.headingDegrees).toString().padStart(3, '0')}°`
-                : selectedStation?.name ?? displayedSelectedRoute?.name ?? (selectedTrain ? `${selectedTrain.route} ${selectedTrain.shortName}` : airCategorySelected ? 'Observed London airspace' : studyWindow === 'day' ? '24-hour lattice' : 'Morning lattice')}
+                : selectedStation?.name ?? displayedSelectedRoute?.name ?? (selectedTrain ? `${selectedTrain.route} ${selectedTrain.shortName}` : airStatus ? 'Observed London airspace' : !networkSelection && (airEnabled || roadEnabled || nationalRailEnabled) ? 'Enabled transport layers' : studyWindow === 'day' ? '24-hour lattice' : 'Morning lattice')}
             </p>
             <small>
               {pulseHub
                 ? `${pulseHub.character} · ${pulseCalls.length.toLocaleString('en-GB')} ${pulseLens === 'all' ? '' : `${pulseLens} `}calls in the loaded study`
                 : operationsMode === 'observed' && !selectedDescription
                   ? observedOperationsSummary
-                : selectedRoad || roadCategorySelected
+                : selectedRoad || roadStatus
                 ? selectedDescription ?? `${reconstructedRoadVehicleCount.toLocaleString('en-GB')} reconstructed at ${formatServiceTime(time)} · observed ${roadObservationDate}`
                 : selectedAirTelemetry
                 ? `${Math.round(selectedAirTelemetry.altitudeFeet / 100) * 100} ft · ${Math.round(selectedAirTelemetry.groundSpeedKnots)} kt · ${selectedDescription}`
-                : selectedDescription ?? (airCategorySelected ? `${activeAircraftCount.toLocaleString('en-GB')} active at ${formatServiceTime(time)}` : `${scheduledJourneyCount?.toLocaleString('en-GB')} scheduled journeys`)}
+                : selectedDescription ?? (airStatus ? `${activeAircraftCount.toLocaleString('en-GB')} active at ${formatServiceTime(time)}` : journeySummary)}
             </small>
-            {!pulseHub && (selectedRoad || roadCategorySelected) && <Suspense fallback={null}><LondonRoadObservations snapshot={roadDay.snapshot} topology={roadTopology} time={roadIntervalTime} road={selectedRoad?.id} date={roadObservationDate} /></Suspense>}
+            {!pulseHub && (selectedRoad || roadStatus) && <Suspense fallback={null}><LondonRoadObservations snapshot={roadDay.snapshot} topology={roadTopology} time={roadIntervalTime} road={selectedRoad?.id} date={roadObservationDate} /></Suspense>}
             {pulseHub?.nationalRail && (
               <small className="london-pulse-rail" role="status">
                 {pulseRailSnapshot && `${pulseRailOperator} · ${nationalRailPulseCount} National Rail calls · published times`}

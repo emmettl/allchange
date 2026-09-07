@@ -3,15 +3,13 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { MapBoundary } from '@motionstudies/core/domain/boundary'
 import type { NetworkProjection } from '@motionstudies/three/NationalNetworkScene'
-import { prepareRailPath, railPosition } from '../data/national-rail-geometry.ts'
+import { cachedRailPath, railPosition } from '../data/national-rail-geometry.ts'
 import type { NationalRailSnapshot } from '../data/national-rail.ts'
 
 export interface NationalRailSceneExtension {
   readonly nationalRailSnapshot?: NationalRailSnapshot
   readonly nationalRailSelectedId?: string
 }
-
-const preparedBoundaries = new WeakMap<MapBoundary, WeakMap<NonNullable<NationalRailSnapshot['paths']>[number], ReturnType<typeof prepareRailPath>>>()
 
 function setRailPickId(geometry: THREE.BufferGeometry, index: number, id: string | undefined) {
   geometry.userData.londonRailIds[index] = id
@@ -25,13 +23,8 @@ export function LondonNationalRailLayer({ snapshot, boundary, projection, time, 
 }) {
   const localTime = useRef(time)
   const resources = useMemo(() => {
-    let prepared = preparedBoundaries.get(boundary)
-    if (!prepared) { prepared = new WeakMap(); preparedBoundaries.set(boundary, prepared) }
-    const prepare = (path: NonNullable<NationalRailSnapshot['paths']>[number]) => {
-      let value = prepared!.get(path)
-      if (!value) { value = prepareRailPath(path, boundary, snapshot.fadeKilometres); prepared!.set(path, value) }
-      return value
-    }
+    const prepare = (path: NonNullable<NationalRailSnapshot['paths']>[number]) =>
+      cachedRailPath(path, boundary, snapshot.fadeKilometres)
     const paths = snapshot.paths!.map(prepare)
     const corridor = snapshot.corridorPaths.map(prepare)
     const color = new THREE.Color('#ffd392')
