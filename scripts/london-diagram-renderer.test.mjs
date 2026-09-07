@@ -22,4 +22,12 @@ describe('London renderer compatibility', () => {
     expect(code).toContain('_jsx(TrafficFlowLayer, { snapshot: snapshot,')
     expect(code).toContain('buildTrainTimeIndex(props.snapshot.trains,')
   })
+  it('resolves selection labels from the reference and prioritises them before collision checks', () => {
+    const { code } = londonDiagramRenderer().transform(source, id)
+    expect(code).toContain('_jsx(StationLabels, { stations: props.stations, snapshot: props.snapshot, referenceSnapshot: props.referenceSnapshot,')
+    expect(code).toContain('() => stationLabelSelection(snapshot, selectedRoute, selectedTrain, referenceSnapshot)')
+    expect(code).toContain('priority: stationLabelPriority(label.station.name, selectedStation?.name, terminalNames, label.emphasised)')
+    expect(code.indexOf('candidates.sort((first, second) => compareStationLabelCandidates('))
+      .toBeLessThan(code.indexOf('const occupied = [];', code.indexOf('function StationLabels(')))
+  })
 })

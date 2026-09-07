@@ -20,7 +20,7 @@ Use `--buses` to measure the opening map, all London buses, and selected route 2
 
 ## Package boundary
 
-The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-alpha.2`. The committed lockfile records registry URLs and integrity hashes. There are no shared source directories, workspace links, vendored packages, or sibling-repository imports here. `check:boundary` verifies the installed release versions and registry lock entries, rejects source links, and checks that imports use declared public exports.
+The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-alpha.4`. The committed lockfile records registry URLs and integrity hashes. There are no shared source directories, workspace links, vendored packages, or sibling-repository imports here. `check:boundary` verifies the installed release versions and registry lock entries, rejects source links, and checks that imports use declared public exports.
 
 ## Diagram layout
 
@@ -28,7 +28,7 @@ The diagram uses the authored station anchors and corridor sequences in `fixture
 
 Elizabeth line corridors carry a route name so timetable links that skip stops follow the complete authored railway through intermediate stations and branch junctions. Both directions reuse the same track geometry instead of drawing shortcuts between calls.
 
-`LondonDiagramStations` supplies perpendicular line-coloured ticks for ordinary stops and rings for interchanges and branches. Shared-track Tube stops retain ticks; changes between transport modes use rings. The pinned `@motionstudies/three` alpha.2 release has no marker extension point, so `scripts/london-diagram-renderer.ts` applies a narrow Vite transform for these markers, consistent parallel lanes, track width, double-sided track surfaces and visibility of fully faded layers. The diagram stops submitting invisible geographic boundaries, water, traffic and station geometry while keeping their resources mounted for the return transition. It leaves the installed package untouched and fails when expected renderer hooks change; review this adapter when upgrading the renderer, and replace it with a public extension point when available.
+`LondonDiagramStations` supplies perpendicular line-coloured ticks for ordinary stops and rings for interchanges and branches. Shared-track Tube stops retain ticks; changes between transport modes use rings. The pinned `@motionstudies/three` alpha.4 release has no marker extension point, so `scripts/london-diagram-renderer.ts` applies a narrow Vite transform for these markers, consistent parallel lanes, track width and London label density. The shared renderer stops submitting invisible geographic boundaries, water, traffic and station geometry while keeping their resources mounted for the return transition. It leaves the installed package untouched and fails when expected renderer hooks change; review this adapter when upgrading the renderer, and replace it with a public extension point when available.
 
 ## Data and hosting
 
@@ -63,3 +63,7 @@ Extracted from [Gleislicht bdb1f3a](https://github.com/emmettl/gleislicht/commit
 ## Local validation
 
 Unit and browser checks cover bus timetable/day selection, platform aliases, alternative route geometry, compact chunk round trips, exact route search, night services and recovery from damaged downloads. The bus catalogue is loaded separately; the opening transfer remains below the existing 650 KiB budget. The 670 active Friday bus routes use a 1,839.4 KiB manifest and at most 428.1 KiB per two-hour chunk (gzip), with an explicit audit of the two routes without Friday timetables and unavailable directional origins.
+
+## Standard selection labels
+
+The shared `@motionstudies/three` alpha.4 renderer gives the selected station first label priority, then the selected route’s terminals (including branch endpoints), then intermediate stops. Selecting a service uses its own endpoints. Clearing selection restores normal station ranking. The rule applies to map clicks and search/picker selection in both geographic and diagram layouts. See the [Motion Studies edition contract](https://github.com/emmettl/motionstudies/blob/main/docs/EDITIONS.md#selection-and-station-labels).

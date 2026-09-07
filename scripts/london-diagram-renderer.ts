@@ -1,4 +1,4 @@
-// A narrow compatibility adapter for the pinned alpha.2 renderer, which has
+// A narrow compatibility adapter for the pinned alpha.4 renderer, which has
 // no public station-marker slot or per-category label zoom setting yet.
 // Transform at build time; never modify or
 // vendor the installed package. Fail closed when an upstream release changes
@@ -140,25 +140,8 @@ export function londonDiagramRenderer(): Plugin {
         throw new Error('The London vehicle trail height adapter needs review for this renderer version')
       }
       code = code.replace(trailHook, 'position: [0, -0.005, 0], children:')
-      // Opacity zero still submits geometry to WebGL. Keep these resources
-      // mounted for a smooth return to Geography, but cull fully faded layers.
-      for (const [before, after] of [
-        ['position: [0, -0.072, 0], children:', 'position: [0, -0.072, 0], visible: opacityScale > 0, children:'],
-        ['children: [geometry.ribbons.map', 'visible: opacity > 0, children: [geometry.ribbons.map'],
-        ['children: tubes.map(({ id, glow, core })', 'visible: opacityScale > 0, children: tubes.map(({ id, glow, core })'],
-        ['geometry: railGeometry.structural, children:', 'geometry: railGeometry.structural, visible: !lineMapStyle || routeColorMix < 1, children:'],
-        ['geometry: railGeometry.local, children:', 'geometry: railGeometry.local, visible: !lineMapStyle || routeColorMix < 1, children:'],
-        ['position: [0, 0.055, 0], children:', 'position: [0, 0.055, 0], visible: identityAttenuation > 0, children:'],
-        ['geometry: stationGeometry, position:', 'geometry: stationGeometry, visible: !lineMapStyle || routeColorMix < 1, position:'],
-      ]) {
-        if (code.split(before).length !== 2) throw new Error(`London layer visibility hook needs review: ${before}`)
-        code = code.replace(before, after)
-      }
-      // Flat ribbons need no separate back/front transparency passes.
       // More track between junctions: slim cores and restrained parallel lanes.
       for (const [before, after] of [
-        ['color: color, transparent: true, opacity: opacity * (subdued ? 0.28 : 0.94)', 'color: color, side: THREE.DoubleSide, forceSinglePass: true, transparent: true, opacity: opacity * (subdued ? 0.28 : 0.94)'],
-        ['color: "#050510", transparent: true, opacity: opacity * (subdued ? 0.52 : 0.96)', 'color: "#050510", side: THREE.DoubleSide, forceSinglePass: true, transparent: true, opacity: opacity * (subdued ? 0.52 : 0.96)'],
         ['(lineMapStyle ? 0.24 : 0.11)', '(lineMapStyle ? 0.11 : 0.11)'],
         ['diagramRibbonGeometry(record.positions, 0.16, 0.072)', 'diagramRibbonGeometry(record.positions, 0.075, 0.072)'],
         ['diagramRibbonGeometry(record.positions, 0.1, 0.078)', 'diagramRibbonGeometry(record.positions, 0.04, 0.078)'],
