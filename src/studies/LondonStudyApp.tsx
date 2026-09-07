@@ -245,9 +245,11 @@ function searchNetworkChoices(
   const trainMatches = snapshot.trains
     // Tube, DLR and Elizabeth line journeys have no useful public service
     // identifier; line results provide the meaningful way to explore them.
+    // Overground services are also best explored through their line results.
     .filter((train) =>
       train.category !== 'metro' &&
       train.mode !== 'elizabeth-line' &&
+      train.mode !== 'overground' &&
       trainSearchText(train, snapshot).includes(serviceQuery),
     )
     .slice(0, 5)
