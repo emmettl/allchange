@@ -42,12 +42,13 @@ test('boots as a separate edition without loading Swiss network data', async ({
   await expect(page.getByRole('button', { name: /Diagram/ })).toBeEnabled()
 })
 
-test('River Bus and cable car load as a separate 24-hour surface study', async ({
+test('River Bus and cable car load as a separate 24-hour river study', async ({
   page,
 }) => {
   const surfaceResponse = page.waitForResponse((response) =>
     response.url().includes('all-change-surface-day.json'),
   )
+  await expect(page.locator('.london-surface-toggle .london-wide-label')).toHaveText('River')
   await page.getByRole('button', { name: 'Show River Bus and cable car' }).click()
   expect((await surfaceResponse).ok()).toBe(true)
 

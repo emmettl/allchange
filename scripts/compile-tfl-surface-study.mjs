@@ -1,10 +1,12 @@
 #!/usr/bin/env node
 
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { compileTflLineProof } from './ingest-tfl-line.mjs'
 import { mergeNetworkSnapshots } from './merge-network-snapshots.mjs'
+
+import { constrainRiverPaths } from './river-paths.mjs'
 
 const SERVICE_DATE = '2026-09-04'
 const RETRIEVED_AT = '2026-09-06T12:00:00.000Z'
@@ -76,11 +78,13 @@ export async function compileSurfaceStudy({
     }),
   )
 
-  return mergeNetworkSnapshots(snapshots, {
+  const snapshot = mergeNetworkSnapshots(snapshots, {
     retrievedAt,
     note:
-      'A separately loaded Friday surface study: scheduled RB1, RB4 and RB6 river services plus London Cable Car in both directions. Positions are timetable interpolation, not observed craft or cabin telemetry.',
+      'A separately loaded Friday river study: scheduled RB1, RB4 and RB6 river services plus London Cable Car in both directions. Positions are timetable interpolation, not observed craft or cabin telemetry.',
   })
+  const geography = JSON.parse(await readFile(resolve('fixtures/tfl/all-change-geography.json'), 'utf8'))
+  return constrainRiverPaths(snapshot, geography)
 }
 
 async function main() {

@@ -638,13 +638,13 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       signal: controller.signal,
     })
       .then((response) => {
-        if (!response.ok) throw new Error(`Surface study returned ${response.status}`)
+        if (!response.ok) throw new Error(`River study returned ${response.status}`)
         return response.json() as Promise<NetworkSnapshot>
       })
       .then(setSurfaceNetwork)
       .catch((error: unknown) => {
         if (error instanceof DOMException && error.name === 'AbortError') return
-        console.error('Unable to load the All Change surface study', error)
+        console.error('Unable to load the All Change river study', error)
         setSurfaceLoadError(true)
       })
     return () => controller.abort()
@@ -1558,7 +1558,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           <small>
             {operationsEngaged
               ? 'Observed rail · prediction-derived'
-              : `${surfaceEnabled || busEnabled ? 'Rail + surface' : 'Rail'} study · ${studyWindow === 'day' ? '24-hour Friday' : '06:45–08:45'}`}
+              : `${surfaceEnabled && busEnabled ? 'Rail + river + bus' : surfaceEnabled ? 'Rail + river' : busEnabled ? 'Rail + bus' : 'Rail'} study · ${studyWindow === 'day' ? '24-hour Friday' : '06:45–08:45'}`}
           </small>
         </div>
       </header>
@@ -1614,7 +1614,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               aria-keyshortcuts={option.id === 'diagram' ? 'D' : 'G'}
               aria-busy={loading}
               disabled={!available || loading || !network}
-              data-tooltip={!available ? 'The diagram is unavailable while Bus, Surface or National Rail is enabled' : option.id === 'geographic' ? 'Place services at their geographic locations (G)' : 'Arrange the same services on a simplified network diagram (D)'}
+              data-tooltip={!available ? 'The diagram is unavailable while Bus, River or National Rail is enabled' : option.id === 'geographic' ? 'Place services at their geographic locations (G)' : 'Arrange the same services on a simplified network diagram (D)'}
               onClick={() => available && activateLayout(option.id, artifact)}
             >
               <span className="london-wide-label">{option.label}</span>
@@ -1740,7 +1740,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           aria-busy={surfaceLoading}
           onClick={toggleSurfaceLayer}
         >
-          <span className="london-wide-label">Surface</span>
+          <span className="london-wide-label">River</span>
           <span className="london-mobile-label">≈</span>
           {surfaceLoading && <small>Loading</small>}
         </button>
@@ -1780,7 +1780,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         )}
         {surfaceLoadError && (
           <span className="london-surface-status" role="status">
-            Surface study unavailable
+            River study unavailable
           </span>
         )}
         {busEnabled && busDay.error && (
