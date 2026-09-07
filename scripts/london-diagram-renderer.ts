@@ -11,6 +11,15 @@ export function londonDiagramRenderer(): Plugin {
     enforce: 'pre',
     transform(source, id) {
       const moduleId = id.split('?')[0].replaceAll('\\', '/')
+      if (moduleId.endsWith('/@motionstudies/three/RoadTrafficLayer.js')) {
+        const hook = 'topology && (_jsx(RoadTopology, { snapshot: topology, projection: projection, subdued: subdued, selectedRoadId: selectedRoadId }))'
+        if (source.split(hook).length !== 2) throw new Error('The London road label adapter needs review for this renderer version')
+        return {
+          code: 'import { LondonRoadLabels } from "/src/studies/LondonRoadLabels.tsx";\n'
+            + source.replace(hook, `${hook}, topology && _jsx(LondonRoadLabels, { topology, projection, subdued, selectedRoadId })`),
+          map: null,
+        }
+      }
       if (moduleId.endsWith('/@motionstudies/three/AirTrafficLayer.js')) {
         // Airport infrastructure belongs to the enabled Air layer, independently
         // of flight loading, category isolation, selection or vehicle labels.
