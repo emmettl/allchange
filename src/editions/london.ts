@@ -137,8 +137,8 @@ export const LONDON_EDITION: LondonEdition = {
     },
     bus: {
       dayManifest: 'all-change-bus-day-manifest.json',
-      focus: [-0.066, 51.54],
-      cameraScale: 0.28,
+      focus: [-0.12, 51.51],
+      cameraScale: 0.65,
     },
     operations: {
       latest:

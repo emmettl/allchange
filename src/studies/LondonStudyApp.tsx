@@ -30,7 +30,6 @@ import {
   buildRouteIndex,
   buildStationIndex,
   formatServiceTime,
-  positionForTrain,
   type NetworkRouteIndexEntry,
   type NetworkDayChunk,
   type NetworkDayManifest,
@@ -102,9 +101,9 @@ import type { TrainLabelMode } from '@motionstudies/three/train-labels'
 import { SERVICE_COLORS } from '@motionstudies/core/theme'
 import { useProgressiveAirDay } from '@motionstudies/web/use-progressive-air-day'
 import {
-  useProgressiveNetworkDay,
   verifiedNetworkDayChunk,
 } from '@motionstudies/web/use-progressive-network-day'
+import { useBusDay } from '../data/use-bus-day.ts'
 import { useProgressiveRoadStudy } from '@motionstudies/web/use-progressive-road-study'
 import { useObservedOperations } from '@motionstudies/web/use-observed-operations'
 import { validateNationalRail, type NationalRailSnapshot } from '../data/national-rail.ts'
@@ -155,7 +154,7 @@ const LONDON_CATEGORIES: readonly {
   },
   { id: 'intercity', label: 'National Rail', detail: 'GWR mainline services' },
   { id: 'tram', label: 'Tramlink', detail: 'South London tram services' },
-  { id: 'bus', label: 'Bus 26', detail: 'Route 26 and N26 night services' },
+  { id: 'bus', label: 'Buses', detail: 'London bus routes and night services' },
   { id: 'ferry', label: 'River', detail: 'Scheduled Thames river services' },
   { id: 'cableway', label: 'Cable', detail: 'London Cable Car cabins' },
 ]
@@ -222,7 +221,7 @@ function searchNetworkChoices(
 ): { readonly places: readonly SearchChoice[]; readonly services: readonly SearchChoice[] } {
   const folded = foldSearchText(query.trim())
   if (!folded) return { places: [], services: [] }
-  const serviceQuery = folded.replace(/^(?:route|line)\s+/, '')
+  const serviceQuery = folded.replace(/^(?:route|line|bus)\s+/, '')
 
   const airportMatches = searchAirports(airports, query, 4).map(
     (value): SearchChoice => ({ kind: 'airport', value }),
@@ -240,14 +239,22 @@ function searchNetworkChoices(
         serviceQuery,
       ),
     )
+    .sort((first, second) => {
+      const rank = (name: string) => {
+        const foldedName = foldSearchText(name)
+        return foldedName === serviceQuery ? 0 : foldedName.startsWith(serviceQuery) ? 1 : 2
+      }
+      return rank(first.name) - rank(second.name) || first.name.localeCompare(second.name, 'en', { numeric: true })
+    })
     .slice(0, 5)
     .map((value): SearchChoice => ({ kind: 'route', value }))
   const trainMatches = snapshot.trains
-    // Tube, DLR and Elizabeth line journeys have no useful public service
-    // identifier; line results provide the meaningful way to explore them.
+    // Tube, DLR, Elizabeth line and bus journeys have no useful public service
+    // identifier; route results provide the meaningful way to explore them.
     // Overground services are also best explored through their line results.
     .filter((train) =>
       train.category !== 'metro' &&
+      train.category !== 'bus' &&
       train.mode !== 'elizabeth-line' &&
       train.mode !== 'overground' &&
       trainSearchText(train, snapshot).includes(serviceQuery),
@@ -337,7 +344,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     time,
     editionDataUrl,
   )
-  const busDay = useProgressiveNetworkDay(
+  const busDay = useBusDay(
     edition.data.bus.dayManifest,
     busEnabled,
     time,
@@ -726,7 +733,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     () =>
       countableTrains.reduce(
         (count, train) =>
-          count + Number(Boolean(positionForTrain(train, sceneTime))),
+          count + Number(train.realtime?.status !== 'cancelled' && train.stops.length >= 2
+            && sceneTime >= train.start && sceneTime <= train.end),
         0,
       ),
     [countableTrains, sceneTime],
@@ -887,6 +895,19 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     },
     [],
   )
+
+  const busCameraFocused = useRef(false)
+  useEffect(() => {
+    if (!busEnabled) {
+      busCameraFocused.current = false
+      return
+    }
+    if (!busDay.chunkReady || !activeDayChunk || busCameraFocused.current) return
+    // The bus topology changes the projection bounds. Focus only once the
+    // composed network is mounted, so the camera uses those new coordinates.
+    busCameraFocused.current = true
+    moveCamera('focus-location', edition.data.bus.focus, edition.data.bus.cameraScale)
+  }, [activeDayChunk, busDay.chunkReady, busEnabled, edition.data.bus.cameraScale, edition.data.bus.focus, moveCamera])
 
   const loadLayout = useCallback(async (artifact: string) => {
     setLayoutLoading(true)
@@ -1286,19 +1307,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     setStudyWindow('day')
     setBusEnabled(true)
     activateLayout('geographic')
-    moveCamera(
-      'focus-location',
-      edition.data.bus.focus,
-      edition.data.bus.cameraScale,
-    )
-  }, [
-    activateLayout,
-    busEnabled,
-    clearSelection,
-    edition.data.bus.cameraScale,
-    edition.data.bus.focus,
-    moveCamera,
-  ])
+  }, [activateLayout, busEnabled, clearSelection])
 
   const toggleNationalRailLayer = useCallback(() => {
     clearSelection()
@@ -1641,13 +1650,13 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         <button
           className="london-bus-toggle"
           type="button"
-          aria-label={busEnabled ? 'Hide route 26 buses' : 'Show route 26 buses'}
+          aria-label={busEnabled ? 'Hide London buses' : 'Show London buses'}
           aria-pressed={busEnabled}
           aria-busy={busLoading}
           onClick={toggleBusLayer}
         >
           <span className="london-wide-label">Bus</span>
-          <span className="london-mobile-label">26</span>
+          <span className="london-mobile-label">Bus</span>
           {busLoading && <small>Loading</small>}
         </button>
         <button
@@ -1701,7 +1710,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
             Surface study unavailable
           </span>
         )}
-        {busDay.error && (
+        {busEnabled && busDay.error && (
           <span className="london-bus-status" role="status">
             Bus study unavailable
           </span>
@@ -1730,7 +1739,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
             <input
               type="search"
               value={query}
-              placeholder={busEnabled ? 'Find route 26, N26, Bank, or Victoria' : surfaceEnabled ? 'Find RB6, Canary Wharf, or cable car' : airEnabled ? "Find Heathrow, M25, DLR, or flight" : "Find King's Cross, Heathrow, M25, or DLR"}
+              placeholder={busEnabled ? 'Find a bus route, night bus, or stop' : surfaceEnabled ? 'Find RB6, Canary Wharf, or cable car' : airEnabled ? "Find Heathrow, M25, DLR, or flight" : "Find King's Cross, Heathrow, M25, or DLR"}
               autoComplete="off"
               aria-controls="london-search-results"
               aria-expanded={searchOpen && choices.length > 0}

@@ -12,9 +12,12 @@ const { values } = parseArgs({ options: {
   duration: { type: 'string', default: '5000' },
   fps: { type: 'string', default: '60' },
   output: { type: 'string' },
+  buses: { type: 'boolean', default: false },
+  angle: { type: 'string' },
+  'cpu-throttle': { type: 'string', default: '1' },
 } })
 const numeric = Object.fromEntries(
-  ['width', 'height', 'dpr', 'duration', 'fps'].map((key) => [key, Number(values[key])]),
+  ['width', 'height', 'dpr', 'duration', 'fps', 'cpu-throttle'].map((key) => [key, Number(values[key])]),
 )
 for (const [key, value] of Object.entries(numeric)) {
   if (!Number.isFinite(value) || value <= 0) throw new Error(`--${key} must be positive`)
@@ -23,7 +26,10 @@ if (!Number.isInteger(numeric.width) || !Number.isInteger(numeric.height)) {
   throw new Error('--width and --height must be integers')
 }
 
-const browser = await chromium.launch({ channel: values.channel, headless: values.headless })
+if (numeric['cpu-throttle'] < 1) throw new Error('--cpu-throttle must be at least 1')
+const browser = await chromium.launch({ channel: values.channel, headless: values.headless,
+  args: values.angle ? [`--use-angle=${values.angle}`] : [],
+})
 try {
   const page = await browser.newPage({
     viewport: { width: numeric.width, height: numeric.height },
@@ -35,6 +41,7 @@ try {
   await page.locator('.scene canvas').waitFor()
   const cdp = await page.context().newCDPSession(page)
   await cdp.send('Performance.enable')
+  await cdp.send('Emulation.setCPUThrottlingRate', { rate: numeric['cpu-throttle'] })
   const scenarios = []
   async function sample(name) {
     // Exclude lazy loading, camera settling, and initial shader compilation.
@@ -78,18 +85,28 @@ try {
       // Allows timestamp jitter around one refresh; exposes clearly missed frames.
       overOneAndHalfBudgetsPercent: percentage(budget * 1.5),
       mainThreadMilliseconds: metrics,
+      scriptMsPerFrame: round(metrics.ScriptDuration / intervals.length),
     })
   }
   await sample('opening')
-  await page.getByRole('searchbox').fill('Bakerloo')
-  await page.getByRole('option', { name: /Bakerloo/ }).first().waitFor()
-  await sample('search-open')
-  await page.getByRole('option', { name: /Bakerloo/ }).first().click()
-  await sample('selected-search-closed')
-  await page.getByRole('button', { name: 'Clear search and selection' }).click()
-  await page.getByRole('button', { name: 'Diagram layout' }).click()
-  await page.locator('.london-experience[data-layout-transitioning="false"][data-layout-mix="1.000"]').waitFor()
-  await sample('diagram')
+  if (values.buses) {
+    await page.getByRole('button', { name: 'Show London buses' }).click()
+    await page.locator('.london-experience[data-bus-loading="false"]').waitFor({ timeout: 90_000 })
+    await sample('all-buses')
+    await page.getByRole('searchbox').fill('bus 26')
+    await page.getByRole('option').first().click()
+    await sample('selected-bus-route')
+  } else {
+    await page.getByRole('searchbox').fill('Bakerloo')
+    await page.getByRole('option', { name: /Bakerloo/ }).first().waitFor()
+    await sample('search-open')
+    await page.getByRole('option', { name: /Bakerloo/ }).first().click()
+    await sample('selected-search-closed')
+    await page.getByRole('button', { name: 'Clear search and selection' }).click()
+    await page.getByRole('button', { name: 'Diagram layout' }).click()
+    await page.locator('.london-experience[data-layout-transitioning="false"][data-layout-mix="1.000"]').waitFor()
+    await sample('diagram')
+  }
   const environment = await page.evaluate(() => {
     const canvas = document.querySelector('.scene canvas')
     const gl = canvas.getContext('webgl2')
@@ -104,7 +121,8 @@ try {
     capturedAt: new Date().toISOString(),
     platform: process.platform,
     browserVersion: browser.version(),
-    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless },
+    settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless,
+      angle: values.angle ?? 'default', buses: values.buses },
     environment,
     scenarios,
   }, null, 2)

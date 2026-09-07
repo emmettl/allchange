@@ -68,7 +68,7 @@ test('River Bus and cable car load as a separate 24-hour surface study', async (
   await expect(page.getByRole('button', { name: 'Diagram layout' })).toBeEnabled()
 })
 
-test('route 26 buses load progressively as a separate street study', async ({
+test('London buses load progressively with route search and time scrubbing', async ({
   page,
 }) => {
   const manifestResponse = page.waitForResponse((response) =>
@@ -77,8 +77,12 @@ test('route 26 buses load progressively as a separate street study', async ({
   const chunkResponse = page.waitForResponse((response) =>
     response.url().includes('all-change-bus-day-chunks/06-08.json'),
   )
-  await page.getByRole('button', { name: 'Show route 26 buses' }).click()
-  expect((await manifestResponse).ok()).toBe(true)
+  await page.getByRole('button', { name: 'Show London buses' }).click()
+  const busManifestResponse = await manifestResponse
+  expect(busManifestResponse.ok()).toBe(true)
+  const busManifest = await busManifestResponse.json()
+  expect(busManifest.format).toBe('tfl-bus-patterns-v1')
+  expect(busManifest.metadata.coverage.activeRouteCount).toBeGreaterThanOrEqual(600)
   expect((await chunkResponse).ok()).toBe(true)
 
   const experience = page.locator('.london-experience')
@@ -86,31 +90,49 @@ test('route 26 buses load progressively as a separate street study', async ({
   await expect(experience).toHaveAttribute('data-bus-enabled', 'true')
   await expect(experience).toHaveAttribute('data-bus-loading', 'false')
   await expect(page.getByRole('button', { name: 'Diagram layout' })).toBeDisabled()
-  await expect(page.getByRole('button', { name: 'Bus 26', exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Buses', exact: true })).toBeVisible()
   await expect(page.locator('.london-status-card')).toContainText('vehicles in motion')
   await expect(page.locator('.london-status-card')).toContainText(
-    '11,055 scheduled journeys',
+    'scheduled journeys',
   )
   await page.getByRole('button', { name: 'Pause motion' }).click()
-  await page.getByRole('button', { name: 'Bus 26', exact: true }).click()
+  await page.getByRole('button', { name: 'Buses', exact: true }).click()
   await expect(experience).toHaveClass(/has-selection/)
 
   const search = page.getByRole('searchbox', {
     name: 'Find a London station, line, service, airport, flight or motorway',
   })
+  await search.fill('bus SL1')
+  await expect(page.getByRole('option').first().locator('strong')).toHaveText('SL1')
+  await page.getByRole('option').first().click()
+  await expect(page.locator('.london-status-card')).toContainText('SL1')
+
   await search.fill('route 26')
+  await expect(page.getByRole('option').first().locator('strong')).toHaveText('26')
   const routeOption = page.getByRole('option', { name: /26/ }).first()
   await expect(routeOption).toBeVisible()
   await routeOption.click()
   await expect(page.locator('.london-status-card')).toContainText('26')
-  await expect(page.locator('.london-status-card')).toContainText('30 journeys')
+  await expect(page.locator('.london-status-card')).toContainText('journeys')
 
   const eveningChunkResponse = page.waitForResponse((response) =>
     response.url().includes('all-change-bus-day-chunks/18-20.json'),
   )
   await page.locator('.london-transport input[type="range"]').fill('66600')
   expect((await eveningChunkResponse).ok()).toBe(true)
-  await expect(page.locator('.london-status-card')).toContainText('36 journeys')
+  await expect(experience).toHaveAttribute('data-bus-loading', 'false')
+  await expect(page.locator('.london-status-card')).toContainText('journeys')
+
+  const nightChunkResponse = page.waitForResponse((response) =>
+    response.url().includes('all-change-bus-day-chunks/02-04.json'),
+  )
+  await page.locator('.london-transport input[type="range"]').fill('9000')
+  expect((await nightChunkResponse).ok()).toBe(true)
+  await expect(experience).toHaveAttribute('data-bus-loading', 'false')
+  await search.fill('N26')
+  await expect(page.getByRole('option').first().locator('strong')).toHaveText('N26')
+  await page.getByRole('option').first().click()
+  await expect(page.locator('.london-status-card')).toContainText('N26')
 
   const morningStudy = page.getByRole('button', { name: 'Morning study' })
   await morningStudy.focus()
@@ -118,6 +140,22 @@ test('route 26 buses load progressively as a separate street study', async ({
   await expect(experience).toHaveAttribute('data-study-window', 'morning')
   await expect(experience).toHaveAttribute('data-bus-enabled', 'false')
   await expect(page.getByRole('button', { name: 'Diagram layout' })).toBeEnabled()
+})
+
+test('a damaged bus chunk can be retried without losing the rail study', async ({ page }) => {
+  const busChunks = '**/all-change-bus-day-chunks/*.json'
+  await page.route(busChunks, (route) => route.fulfill({ contentType: 'application/json', body: '{}' }))
+  await page.getByRole('button', { name: 'Show London buses' }).click()
+  await expect(page.getByRole('status').filter({ hasText: 'Bus study unavailable' })).toBeVisible()
+  await expect(page.locator('.scene canvas')).toBeVisible()
+  await expect(page.locator('.london-experience')).toHaveAttribute('data-bus-loading', 'false')
+  await page.getByRole('button', { name: 'Hide London buses' }).click()
+  await expect(page.getByText('Bus study unavailable', { exact: true })).toBeHidden()
+  await page.unroute(busChunks)
+  await page.getByRole('button', { name: 'Show London buses' }).click()
+  await expect(page.locator('.london-experience')).toHaveAttribute('data-bus-loading', 'false')
+  await expect(page.getByText('Bus study unavailable', { exact: true })).toBeHidden()
+  await expect(page.getByRole('button', { name: 'Buses', exact: true })).toBeVisible()
 })
 
 test('station search selects and reveals a London interchange', async ({ page }) => {

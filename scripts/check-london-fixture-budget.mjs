@@ -2,6 +2,7 @@ import { readFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { resolve } from 'node:path'
 import { gzipSync } from 'node:zlib'
+import { decodeBusChunk } from '../src/data/bus-day.ts'
 import { canonicalStationName as canonicalDiagramStationName } from './london-diagram-layout.mjs'
 
 const FILES = [
@@ -28,9 +29,9 @@ const BUDGETS = {
   roadChunkGzip: 50 * 1024,
   roadDayTotalGzip: 250 * 1024,
   surfaceGzip: 32 * 1024,
-  busManifestGzip: 16 * 1024,
-  busChunkGzip: 10 * 1024,
-  busDayTotalGzip: 100 * 1024,
+  busManifestGzip: 2300 * 1024,
+  busChunkGzip: 550 * 1024,
+  busDayTotalGzip: 8000 * 1024,
 }
 
 const networkBytes = await readFile(
@@ -302,6 +303,10 @@ if (
 ) {
   throw new Error('London bus study violates its 24-hour mode contract')
 }
+if (busManifest.stops.some(([lon, lat]) => !Number.isFinite(lon) || !Number.isFinite(lat)) ||
+  busManifest.paths.some((path) => path.length < 2 || path.some(([lon, lat]) => !Number.isFinite(lon) || !Number.isFinite(lat)))) {
+  throw new Error('London bus geometry contains invalid coordinates')
+}
 let busDayTotalGzip = gzipSync(busManifestBytes, { level: 9 }).byteLength
 let largestBusChunkGzip = 0
 const busTrainIds = new Set()
@@ -315,12 +320,16 @@ for (const descriptor of busManifest.chunks) {
     throw new Error(`London bus chunk ${descriptor.id} has stale integrity metadata`)
   }
   const chunk = JSON.parse(bytes.toString('utf8'))
-  for (const train of chunk.trains) {
+  for (const train of decodeBusChunk(chunk).trains) {
     if (train.category !== 'bus') {
       throw new Error(`London bus chunk ${descriptor.id} contains a non-bus journey`)
     }
-    if (train.pathSegments?.some((segment) => segment.pathIndex >= busManifest.paths.length)) {
+    if (train.pathSegments?.some((pathIndex) => pathIndex !== null && (!Number.isInteger(pathIndex) || pathIndex < 0 || pathIndex >= busManifest.paths.length))) {
       throw new Error(`London bus chunk ${descriptor.id} contains an invalid path reference`)
+    }
+    if (train.end < train.start || train.stops.length < 2 || train.pathSegments?.length !== train.stops.length - 1 || train.stops.some(([stop, arrival, departure], index) =>
+      !busManifest.stops[stop] || departure < arrival || (index > 0 && arrival < train.stops[index - 1][2]))) {
+      throw new Error(`London bus journey ${train.id} has invalid stop calls`)
     }
     busTrainIds.add(train.id)
     busRoutes.add(train.route)
@@ -332,9 +341,14 @@ for (const descriptor of busManifest.chunks) {
 if (
   busTrainIds.size !== busManifest.tripCount ||
   !busRoutes.has('26') ||
-  !busRoutes.has('N26')
+  !busRoutes.has('N26') ||
+  busRoutes.size !== busManifest.metadata.coverage?.activeRouteCount ||
+  busRoutes.size < 600 ||
+  busManifest.metadata.coverage.routes.length !== busManifest.metadata.coverage.advertisedRouteCount ||
+  busManifest.metadata.coverage.routes.some(({ name, journeyCount, issues }) =>
+    (journeyCount > 0) !== busRoutes.has(name) || (!journeyCount && !issues.length))
 ) {
-  throw new Error('London bus chunks do not contain the complete 26/N26 study')
+  throw new Error('London bus chunks do not match the audited London-wide route catalogue')
 }
 const busManifestGzip = gzipSync(busManifestBytes, { level: 9 }).byteLength
 console.log('All Change progressive bus-study budget:')

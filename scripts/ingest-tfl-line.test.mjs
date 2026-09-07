@@ -274,3 +274,25 @@ describe('TfL line adapter', () => {
     expect(geometry.points[0]).toEqual([-0.12, 51.5])
   })
 })
+
+describe('multi-part TfL route geometry', () => {
+  it('fits separate alternatives inside one line-string field without producing NaN coordinates', () => {
+    const near = [[-0.12, 51.5], [-0.13, 51.51], [-0.14, 51.52]]
+    const far = [[-0.12, 51.8], [-0.13, 51.81], [-0.14, 51.82]]
+    const geometry = linePointsForStops({ lineStrings: [JSON.stringify([far, near])] }, stops)
+    expect(geometry.partIndex).toBe(1)
+    expect(geometry.points).toEqual(near)
+    expect(geometry.score).toBe(0)
+  })
+  it('rejects malformed coordinates instead of serializing them as null', () => {
+    expect(() => linePointsForStops({ lineStrings: ['[[[null,51.5],[-0.13,51.51]]]'] }, stops)).toThrow('malformed point')
+  })
+})
+
+it('fits a looping route globally rather than jumping to a later nearby return point', () => {
+  const points = [[0, 0], [1, 0], [2, 0], [2, 1], [1, 1], [1, 0.0001], [0, 1]]
+  const calls = [[0, 0], [1, 0.0001], [2, 0], [2, 1], [1, 1], [0, 1]].map(([lon, lat]) => ({ lon, lat }))
+  const geometry = linePointsForStops({ lineStrings: [JSON.stringify(points)] }, calls)
+  expect(geometry.indexes).toEqual([0, 1, 2, 3, 4, 6])
+  expect(geometry.score).toBeLessThan(0.000001)
+})

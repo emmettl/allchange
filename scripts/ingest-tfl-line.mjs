@@ -100,23 +100,30 @@ async function loadSources(options) {
   }
 }
 
+function lineStringParts(encoded) {
+  const parts = []
+  function visit(value) {
+    if (!Array.isArray(value) || !value.length) throw new Error('TfL route sequence line string is malformed')
+    if (Array.isArray(value[0]) && !Array.isArray(value[0][0])) {
+      if (value.length < 2) throw new Error('TfL route sequence line string is malformed')
+      parts.push(value.map((point) => {
+        if (!Array.isArray(point) || point.length < 2 || point.slice(0, 2).some((coordinate) => coordinate === null || !Number.isFinite(Number(coordinate)))) {
+          throw new Error('TfL route sequence contains a malformed point')
+        }
+        return [Number(point[0]), Number(point[1])]
+      }))
+    } else {
+      value.forEach(visit)
+    }
+  }
+  visit(JSON.parse(encoded))
+  return parts
+}
+
 export function linePoints(routeSequence, lineStringIndex = 0) {
   const encoded = routeSequence.lineStrings?.[lineStringIndex]
   if (!encoded) throw new Error('TfL route sequence has no line string')
-  const decoded = JSON.parse(encoded)
-  let points = decoded
-  while (Array.isArray(points) && points.length === 1 && Array.isArray(points[0])) {
-    points = points[0]
-  }
-  if (!Array.isArray(points) || points.length < 2) {
-    throw new Error('TfL route sequence line string is malformed')
-  }
-  return points.map((point) => {
-    if (!Array.isArray(point) || point.length < 2) {
-      throw new Error('TfL route sequence contains a malformed point')
-    }
-    return [Number(point[0]), Number(point[1])]
-  })
+  return lineStringParts(encoded)[0]
 }
 
 function distanceSquared(first, second) {
@@ -127,21 +134,33 @@ function distanceSquared(first, second) {
 }
 
 function nearestMonotonicIndexes(points, stops) {
-  const indexes = []
-  let searchStart = 0
-  for (const stop of stops) {
-    const target = [stop.lon, stop.lat]
-    let bestIndex = searchStart
-    let bestDistance = Number.POSITIVE_INFINITY
-    for (let index = searchStart; index < points.length; index += 1) {
-      const distance = distanceSquared(points[index], target)
-      if (distance < bestDistance) {
-        bestDistance = distance
-        bestIndex = index
-      }
+  // Fit the whole ordered stop sequence. A greedy nearest-point match can
+  // jump to the returning side of a loop and strand every later stop at the
+  // shape's endpoint, producing long spokes instead of a bus route.
+  const width = points.length
+  let previous = new Float64Array(width)
+  const parents = []
+  for (let stopIndex = 0; stopIndex < stops.length; stopIndex++) {
+    const target = [stops[stopIndex].lon, stops[stopIndex].lat]
+    const costs = new Float64Array(width)
+    const row = new Int32Array(width)
+    let best = Number.POSITIVE_INFINITY, bestIndex = 0
+    for (let pointIndex = 0; pointIndex < width; pointIndex++) {
+      if (previous[pointIndex] < best) { best = previous[pointIndex]; bestIndex = pointIndex }
+      costs[pointIndex] = best + distanceSquared(points[pointIndex], target)
+      row[pointIndex] = bestIndex
     }
-    indexes.push(bestIndex)
-    searchStart = bestIndex
+    parents.push(row)
+    previous = costs
+  }
+  let index = 0
+  for (let pointIndex = 1; pointIndex < width; pointIndex++) {
+    if (previous[pointIndex] < previous[index]) index = pointIndex
+  }
+  const indexes = new Array(stops.length)
+  for (let stopIndex = stops.length - 1; stopIndex >= 0; stopIndex--) {
+    indexes[stopIndex] = index
+    index = parents[stopIndex][index]
   }
   return indexes
 }
@@ -165,13 +184,13 @@ function monotonicFit(points, stops) {
  */
 export function linePointsForStops(routeSequence, stops, preferredIndex = 0) {
   if (stops.length < 2) throw new Error('TfL branch has too few stops for geometry')
-  const candidates = (routeSequence.lineStrings ?? []).flatMap((_, lineStringIndex) => {
-    const points = linePoints(routeSequence, lineStringIndex)
-    return [
-      { lineStringIndex, reversed: false, points, ...monotonicFit(points, stops) },
-      { lineStringIndex, reversed: true, points: [...points].reverse(), ...monotonicFit([...points].reverse(), stops) },
-    ]
-  })
+  const candidates = (routeSequence.lineStrings ?? []).flatMap((encoded, lineStringIndex) =>
+    // A TfL line-string field can contain several alternative polylines, not
+    // just one nested polyline. Fit each separately; never join their ends.
+    lineStringParts(encoded).flatMap((points, partIndex) => [
+      { lineStringIndex, partIndex, reversed: false, points, ...monotonicFit(points, stops) },
+      { lineStringIndex, partIndex, reversed: true, points: [...points].reverse(), ...monotonicFit([...points].reverse(), stops) },
+    ]))
   if (!candidates.length) throw new Error('TfL route sequence has no line string')
   candidates.sort((first, second) =>
     first.score - second.score ||
@@ -236,6 +255,7 @@ export function compileTflLineProof({
   routeUrl,
   timetableUrl,
   timeOffsetSeconds = 0,
+  stopIdsEquivalent = (first, second) => first === second,
 }) {
   if (routeSequence.lineId !== timetable.lineId) {
     throw new Error('TfL route and timetable line IDs disagree')
@@ -306,7 +326,7 @@ export function compileTflLineProof({
       const intervalKey = `${routeIndex}:${journey.intervalId}`
       let branch
       try {
-        branch = matchBranch(routeSequence, journeyStopIds)
+        branch = matchBranch(routeSequence, journeyStopIds, stopIdsEquivalent)
       } catch (error) {
         if (!error.message.includes('has no matching route sequence')) throw error
         unmatchedBranchPatterns.add(intervalKey)
@@ -329,7 +349,7 @@ export function compileTflLineProof({
           const from = stopIndexById.get(journeyStopIds[index])
           const to = stopIndexById.get(journeyStopIds[index + 1])
           if (from === undefined || to === undefined) throw new Error('TfL branch stop is missing from the stop catalogue')
-          const segmentKey = `${branchGeometry.lineStringIndex}:${Number(branchGeometry.reversed)}:${from}:${to}`
+          const segmentKey = `${branchGeometry.lineStringIndex}:${branchGeometry.partIndex}:${Number(branchGeometry.reversed)}:${from}:${to}`
           const existingPathIndex = pathIndexByBranchSegment.get(segmentKey)
           if (existingPathIndex !== undefined) return existingPathIndex
           const pathIndex = paths.length
@@ -392,7 +412,7 @@ export function compileTflLineProof({
         feedVersion: `tfl-unified-api:${retrievedAt.slice(0, 10)}`,
         sourceUrl: routeUrl,
         sourceSha256: sourceSha256(routeSequence),
-        model: 'TfL route-sequence line string matched and oriented by NaPTAN sequence, then split at nearest monotonic stops',
+        model: 'TfL route-sequence line string matched and oriented by NaPTAN sequence, then split at globally fitted monotonic stops',
         matchedSegments: paths.length,
         totalSegments: paths.length,
         unmatchedBranchPatterns: unmatchedBranchPatterns.size,
@@ -446,17 +466,17 @@ function collapseDwellIntervals(intervals) {
   return collapsed
 }
 
-function matchBranch(routeSequence, journeyStopIds) {
+function matchBranch(routeSequence, journeyStopIds, equivalent) {
   const branches = routeSequence.orderedLineRoutes ?? []
   const exactIndex = branches.findIndex(({ naptanIds }) =>
     naptanIds?.length === journeyStopIds.length &&
-    naptanIds.every((stopId, index) => stopId === journeyStopIds[index]))
+    naptanIds.every((stopId, index) => equivalent(stopId, journeyStopIds[index])))
   if (exactIndex >= 0) return { lineStringIndex: exactIndex, name: branches[exactIndex].name }
   const prefixMatch = branches
     .map((branch, lineStringIndex) => ({ branch, lineStringIndex }))
     .filter(({ branch }) =>
       branch.naptanIds?.length >= journeyStopIds.length &&
-      journeyStopIds.every((stopId, index) => stopId === branch.naptanIds[index]))
+      journeyStopIds.every((stopId, index) => equivalent(stopId, branch.naptanIds[index])))
     .sort((first, second) => first.branch.naptanIds.length - second.branch.naptanIds.length)[0]
   if (prefixMatch) return { lineStringIndex: prefixMatch.lineStringIndex, name: prefixMatch.branch.name }
   const subsequenceMatch = branches
@@ -464,7 +484,7 @@ function matchBranch(routeSequence, journeyStopIds) {
     .filter(({ branch }) => {
       let journeyIndex = 0
       for (const stopId of branch.naptanIds ?? []) {
-        if (stopId === journeyStopIds[journeyIndex]) journeyIndex += 1
+        if (equivalent(stopId, journeyStopIds[journeyIndex])) journeyIndex += 1
         if (journeyIndex === journeyStopIds.length) return true
       }
       return false
