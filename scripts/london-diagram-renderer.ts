@@ -107,6 +107,24 @@ export function londonDiagramRenderer(): Plugin {
       }
       code = code.replace(labelHook,
         `if (train.category === 'metro' && semanticCameraHeight >= 10) continue;\n            ${labelHook}`)
+      // Tube and DLR labels retain their line identity in both layouts.
+      // Include the resolved colour in the cache key so a reused texture
+      // cannot carry another line's colour or a previous layout's palette.
+      for (const [before, after] of [
+        ['function createTrainLabelTexture(label, color) {',
+          "function createTrainLabelTexture(label, color, textColor = '#f8f7ff') {"],
+        ["context.fillStyle = '#f8f7ff';\n        context.fillText(label, 56, 38);",
+          'context.fillStyle = textColor;\n        context.fillText(label, 56, 38);'],
+        ['const textureKey = `${candidate.train.category}:${text}`;',
+          `const lineColor = candidate.train.category === 'metro' ? routeColors?.[candidate.train.route] : undefined;
+            const labelColor = lineColor ?? mixedRouteColor(candidate.train.category, candidate.train.route, routeColors, routeColorMix);
+            const textureKey = \`\${candidate.train.category}:\${labelColor}:\${text}\`;`],
+        ['createTrainLabelTexture(text, mixedRouteColor(candidate.train.category, candidate.train.route, routeColors, routeColorMix))',
+          'createTrainLabelTexture(text, labelColor, lineColor)'],
+      ]) {
+        if (code.split(before).length !== 2) throw new Error(`London train label colour hook needs review: ${before}`)
+        code = code.replace(before, after)
+      }
       // Keep vehicles just above the diagram track cores (y = 0.078),
       // reducing close-zoom parallax in Geography as well. Cover path,
       // detour and straight-line interpolation, including selected markers.
