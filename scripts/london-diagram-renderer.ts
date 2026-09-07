@@ -44,6 +44,11 @@ export function londonDiagramRenderer(): Plugin {
           'const key = lineMapStyle ? londonDiagramSegmentKey(train, index - 1, projectedStops) : routeSegmentKey(train, index - 1);')
         .replace('offsetProjectedPath(points, laneOffset)', 'offsetProjectedPath(lineMapStyle ? londonDiagramOrderedPoints(points) : points, laneOffset)')
       code = code.slice(0, identityStart) + identity + code.slice(identityEnd)
+      const stationRankHook = 'const rankLimit = stationLabelRankLimit(semanticHeight);'
+      if (code.split(stationRankHook).length !== 2) {
+        throw new Error('The London station label tier adapter needs review for this renderer version')
+      }
+      code = code.replace(stationRankHook, 'const rankLimit = londonStationLabelRankLimit(semanticHeight);')
       // Tube and DLR share the metro category. Require close zoom (about 4×
       // home) even for focused services and the explicit label-on mode.
       const labelHook = 'const arrivalOpacity = trainLabelArrivalOpacity(localTime.current, train.end, playbackRate);'
@@ -93,7 +98,7 @@ export function londonDiagramRenderer(): Plugin {
         if (!code.includes(before)) throw new Error(`London diagram renderer hook missing: ${before}`)
         code = code.replace(before, after)
       }
-      return { code: 'import { LondonDiagramStations } from "/src/studies/LondonDiagramStations.tsx";\nimport { londonDiagramSegmentKey, londonDiagramOrderedPoints } from "/src/editions/london-diagram-markers.ts";\n' + code, map: null }
+      return { code: 'import { LondonDiagramStations } from "/src/studies/LondonDiagramStations.tsx";\nimport { londonDiagramSegmentKey, londonDiagramOrderedPoints } from "/src/editions/london-diagram-markers.ts";\nimport { londonStationLabelRankLimit } from "/src/editions/london-station-labels.ts";\n' + code, map: null }
     },
   }
 }

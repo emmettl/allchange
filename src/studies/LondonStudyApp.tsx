@@ -77,6 +77,7 @@ import {
 } from '../editions/london.ts'
 import { LONDON_AIRPORTS } from '../editions/london-airports.ts'
 import { londonInfrastructureSnapshot } from '../editions/london-infrastructure.ts'
+import { londonStationLabels } from '../editions/london-station-labels.ts'
 import {
   LONDON_HUBS,
   LONDON_PULSE_CENTRE,
@@ -646,7 +647,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   )
 
   const stations = useMemo(
-    () => (infrastructureNetwork ? buildStationIndex(infrastructureNetwork) : []),
+    () => (infrastructureNetwork ? londonStationLabels(buildStationIndex(infrastructureNetwork)) : []),
     [infrastructureNetwork],
   )
   const routes = useMemo(
