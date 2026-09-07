@@ -1,0 +1,75 @@
+/* Keep the phosphor treatment on the map: type and controls stay crisp. */
+.london-experience[data-quiet-map='true'] .scene canvas {
+  animation: london-quiet-phosphor 7.3s linear infinite;
+}
+
+.london-experience[data-quiet-map='true'] .scene::after {
+  content: '';
+  position: absolute;
+  top: -25%;
+  left: 0;
+  width: 100%;
+  height: 25%;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(137, 247, 255, 0.055) 48%, rgba(174, 159, 226, 0.025) 60%, transparent);
+  mix-blend-mode: screen;
+  animation: london-quiet-scan 12s linear -4s infinite;
+}
+
+.london-experience[data-quiet-map='true'] .scanlines {
+  opacity: 0.24;
+  animation: london-quiet-raster 2.4s steps(4, end) infinite;
+}
+
+.london-experience[data-quiet-playing='false'] .scene canvas,
+.london-experience[data-quiet-playing='false'] .scene::after,
+.london-experience[data-quiet-playing='false'] .scanlines {
+  animation-play-state: paused;
+}
+
+.london-status-card.is-quiet strong {
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: #d1e4e8;
+}
+
+.london-status-card.is-quiet p {
+  margin-top: 10px;
+  font-size: 0.65rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.london-status-card.is-quiet small {
+  margin-top: 6px;
+  font-size: 0.57rem;
+  white-space: normal;
+}
+
+@keyframes london-quiet-phosphor {
+  0%, 100% { filter: brightness(1) saturate(1.04); }
+  19% { filter: brightness(1.08) saturate(1.08); }
+  37% { filter: brightness(0.97) saturate(1.02); }
+  43% { filter: brightness(1.04) saturate(1.06); }
+  47% { filter: brightness(0.99) saturate(1.04); }
+  68% { filter: brightness(1.1) saturate(1.09); }
+  84% { filter: brightness(1.02) saturate(1.04); }
+}
+
+@keyframes london-quiet-scan {
+  to { transform: translateY(500%); }
+}
+
+@keyframes london-quiet-raster {
+  to { background-position: 0 4px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .london-experience[data-quiet-map='true'] .scene canvas,
+  .london-experience[data-quiet-map='true'] .scanlines {
+    animation: none;
+  }
+
+  .london-experience[data-quiet-map='true'] .scene::after { display: none; }
+
+}

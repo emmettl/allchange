@@ -21,7 +21,8 @@ export function londonNationalRailRenderer(): Plugin {
       if (!moduleId.endsWith('/@motionstudies/three/NationalNetworkScene.js')) return
       const hook = '_jsx(VehicleTrails, { ...props,'
       if (source.split(hook).length !== 2) throw new Error('The National Rail scene slot needs review for this renderer version')
-      return { code: 'import { LondonNationalRailLayer } from "/src/studies/LondonNationalRailLayer.tsx";\n' + source.replace(hook,
+      return { code: 'import { LondonNationalRailLayer } from "/src/studies/LondonNationalRailLayer.tsx";\nimport { LondonQuietMap } from "/src/studies/LondonQuietMap.tsx";\n' + source.replace(hook,
+        'props.quietMap && _jsx(LondonQuietMap, { projection, isPlaying: props.isPlaying }), ' +
         'props.nationalRailSnapshot && props.boundary && (props.spatialLayoutMix ?? 0) === 0 && _jsx(LondonNationalRailLayer, { snapshot: props.nationalRailSnapshot, boundary: props.boundary, projection, time: props.time, isPlaying: props.isPlaying, playbackRate: props.playbackRate, windowStart: props.snapshot.metadata.windowStart, windowEnd: props.snapshot.metadata.windowEnd, selectedId: props.nationalRailSelectedId, subdued: Boolean(props.selectedTrain || props.selectedRoute || props.selectedStation || props.selectedCategory || props.airCategorySelected || props.roadCategorySelected) }), ' + hook), map: null }
     },
   }

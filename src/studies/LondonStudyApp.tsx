@@ -109,10 +109,12 @@ import { useObservedOperations } from '@motionstudies/web/use-observed-operation
 import { validateNationalRail, type NationalRailSnapshot } from '../data/national-rail.ts'
 import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
 import { LondonNationalRailBoard } from './LondonNationalRailBoard.tsx'
+import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
+import '../styles/london-quiet-map.css'
 
 const NationalNetworkScene = lazy(() =>
   import('@motionstudies/three/NationalNetworkScene').then(
-    ({ NationalNetworkScene: Scene }) => ({ default: Scene as ComponentType<NationalNetworkSceneProps & NationalRailSceneExtension> }),
+    ({ NationalNetworkScene: Scene }) => ({ default: Scene as ComponentType<NationalNetworkSceneProps & NationalRailSceneExtension & QuietMapSceneExtension> }),
   ),
 )
 
@@ -1415,6 +1417,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       : 'Planned timetable fallback'
   const operationsEngaged =
     operationsMode === 'observed' || operationsRequested
+  const quietMap = Boolean(webglAvailable && sceneNetwork && !loadError && !pulseHub &&
+    !tflEnabled && !airEnabled && !roadEnabled && !busEnabled && !surfaceEnabled && !nationalRailEnabled)
   const scheduledJourneyCount =
     studyWindow === 'day' && dayManifest
       ? (tflEnabled ? dayManifest.tripCount : 0) +
@@ -1435,6 +1439,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       data-selected-road={selectedRoad?.id}
       data-surface-enabled={surfaceEnabled}
       data-tfl-enabled={tflEnabled}
+      data-quiet-map={quietMap}
+      data-quiet-playing={quietMap ? isPlaying : undefined}
       data-bus-enabled={busEnabled}
       data-bus-loading={busLoading}
       data-operations-mode={operationsRequested ? 'preparing' : operationsMode}
@@ -1466,6 +1472,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
             />
           ) : sceneNetwork && network ? (
             <NationalNetworkScene
+              quietMap={quietMap}
               nationalRailSnapshot={nationalRailEnabled ? nationalRail : undefined}
               nationalRailSelectedId={nationalRailSelectedId}
               boundary={boundary}
@@ -1819,7 +1826,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       </section>
 
       <section
-        className={`london-status-card${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airCategorySelected ? ' is-air-selection' : ''}${selectedRoad || roadCategorySelected ? ' is-road-selection' : ''}`}
+        className={`london-status-card${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airCategorySelected ? ' is-air-selection' : ''}${selectedRoad || roadCategorySelected ? ' is-road-selection' : ''}`}
         aria-live="polite"
       >
         {pulseHub && (
@@ -1861,6 +1868,12 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         )}
         {loadError ? (
           <p>Opening study unavailable.</p>
+        ) : quietMap ? (
+          <>
+            <div><strong>All quiet.</strong></div>
+            <p>For once, nothing is running late.</p>
+            <small>Switch on a layer to wake the city.</small>
+          </>
         ) : sceneNetwork ? (
           <>
             <div>
