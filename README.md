@@ -10,7 +10,7 @@ This is the independent London edition. It owns the London application, styles, 
 
 ## Run and check
 
-Use Node 22.12 or newer, then `npm ci` and `npm run dev`. The app is served at the root. `npm run build` stages only London artifacts and builds a single entry point.
+Use Node 24 LTS (`nvm use`) and npm 11.19.0, then `npm ci` and `npm run dev`. The app is served at the root. `npm run build` stages only London artifacts and builds a single entry point.
 
 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run check:boundary`, `npm run build` and `npm run check:bundle`. Install browser engines with `npx playwright install chromium webkit`, then run `npm run test:e2e:ci`. `npm run worker:check` and `npm run worker:build` validate the existing London observation adapter without deploying it.
 

@@ -10,18 +10,19 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version-file: .nvmrc
           cache: npm
+      - run: npm install --global npm@11.19.0 --ignore-scripts
       - run: npm ci
       - run: npm run check:boundary && npm run typecheck && npm run lint && npm test
       - run: npm run worker:check && npm run worker:build
       - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e:ci
       - run: npm run build && npm run check:bundle
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: allchange-site
           path: dist
