@@ -135,8 +135,13 @@ test('station search selects and reveals a London interchange', async ({ page })
 test('observed operations stay distinct from the planned timetable', async ({
   page,
 }) => {
+  let releaseObservation!: () => void
+  const observationReady = new Promise<void>((resolve) => {
+    releaseObservation = resolve
+  })
   await page.route('**/motionstudies-london-operations.*/operations.json',
     async (route) => {
+      await observationReady
       await route.fulfill({
         contentType: 'application/json',
         body: JSON.stringify({
@@ -188,7 +193,11 @@ test('observed operations stay distinct from the planned timetable', async ({
 
   await page.getByRole('button', { name: 'Show observed TfL operations' }).click()
   const experience = page.locator('.london-experience')
-  await expect(experience).toHaveAttribute('data-operations-mode', 'preparing')
+  try {
+    await expect(experience).toHaveAttribute('data-operations-mode', 'preparing')
+  } finally {
+    releaseObservation()
+  }
   await expect(experience).toHaveAttribute('data-operations-mode', 'observed')
   await expect(experience).toHaveAttribute('data-operations-ready', 'true')
   await expect(experience).toHaveAttribute('data-study-window', 'morning')
