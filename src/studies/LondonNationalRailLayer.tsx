@@ -10,6 +10,10 @@ export interface NationalRailSceneExtension {
   readonly nationalRailSelectedId?: string
 }
 
+function setRailPickId(geometry: THREE.BufferGeometry, index: number, id: string | undefined) {
+  geometry.userData.londonRailIds[index] = id
+}
+
 /** A London-only geographic overlay, sharing the host projection and playback clock. */
 export function LondonNationalRailLayer({ snapshot, boundary, projection, time, isPlaying, playbackRate, windowStart, windowEnd, selectedId, subdued = false }: {
   snapshot: NationalRailSnapshot; boundary: MapBoundary; projection: NetworkProjection
@@ -36,6 +40,7 @@ export function LondonNationalRailLayer({ snapshot, boundary, projection, time, 
     tracks.setAttribute('position', new THREE.Float32BufferAttribute(trackPositions, 3))
     tracks.setAttribute('color', new THREE.Float32BufferAttribute(trackColors, 3))
     const vehicles = new THREE.BufferGeometry(), trails = new THREE.BufferGeometry()
+    vehicles.userData.londonRailIds = []
     for (const [geometry, capacity] of [[vehicles, snapshot.trains.length * 3], [trails, snapshot.trains.length * 18]] as const) {
       geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(capacity), 3).setUsage(THREE.DynamicDrawUsage))
       geometry.setAttribute('color', new THREE.BufferAttribute(new Float32Array(capacity), 3).setUsage(THREE.DynamicDrawUsage))
@@ -67,6 +72,7 @@ export function LondonNationalRailLayer({ snapshot, boundary, projection, time, 
       if (!point || point[2] <= 0.001) continue
       const intensity = (selectedId ? train.id === selectedId ? 1 : 0.15 : subdued ? 0.18 : 1)
       positions.setXYZ(active, ...project(point) as [number, number, number])
+      setRailPickId(vehicles, active, point[2] * intensity >= 0.1 ? train.id : undefined)
       colors.setXYZ(active, color.r * point[2] * intensity, color.g * point[2] * intensity, color.b * point[2] * intensity)
       active++
       let previous = point

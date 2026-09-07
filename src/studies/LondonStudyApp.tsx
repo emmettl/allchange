@@ -111,12 +111,13 @@ import { validateNationalRail, type NationalRailSnapshot } from '../data/nationa
 import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
 import { LondonNationalRailBoard } from './LondonNationalRailBoard.tsx'
 import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
+import type { MapSelectionSceneExtension } from './LondonMapSelection.tsx'
 import '../styles/london-quiet-map.css'
 
 const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
 const NationalNetworkScene = lazy(() =>
   import('@motionstudies/three/NationalNetworkScene').then(
-    ({ NationalNetworkScene: Scene }) => ({ default: Scene as ComponentType<NationalNetworkSceneProps & NationalRailSceneExtension & QuietMapSceneExtension> }),
+    ({ NationalNetworkScene: Scene }) => ({ default: Scene as ComponentType<NationalNetworkSceneProps & NationalRailSceneExtension & QuietMapSceneExtension & MapSelectionSceneExtension> }),
   ),
 )
 
@@ -1111,6 +1112,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   const selectStation = useCallback(
     (station: StationIndexEntry) => {
+      setNationalRailSelectedId(undefined)
       setSelectedStation(station)
       setSelectedRoute(undefined)
       setSelectedTrain(undefined)
@@ -1128,6 +1130,19 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     },
     [moveCamera, sceneNetwork],
   )
+
+  const selectTrain = useCallback((train: NetworkTrain) => {
+    clearSelection()
+    setSelectedTrain(train)
+    setQuery(`${train.route} ${train.shortName}`.trim())
+    setSearchOpen(false)
+  }, [clearSelection])
+
+  const selectNationalRail = useCallback((id: string) => {
+    clearSelection()
+    setNationalRailSelectedId(id)
+    setSearchOpen(false)
+  }, [clearSelection])
 
   const activateChoice = useCallback(
     (choice: SearchChoice) => {
@@ -1505,6 +1520,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               selectedRoute={displayedSelectedRoute}
               selectedStation={selectedStation}
               onSelectStation={selectStation}
+              onSelectTrain={selectTrain}
+              onSelectNationalRail={selectNationalRail}
               airSnapshot={airEnabled ? activeAirSnapshot : undefined}
               airCategorySelected={airCategorySelected}
               airports={airEnabled ? LONDON_AIRPORTS : undefined}

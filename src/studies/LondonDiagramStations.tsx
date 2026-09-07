@@ -14,10 +14,11 @@ export function LondonDiagramStations({ snapshot, projectedStops, projectedPaths
 }) {
   const geometry = useMemo(() => {
     const positions: number[] = [], colors: number[] = [], rings: number[] = []
+    const tickStops: number[] = [], ringStops: number[] = []
     const markers = londonDiagramMarkers(snapshot, projectedStops, projectedPaths)
     for (const marker of markers) {
       const [x, , z] = projectedStops[marker.stopIndex]
-      if (marker.interchange) { rings.push(x, 0.14, z); continue }
+      if (marker.interchange) { rings.push(x, 0.14, z); ringStops.push(marker.stopIndex); continue }
       const [nx, nz] = marker.normal
       const halfBundle = (marker.routes.length - 1) * 0.055
       const from = -halfBundle, to = halfBundle + 0.20, halfWidth = 0.025
@@ -30,14 +31,17 @@ export function LondonDiagramStations({ snapshot, projectedStops, projectedPaths
       const color = new THREE.Color(routeColors[marker.routes[0]] ?? '#fffdf4')
       for (const corner of [0, 1, 2, 0, 2, 3]) {
         positions.push(corners[corner][0], 0.14, corners[corner][1])
+        tickStops.push(marker.stopIndex)
         colors.push(color.r, color.g, color.b)
       }
     }
     const ticks = new THREE.BufferGeometry()
     ticks.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
     ticks.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
+    ticks.userData.londonStops = tickStops
     const interchanges = new THREE.BufferGeometry()
     interchanges.setAttribute('position', new THREE.Float32BufferAttribute(rings, 3))
+    interchanges.userData.londonStops = ringStops
     return { ticks, interchanges }
   }, [projectedPaths, projectedStops, routeColors, snapshot])
   const ring = useMemo(() => {
