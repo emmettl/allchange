@@ -629,6 +629,10 @@
 }
 
 @media (max-width: 700px) {
+  .london-layout-switch .london-tfl-toggle {
+    display: none;
+  }
+
   .london-experience {
     --london-gutter: calc(12px + env(safe-area-inset-left));
   }

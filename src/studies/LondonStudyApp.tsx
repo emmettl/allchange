@@ -281,6 +281,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const [selectedStation, setSelectedStation] = useState<StationIndexEntry>()
   const [selectedRoute, setSelectedRoute] = useState<NetworkRouteIndexEntry>()
   const [selectedTrain, setSelectedTrain] = useState<NetworkTrain>()
+  const [tflEnabled, setTflEnabled] = useState(true)
   const [airEnabled, setAirEnabled] = useState(false)
   const [airCategorySelected, setAirCategorySelected] = useState(false)
   const [morningAir, setMorningAir] = useState<AirSnapshot>()
@@ -419,7 +420,16 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   )
   const assembledNetwork = useMemo(() => {
     if (!baseNetwork) return undefined
-    const layers = [baseNetwork]
+    // Keep the study bounds and clock when TfL is hidden, including when no
+    // other layers are enabled. Each added layer supplies its own geometry.
+    const layers: NetworkSnapshot[] = [tflEnabled ? baseNetwork : {
+      ...baseNetwork,
+      stops: [],
+      edges: [],
+      paths: [],
+      edgePaths: [],
+      trains: [],
+    }]
     if (
       surfaceEnabled &&
       surfaceNetwork &&
@@ -437,9 +447,10 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     ) {
       layers.push(busDay.network)
     }
-    return layers.length === 1 ? baseNetwork : mergeNetworkLayers(layers)
+    return layers.length === 1 ? layers[0] : mergeNetworkLayers(layers)
   }, [
     baseNetwork,
+    tflEnabled,
     busDay.chunkReady,
     busDay.network,
     busEnabled,
@@ -479,10 +490,10 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       ? (operationsProjection?.snapshot ?? network)
       : network
   const infrastructureNetwork = useMemo(
-    () => sceneNetwork && morningNetwork
+    () => tflEnabled && sceneNetwork && morningNetwork
       ? londonInfrastructureSnapshot(sceneNetwork, morningNetwork)
       : sceneNetwork,
-    [sceneNetwork, morningNetwork],
+    [tflEnabled, sceneNetwork, morningNetwork],
   )
 
   const allPulseCalls = useMemo(
@@ -1007,6 +1018,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       }
       clearSelection()
       if (nextMode === 'observed') {
+        setTflEnabled(true)
         setNationalRailEnabled(false)
         setOperationsTransitionNetwork(baseNetwork)
         setOperationsRequested(true)
@@ -1176,6 +1188,14 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     },
     [activateLayout, moveCamera, selectStation],
   )
+
+  const toggleTflLayer = useCallback(() => {
+    clearSelection()
+    setOperationsRequested(false)
+    setOperationsTransitionNetwork(undefined)
+    setOperationsMode('plan')
+    setTflEnabled(value => !value)
+  }, [clearSelection])
 
   const toggleAirLayer = useCallback(() => {
     if (airEnabled) {
@@ -1388,7 +1408,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     operationsMode === 'observed' || operationsRequested
   const scheduledJourneyCount =
     studyWindow === 'day' && dayManifest
-      ? dayManifest.tripCount +
+      ? (tflEnabled ? dayManifest.tripCount : 0) +
         (surfaceEnabled ? (surfaceNetwork?.trains.length ?? 0) : 0) +
         (busEnabled ? (busDay.manifest?.tripCount ?? 0) : 0)
       : network?.trains.length
@@ -1405,6 +1425,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       data-selected-airport={selectedAirport?.id}
       data-selected-road={selectedRoad?.id}
       data-surface-enabled={surfaceEnabled}
+      data-tfl-enabled={tflEnabled}
       data-bus-enabled={busEnabled}
       data-bus-loading={busLoading}
       data-operations-mode={operationsRequested ? 'preparing' : operationsMode}
@@ -1583,6 +1604,16 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           )}
         </button>
         <span className="london-switch-divider" aria-hidden="true" />
+        <button
+          className="london-tfl-toggle"
+          type="button"
+          aria-label={tflEnabled ? 'Hide TfL rail' : 'Show TfL rail'}
+          aria-pressed={tflEnabled}
+          data-tooltip="Tube, DLR, Overground, Elizabeth line and trams"
+          onClick={toggleTflLayer}
+        >
+          TfL
+        </button>
         <button
           className="london-air-toggle"
           type="button"
