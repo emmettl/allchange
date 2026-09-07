@@ -25,10 +25,11 @@ export function londonDiagramRenderer(): Plugin {
           'const key = lineMapStyle ? londonDiagramSegmentKey(train, index - 1, projectedStops) : routeSegmentKey(train, index - 1);')
         .replace('offsetProjectedPath(points, laneOffset)', 'offsetProjectedPath(lineMapStyle ? londonDiagramOrderedPoints(points) : points, laneOffset)')
       code = code.slice(0, identityStart) + identity + code.slice(identityEnd)
+      // Flat ribbons need no separate back/front transparency passes.
       // More track between junctions: slim cores and restrained parallel lanes.
       for (const [before, after] of [
-        ['color: color, transparent: true, opacity: opacity * (subdued ? 0.28 : 0.94)', 'color: color, side: THREE.DoubleSide, transparent: true, opacity: opacity * (subdued ? 0.28 : 0.94)'],
-        ['color: "#050510", transparent: true, opacity: opacity * (subdued ? 0.52 : 0.96)', 'color: "#050510", side: THREE.DoubleSide, transparent: true, opacity: opacity * (subdued ? 0.52 : 0.96)'],
+        ['color: color, transparent: true, opacity: opacity * (subdued ? 0.28 : 0.94)', 'color: color, side: THREE.DoubleSide, forceSinglePass: true, transparent: true, opacity: opacity * (subdued ? 0.28 : 0.94)'],
+        ['color: "#050510", transparent: true, opacity: opacity * (subdued ? 0.52 : 0.96)', 'color: "#050510", side: THREE.DoubleSide, forceSinglePass: true, transparent: true, opacity: opacity * (subdued ? 0.52 : 0.96)'],
         ['(lineMapStyle ? 0.24 : 0.11)', '(lineMapStyle ? 0.11 : 0.11)'],
         ['diagramRibbonGeometry(record.positions, 0.16, 0.072)', 'diagramRibbonGeometry(record.positions, 0.075, 0.072)'],
         ['diagramRibbonGeometry(record.positions, 0.1, 0.078)', 'diagramRibbonGeometry(record.positions, 0.04, 0.078)'],

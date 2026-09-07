@@ -53,7 +53,7 @@ export function LondonDiagramStations({ snapshot, projectedStops, projectedPaths
   useEffect(() => () => ring.dispose(), [ring])
   return <group>
     <mesh geometry={geometry.ticks} renderOrder={5}>
-      <meshBasicMaterial vertexColors side={THREE.DoubleSide} transparent opacity={opacity} depthTest={false} depthWrite={false} toneMapped={false} fog={false} />
+      <meshBasicMaterial vertexColors side={THREE.DoubleSide} forceSinglePass transparent opacity={opacity} depthTest={false} depthWrite={false} toneMapped={false} fog={false} />
     </mesh>
     <points geometry={geometry.interchanges} renderOrder={6}>
       <pointsMaterial map={ring} size={9} sizeAttenuation={false} transparent opacity={opacity} alphaTest={0.08} depthTest={false} depthWrite={false} toneMapped={false} fog={false} />
