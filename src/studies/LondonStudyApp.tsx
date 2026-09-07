@@ -1473,6 +1473,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           ) : sceneNetwork && network ? (
             <NationalNetworkScene
               quietMap={quietMap}
+              quietDiagramSnapshot={quietMap ? morningNetwork : undefined}
               nationalRailSnapshot={nationalRailEnabled ? nationalRail : undefined}
               nationalRailSelectedId={nationalRailSelectedId}
               boundary={boundary}

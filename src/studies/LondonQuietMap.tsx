@@ -2,9 +2,13 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { NetworkProjection } from '@motionstudies/three/NationalNetworkScene'
+import type { NetworkSnapshot } from '@motionstudies/core/domain/network'
+import type { SpatialLayoutSnapshot } from '@motionstudies/core/domain/spatial-layout'
+import { LondonQuietDiagram } from './LondonQuietDiagram.tsx'
 
 export interface QuietMapSceneExtension {
   readonly quietMap?: boolean
+  readonly quietDiagramSnapshot?: NetworkSnapshot
 }
 
 const SCRAPS = [
@@ -24,9 +28,12 @@ const WEST = -0.49
 const SPAN = 0.78
 
 /** Small route tangles in the same geographic world as the tracks and Thames. */
-export function LondonQuietMap({ projection, isPlaying }: {
+export function LondonQuietMap({ projection, isPlaying, diagramSnapshot, spatialLayout, spatialLayoutMix = 0 }: {
   readonly projection: NetworkProjection
   readonly isPlaying: boolean
+  readonly diagramSnapshot?: NetworkSnapshot
+  readonly spatialLayout?: SpatialLayoutSnapshot
+  readonly spatialLayoutMix?: number
 }) {
   const elapsed = useRef(0)
   const arrival = useRef(0)
@@ -101,6 +108,9 @@ export function LondonQuietMap({ projection, isPlaying }: {
   })
 
   return <group name="london-quiet-map">
+    {diagramSnapshot && spatialLayout && spatialLayoutMix > 0 && (
+      <LondonQuietDiagram snapshot={diagramSnapshot} layout={spatialLayout} mix={spatialLayoutMix} />
+    )}
     {resources.scraps.map(({ group }) => <primitive key={group.name} object={group} />)}
   </group>
 }
