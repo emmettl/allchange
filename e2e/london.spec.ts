@@ -5,7 +5,7 @@ const runningInCi = Boolean(
 )
 
 test.beforeEach(async ({ page }) => {
-  await page.goto('/london.html')
+  await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('All Change')
   await expect(page.locator('.scene canvas')).toBeVisible()
 })

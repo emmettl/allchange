@@ -509,7 +509,7 @@ const manifest = JSON.parse(
   await readFile(resolve('dist/.vite/manifest.json'), 'utf8'),
 )
 const londonEntry = Object.entries(manifest).find(
-  ([key, chunk]) => chunk.isEntry && key === 'london.html',
+  ([key, chunk]) => chunk.isEntry && key === 'index.html',
 )
 if (!londonEntry) throw new Error('Vite manifest has no London entry')
 

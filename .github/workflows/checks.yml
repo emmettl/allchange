@@ -1,0 +1,28 @@
+name: Check All Change
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check:boundary && npm run typecheck && npm run lint && npm test
+      - run: npm run worker:check && npm run worker:build
+      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run test:e2e:ci
+      - run: npm run build && npm run check:bundle
+      - uses: actions/upload-artifact@v4
+        with:
+          name: allchange-site
+          path: dist
+          include-hidden-files: true
