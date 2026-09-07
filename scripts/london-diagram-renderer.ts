@@ -16,9 +16,15 @@ export function londonDiagramRenderer(): Plugin {
         if (source.split(hook).length !== 2) throw new Error('The London road label adapter needs review for this renderer version')
         const selectedAxis = 'color: "#fff1cf", transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending'
         if (source.split(selectedAxis).length !== 2) throw new Error('The London road speed context adapter needs review')
+        // Geometry remains visible independently of observation coverage or selection.
+        const roadAxis = 'color: "#ffb36b", transparent: true, opacity: selectedRoadId ? 0.008 : subdued ? 0.018 : 0.062, blending: THREE.AdditiveBlending, depthWrite: false'
+        const connectors = 'color: "#bc8058", transparent: true, opacity: selectedRoadId ? 0.003 : subdued ? 0.008 : 0.018, depthWrite: false'
+        if (source.split(roadAxis).length !== 2 || source.split(connectors).length !== 2) throw new Error('The London road baseline adapter needs review')
         return {
           code: 'import { LondonRoadLabels } from "/src/studies/LondonRoadLabels.tsx";\nimport { LondonRoadSpeeds } from "/src/studies/LondonRoadSpeeds.tsx";\n'
-            + source.replace(selectedAxis, 'color: "#a0a6b2", transparent: true, opacity: 0.25, blending: THREE.AdditiveBlending')
+            + source.replace(selectedAxis, 'color: "#a0a6b2", transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending')
+              .replace(roadAxis, 'color: "#a0a6b2", transparent: true, opacity: selectedRoadId ? 0.25 : subdued ? 0.2 : 0.45, blending: THREE.AdditiveBlending, depthTest: false, depthWrite: false, toneMapped: false')
+              .replace(connectors, 'color: "#a0a6b2", transparent: true, opacity: subdued ? 0.15 : 0.3, depthTest: false, depthWrite: false, toneMapped: false')
               .replace(hook, `${hook}, topology && _jsx(LondonRoadLabels, { topology, projection, subdued, selectedRoadId }), topology && _jsx(LondonRoadSpeeds, { topology, snapshot: nationalSnapshot, projection, subdued, selectedRoadId })`),
           map: null,
         }
