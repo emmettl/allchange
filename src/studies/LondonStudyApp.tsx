@@ -115,6 +115,7 @@ const AirportHeroCard = lazy(() => import('./AirportCard.tsx'))
 const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
 import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
 const LondonNationalRailBoard = lazy(() => import('./LondonNationalRailBoard.tsx').then(module => ({ default: module.LondonNationalRailBoard })))
+const LondonStationDepartures = lazy(() => import('./LondonStationDepartures.tsx').then(module => ({ default: module.LondonStationDepartures })))
 import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
 import type { MapSelectionSceneExtension } from './LondonMapSelection.tsx'
 import '../styles/london-quiet-map.css'
@@ -286,6 +287,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     Readonly<Record<string, NetworkDayChunk>>
   >({})
   const [dayError, setDayError] = useState(false)
+  const [dayAttempt, setDayAttempt] = useState(0)
   const [geography, setGeography] = useState<LondonGeographySnapshot>()
   const [loadError, setLoadError] = useState(false)
   const [time, setTime] = useState(edition.defaultNetworkTime)
@@ -547,7 +549,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         setDayError(true)
       })
     return () => controller.abort()
-  }, [dayManifest, edition.data.opening.dayManifest, studyWindow])
+  }, [dayManifest, edition.data.opening.dayManifest, studyWindow, dayAttempt])
 
   useEffect(() => {
     if (
@@ -578,6 +580,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       }),
     )
       .then((entries) => {
+        if (currentMissing) setDayError(false)
         setDayChunks((current) => ({
           ...current,
           ...Object.fromEntries(entries),
@@ -589,7 +592,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         if (currentMissing) setDayError(true)
       })
     return () => controller.abort()
-  }, [dayChunkDescriptor, dayChunks, dayManifest, studyWindow])
+  }, [dayChunkDescriptor, dayChunks, dayManifest, studyWindow, dayAttempt])
 
   useEffect(() => {
     if (!airEnabled || studyWindow === 'day' || morningAir) return
@@ -2061,8 +2064,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         /></Suspense>
       ) : (
       <section
-        className={`london-status-card${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
-        aria-live="polite"
+        className={`london-status-card${selectedStation && !pulseHub && operationsMode === 'plan' ? ' has-station-board' : ''}${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
+        aria-live={selectedStation ? 'off' : 'polite'}
       >
         {pulseHub && (
           <>
@@ -2176,6 +2179,26 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         ) : (
           <p>Drawing London…</p>
         )}
+        {selectedStation && !pulseHub && network && operationsMode === 'plan' && <Suspense fallback={<p role="status">Loading station board…</p>}>
+          <LondonStationDepartures key={selectedStation.name} snapshot={network} stationName={selectedStation.name}
+            time={time} windowStart={network.metadata.windowStart}
+            windowEnd={studyWindow === 'day' ? Math.min(network.metadata.windowEnd, activeDayChunk?.windowEnd ?? network.metadata.windowEnd) : network.metadata.windowEnd}
+            loading={dayLoading} error={dayError && !activeDayChunk ? 'Timetable download failed.' : undefined}
+            onRetry={() => { setDayError(false); setDayAttempt(value => value + 1) }}
+            selectedId={selectedTrain?.id} animate={!isPlaying || playbackRate <= 30}
+            note="Enabled timetable layers"
+            onSelect={call => setSelectedTrain(call.train)}
+            onSeek={(call, direction) => {
+              selectTrain(call.train)
+              setTime(Math.max(network.metadata.windowStart, Math.min(network.metadata.windowEnd - 1, call[direction])))
+              setIsPlaying(false)
+            }}
+            onPulse={pulseHubs.some(hub => hub.name === selectedStation.name || hub.aliases?.includes(selectedStation.name)) ? () => {
+              const hub = pulseHubs.find(value => value.name === selectedStation.name || value.aliases?.includes(selectedStation.name))!
+              clearSelection(); setPulseLens('all'); setPulseHubId(hub.id)
+            } : undefined}
+          />
+        </Suspense>}
       </section>
       )}
 
@@ -2258,7 +2281,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       )}
       {nationalRailEnabled && railBoardSnapshot && !pulseHub && network && (
         <Suspense fallback={<span className="london-layout-status" role="status">Loading rail board…</span>}><LondonNationalRailBoard
-          snapshot={railBoardSnapshot} stations={railStations} stationId={nationalRailStationId} time={time} windowEnd={network.metadata.windowEnd}
+          snapshot={railBoardSnapshot} stations={railStations} stationId={nationalRailStationId} time={time} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd}
+          partial={railStation.corridors.some(id => !railFeed.snapshots[id])} animate={!isPlaying || playbackRate <= 30}
           onStation={id => {
             clearSelection()
             setNationalRailStationId(id)

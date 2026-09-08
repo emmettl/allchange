@@ -77,3 +77,11 @@ Airport selections use the shared `AirportHeroCard` from `@motionstudies/web` 0.
 The 4 September 2026 air fixtures include optional origin/destination evidence from cached global ADSB.lol heatmaps and the public-domain [OurAirports reference](https://ourairports.com/data/). These are inferred observed movements, not schedules or confirmed flight plans. Unknown routes remain blank. Full-day manifest entries and playback chunks carry the same evidence; metadata records the input hashes, reference source, and local UTC offset (1 hours for this service date).
 
 After ingesting the base air study, regenerate the enrichment with `npm run data:air:routes -- /path/to/cached-heatmaps /path/to/airports.csv`. Supply heatmaps covering the same local service day and a saved OurAirports `airports.csv`; the command performs no network calls. Raw source files remain outside the repository.
+
+### Station departure boards
+
+Selecting a TfL station in the planned study opens a lazy split-flap board in its status card. Departures and arrivals follow the study clock, show up to four calls over the next hour, and stop at the loaded timetable boundary. A line filter narrows busy interchanges; selecting a destination reveals the full name and a link to its movement. Supported interchanges also link to their pulse. The National Rail card uses the same widget, retaining its station picker, three-call list and movement controls.
+
+The boards show published times, with source date and available window. They retain repeated station visits and respect origin/terminal, passing, pickup-only and set-down-only restrictions. Missing day data has a retry action; partial National Rail operator coverage is identified. TfL and National Rail remain separate board scopes in this first implementation. Passenger-demand profiles, combined operator boards, platforms and live prediction/status fields remain future work.
+
+The board and its styles load on selection, with a separate dependency-inclusive transfer budget. Flap motion is suppressed during faster playback and respects reduced-motion preferences. Unit checks cover call semantics and bounded time filtering; browser checks cover station selection, filtering, movement, retry and phone layouts.

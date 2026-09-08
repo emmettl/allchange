@@ -527,6 +527,7 @@ const styles = new Set()
 const visited = new Set()
 const roadDetailKey = 'src/studies/LondonRoadObservations.tsx'
 const railBoardKey = 'src/studies/LondonNationalRailBoard.tsx'
+const stationBoardKey = 'src/studies/LondonStationDepartures.tsx'
 const airportCardKey = 'src/studies/AirportCard.tsx'
 const railLayerKey = 'src/studies/LondonNationalRailLayer.tsx'
 const visit = (key) => {
@@ -539,7 +540,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // This panel is requested only after road selection. Budget its own payload
   // separately; it is not part of the opening network scene's transfer.
-  for (const importedKey of chunk.dynamicImports ?? []) if (importedKey !== airportCardKey && importedKey !== roadDetailKey && importedKey !== railBoardKey && importedKey !== railLayerKey) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, railLayerKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -552,10 +553,26 @@ async function totalGzipSize(files) {
 }
 
 const javaScript = await totalGzipSize(scripts)
-const airportCard = manifest[airportCardKey]
-if (!airportCard?.isDynamicEntry || airportCard.imports?.some(key => !visited.has(key))) throw new Error('The airport card must remain lazy with budgeted dependencies')
-const airportCardScript = await totalGzipSize([airportCard.file])
-const airportCardStyles = await totalGzipSize(airportCard.css ?? [])
+
+// Optional cards can share the split-flap widget. Include their full static
+// dependency closure, excluding only assets already counted in the opening.
+async function optionalCardSize(key) {
+  if (!manifest[key]?.isDynamicEntry || visited.has(key)) throw new Error(`${key} must remain lazy`)
+  const keys = new Set(), files = new Set(), css = new Set()
+  function collect(id) {
+    if (visited.has(id) || keys.has(id)) return
+    keys.add(id)
+    const chunk = manifest[id]
+    if (!chunk) throw new Error(`Missing optional dependency ${id}`)
+    files.add(chunk.file)
+    for (const file of chunk.css ?? []) if (!styles.has(file)) css.add(file)
+    for (const dependency of chunk.imports ?? []) collect(dependency)
+    if (chunk.dynamicImports?.length) throw new Error(`Unbudgeted optional dynamic dependencies in ${id}`)
+  }
+  collect(key)
+  return { javaScript: await totalGzipSize(files), css: await totalGzipSize(css) }
+}
+const { javaScript: airportCardScript, css: airportCardStyles } = await optionalCardSize(airportCardKey)
 console.log(`All Change optional airport card: ${kibibytes(airportCardScript)} JavaScript / 4.0 KiB; ${kibibytes(airportCardStyles)} CSS / 3.0 KiB`)
 if (airportCardScript > 4 * 1024 || airportCardStyles > 3 * 1024) throw new Error('Airport card transfer budget exceeded')
 const roadDetail = manifest[roadDetailKey]
@@ -571,11 +588,12 @@ if (!railLayer?.isDynamicEntry || railLayer.imports?.some(key => !visited.has(ke
 const railLayerSize = await totalGzipSize([railLayer.file])
 console.log(`All Change optional rail renderer: ${kibibytes(railLayerSize)} / 6.0 KiB`)
 if (railLayerSize > 6 * 1024) throw new Error('Rail renderer transfer budget exceeded')
-const railBoard = manifest[railBoardKey]
-if (!railBoard?.isDynamicEntry || railBoard.imports?.some(key => !visited.has(key))) throw new Error('The optional rail board must stay lazy with budgeted dependencies')
-const railBoardSize = await totalGzipSize([railBoard.file])
-console.log(`All Change optional rail board: ${kibibytes(railBoardSize)} / 4.0 KiB`)
-if (railBoardSize > 4 * 1024) throw new Error('Rail board transfer budget exceeded')
+const stationBoard = await optionalCardSize(stationBoardKey)
+console.log(`All Change optional station board: ${kibibytes(stationBoard.javaScript)} JavaScript / 4.0 KiB; ${kibibytes(stationBoard.css)} CSS / 3.0 KiB`)
+if (stationBoard.javaScript > 4 * 1024 || stationBoard.css > 3 * 1024) throw new Error('Station board transfer budget exceeded')
+const railBoard = await optionalCardSize(railBoardKey)
+console.log(`All Change optional rail board (including station widget): ${kibibytes(railBoard.javaScript)} JavaScript / 6.0 KiB; ${kibibytes(railBoard.css)} CSS / 3.0 KiB`)
+if (railBoard.javaScript > 6 * 1024 || railBoard.css > 3 * 1024) throw new Error('Rail board transfer budget exceeded')
 const railCatalogue = JSON.parse(await readFile('fixtures/national-rail/catalogue.json', 'utf8'))
 let railTotal = 0, railLargest = 0
 for (const { file } of railCatalogue.corridors) {

@@ -1,0 +1,35 @@
+.london-station-departures { min-width: 0; margin-top: 12px; color: #eee9d7; font: 400 11px/1.5 'DM Mono', ui-monospace, monospace; }
+.london-station-board-tools { display: flex; align-items: stretch; gap: 8px; }
+.london-station-board-tabs { display: flex; gap: 5px; flex: 2; }
+.london-station-departures button { font: inherit; color: inherit; cursor: pointer; background: transparent; border: 1px solid #d2c8e833; padding: 6px 9px; min-height: 36px; }
+.london-station-board-tabs button { flex: 1; }
+.london-station-board-tabs button[aria-pressed='true'] { color: #ffe3b8; background: #ffd39212; border-color: #ffd39266; }
+.london-station-departures :focus-visible { outline: 2px solid #ffe3b8; outline-offset: 2px; }
+.london-station-board-filter { display: flex; min-width: 0; flex: 1; }
+.london-station-board-filter select { min-width: 0; width: 100%; min-height: 36px; color: inherit; background: #12121d; font: inherit; border: 1px solid #d2c8e833; }
+.london-station-departures .ms-split-flap-board { padding: 4px 7px; border-radius: 2px; }
+.london-station-departures .ms-flap { font-size: 12px; }
+.london-station-departures .ms-flap span { font-size: inherit; }
+.london-station-departures .ms-flap-text__tiles { gap: 1px; }
+.london-station-departures .ms-split-flap-board__table :is(th, td) { padding-right: 9px; }
+.london-station-departures .ms-split-flap-board__select { padding: 0; min-height: 28px; border: 0; }
+.london-station-departures .ms-split-flap-board__select[aria-pressed='true'] { background: transparent; }
+.london-station-departures p { margin: 9px 0; font: inherit; text-transform: none; letter-spacing: 0; }
+.london-station-departures .london-station-board-window, .london-station-departures .london-station-board-note { color: #bbb7c5; font-size: 10px; }
+.london-station-board-selection { border-bottom: 1px solid #d2c8e833; padding-bottom: 10px; }
+.london-station-board-pulse { margin-top: 10px; }
+.london-station-departures[data-animate='false'] .ms-flap__face,
+.london-station-departures[data-animate='false'] .ms-flap__drum,
+.london-station-departures[data-animate='false'] .ms-flap__drum::before { animation: none; }
+.london-station-departures[data-animate='false'] .ms-flap__drum { display: none; }
+.london-status-card.has-station-board { width: min(420px, calc(100vw - 40px)); max-height: calc(100dvh - clamp(202px, 28vh, 260px) - 163px); overflow-y: auto; }
+.london-status-card.has-station-board > p { display: block; }
+.london-national-rail-board:has(.london-station-departures) { width: 420px; }
+@media (max-width: 760px) {
+  .london-status-card.has-station-board { width: calc(100vw - 84px); max-width: 420px; max-height: calc(100dvh - 310px); }
+  .london-national-rail-board:has(.london-station-departures) { width: min(420px, calc(100vw - 24px)); }
+  .london-station-departures .ms-flap { font-size: 11px; }
+  .london-station-departures button, .london-station-board-filter select { min-height: 44px; }
+  .london-station-departures .ms-split-flap-board__select { min-height: 44px; }
+  .london-status-card .london-station-departures p { display: block; font: 400 10px/1.5 'DM Mono', ui-monospace, monospace; }
+}
