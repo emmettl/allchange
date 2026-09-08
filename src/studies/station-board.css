@@ -26,6 +26,8 @@
 .london-status-card.has-station-board > p { display: block; }
 .london-national-rail-board:has(.london-station-departures) { width: 420px; }
 .london-status-card > .london-combined-board { display: block; min-width: 0; }
+.london-board-area { display: block; font: 400 10px/1.5 'DM Mono', monospace; }
+.london-board-area select { display: block; box-sizing: border-box; width: 100%; height: 44px; margin-top: 4px; color: #eee9d7; background: #12121d; border: 1px solid #d2c8e833; font: inherit; }
 .london-combined-board > p { display: block; margin: 8px 0; font: 400 10px/1.5 'DM Mono', monospace; color: #bbb7c5; text-transform: none; letter-spacing: 0; }
 .london-combined-board > p button { min-height: 44px; padding: 4px 8px; color: #ffe3b8; background: #12121d; border: 1px solid #d2c8e833; font: inherit; cursor: pointer; }
 @media (max-width: 760px) {

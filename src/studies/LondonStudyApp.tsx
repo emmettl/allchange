@@ -110,7 +110,7 @@ import { useProgressiveRoadStudy } from '@motionstudies/web/use-progressive-road
 import { useObservedOperations } from '@motionstudies/web/use-observed-operations'
 import { useNationalRail, useRailCatalogue } from '../data/use-national-rail.ts'
 import { LONDON_RAIL_CORRIDORS, type RailBoardStation, type RailBoardStationId } from '../editions/london-national-rail.ts'
-import { boardInterchange } from '../editions/london-board-interchanges.ts'
+import { boardInterchange, boardInterchanges } from '../editions/london-board-interchanges.ts'
 const AirportHeroCard = lazy(() => import('./AirportCard.tsx'))
 
 const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
@@ -336,7 +336,9 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const [pulseView, setPulseView] = useState<'services' | 'passengers'>('services')
   const [cycleEnabled, setCycleEnabled] = useState(false)
   const [pulseHubId, setPulseHubId] = useState<LondonHubId>()
-  const selectedBoard = operationsMode === 'plan' ? boardInterchange(selectedStation?.name) : undefined
+  const [boardAreaId, setBoardAreaId] = useState<string>()
+  const boardAreas = operationsMode === 'plan' ? boardInterchanges(selectedStation?.name) : []
+  const selectedBoard = boardAreas.find(area => area.id === boardAreaId) ?? boardAreas[0]
   const railCatalogue = useRailCatalogue(nationalRailEnabled || Boolean(pulseHubId) || Boolean(selectedBoard) || searchOpen, morningNetwork?.metadata.serviceDate)
   const railStations = railCatalogue.stations
   const pulseHubs = useMemo(() => railPulseHubs(railStations), [railStations])
@@ -996,6 +998,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   ])
 
   const clearSelection = useCallback(() => {
+    setBoardAreaId(undefined)
     setPulseView('services')
     setDismissedHero(false)
     setDismissedRail(false)
@@ -1492,6 +1495,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   const activeBoard = selectedBoard ?? railBoardInterchange
   const combinedBoard = activeBoard && baseNetwork && network && <LondonCombinedStationBoard key={activeBoard.id}
+    areas={selectedBoard ? boardAreas : undefined} onArea={id => { setBoardAreaId(id); setSelectedTrain(undefined); setNationalRailSelectedId(undefined) }}
     station={activeBoard} tfl={baseNetwork} rail={nationalRail} snapshots={railFeed.snapshots} errors={railFeed.errors}
     time={time} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd}
     tflStart={studyWindow === 'day' ? activeDayChunk?.windowStart ?? network.metadata.windowStart : network.metadata.windowStart}

@@ -9,8 +9,10 @@ import paddingtonFixture from '../../fixtures/national-rail/network-paddington.j
 import thameslinkFixture from '../../fixtures/national-rail/network-thameslink.json'
 import southeasternFixture from '../../fixtures/national-rail/network-southeastern.json'
 import eustonFixture from '../../fixtures/national-rail/network-euston.json'
+import kingsCrossFixture from '../../fixtures/national-rail/network-kings-cross.json'
+import stPancrasFixture from '../../fixtures/national-rail/network-st-pancras.json'
 import catalogue from '../../fixtures/national-rail/catalogue.json'
-import { BOARD_INTERCHANGES, boardInterchange } from '../editions/london-board-interchanges.ts'
+import { BOARD_INTERCHANGES, boardInterchange, boardInterchanges } from '../editions/london-board-interchanges.ts'
 import { combinedStationCalls } from './combined-station-board.ts'
 import { upcomingStationCalls } from './station-board.ts'
 import type { NationalRailTrain } from '../data/national-rail.ts'
@@ -18,7 +20,7 @@ import type { NationalRailTrain } from '../data/national-rail.ts'
 // Reconstruct from committed delivery artifacts; the compiler's full-day output is ignored by Git.
 const chunks = import.meta.glob<{ trains: NetworkTrain[] }>('../../fixtures/tfl/all-change-day-chunks/*.json', { eager: true, import: 'default' })
 const tfl = { ...tflManifest, trains: [...new Map(Object.values(chunks).flatMap(chunk => chunk.trains).map(train => [train.id, train])).values()] } as unknown as NetworkSnapshot
-const rail = mergeNetworkLayers([angliaFixture, swrFixture, southernFixture, paddingtonFixture, thameslinkFixture, southeasternFixture, eustonFixture] as unknown as NetworkSnapshot[])
+const rail = mergeNetworkLayers([angliaFixture, swrFixture, southernFixture, paddingtonFixture, thameslinkFixture, southeasternFixture, eustonFixture, kingsCrossFixture, stPancrasFixture] as unknown as NetworkSnapshot[])
 const source = (snapshot: NetworkSnapshot, windowStart = 0, windowEnd = 86400) => ({ snapshot, windowStart, windowEnd })
 
 describe('combined interchange boards', () => {
@@ -74,6 +76,24 @@ describe('combined interchange boards', () => {
     expect(upcomingStationCalls(calls, 'departure', 0, 0, 86400, 'Greater Anglia').map(call => call.index)).toEqual([1])
     expect(calls.find(call => call.source === 'national-rail')!.train).toBe(national)
     expect(combinedStationCalls(station, '2026-09-05', source(tflSource), source(railSource))).toEqual([])
+  })
+  it('keeps the three national-rail areas of the shared Tube station distinct', () => {
+    const areas = boardInterchanges("King's Cross St. Pancras")
+    expect(areas.map(area => area.railCode)).toEqual(['KGX', 'STP', 'SPL'])
+    const railVisits = new Set<string>()
+    const tflVisits: string[][] = []
+    for (const area of areas) {
+      const calls = combinedStationCalls(area, '2026-09-04', source(tfl), source(rail))
+      tflVisits.push(calls.filter(call => call.source === 'tfl').map(call => call.id))
+      for (const call of calls.filter(call => call.source === 'national-rail')) {
+        expect(rail.stops[call.train.stops[call.index][0]][4]).toBe(`crs:${area.railCode}`)
+        expect(railVisits.has(call.id)).toBe(false)
+        railVisits.add(call.id)
+      }
+    }
+    expect(tflVisits[0].length).toBeGreaterThan(0)
+    expect(tflVisits[1]).toEqual(tflVisits[0])
+    expect(tflVisits[2]).toEqual(tflVisits[0])
   })
   it('clips each source independently at a chunk boundary without losing the rest of the hour', () => {
     const calls = combinedStationCalls(BOARD_INTERCHANGES[0], '2026-09-04', source(tfl, 21600, 28800), source(rail))

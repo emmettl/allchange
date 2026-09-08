@@ -1,6 +1,6 @@
 # Combined interchange boards
 
-Eight interchanges—Stratford, Liverpool Street, Clapham Junction, Paddington, Waterloo, Victoria, London Bridge and Euston—now show one **TfL + National Rail** timetable, whether entered through a TfL station hero or the National Rail station picker. The existing split-flap board retains arrivals/departures, line/service filtering, selection, the shared study clock, movement seeking, pulse links and hero dismissal. Selecting a TfL station suppresses the separate National Rail card while its combined board is visible.
+Stratford, Liverpool Street, Clapham Junction, Paddington, Waterloo, Victoria, London Bridge and Euston show a **TfL + National Rail** timetable. King’s Cross and St Pancras add three explicitly separate rail-area boards, whether entered through a TfL station hero or the National Rail station picker. The existing split-flap board retains arrivals/departures, line/service filtering, selection, the shared study clock, movement seeking, pulse links and hero dismissal. Selecting a TfL station suppresses the separate National Rail card while its combined board is visible.
 
 ## Audited identities
 
@@ -16,8 +16,13 @@ The join is explicit in `src/editions/london-board-interchanges.ts`. It uses ret
 | Victoria | `940GZZLUVIC` | `crs:VIC` | Southern, Southeastern |
 | London Bridge | `940GZZLULNB` | `crs:LBG` | Thameslink, Southern, Southeastern |
 | Euston | `940GZZLUEUS`, `910GEUSTON` | `crs:EUS` | Euston |
+| King’s Cross | `940GZZLUKSX` | `crs:KGX` | King’s Cross, Thameslink |
+| St. Pancras International (domestic mainline/high-speed) | `940GZZLUKSX` | `crs:STP` | Southeastern, St Pancras |
+| St Pancras Thameslink | `940GZZLUKSX` | `crs:SPL` | Thameslink |
 
 Stratford’s `Stratford` and `Stratford (London)` names resolve to the same board. Stratford International and Stratford High Street remain separate. Liverpool Street includes both `Liverpool Street` and `London Liverpool Street`; it does not expand to adjacent stations. Paddington includes its Hammersmith & City station area and both Elizabeth line identities. Waterloo excludes Waterloo East; Euston excludes Euston Square; Victoria excludes Royal Victoria. London-prefixed terminal names resolve to the same board. These boards combine station areas, not platforms: visitors must allow time to transfer, and the study does not promise a connection.
+
+The shared **King’s Cross St. Pancras** Tube hero offers a labelled rail-area selector. It defaults to King’s Cross; changing area retains the map station and clock, clears any previously selected service, and requests the selected area’s rail families. Dismissal preserves the chosen area. National Rail entries open their exact area directly. The same six Tube lines accompany each board; those Tube calls must not be added together as three separate populations. Mainline/high-speed St Pancras explicitly excludes international Eurostar. The retained source name `St Pancras International` means Thameslink (`SPL`); `London St. Pancras International` means the domestic mainline/high-speed area (`STP`). These names are resolved by explicit aliases, not punctuation normalization.
 
 Both sources describe **4 September 2026**. TfL calls come from the existing recurring/public-PDF timetable composition; National Rail calls come from the retained passenger WTT/eNRT compilation. The [rail completion record](RAIL-COMPLETION.md) documents service identity, source reconciliation and exclusions. No new live feed or passenger observations are introduced.
 
@@ -33,6 +38,9 @@ Full-day permitted calls in `[00:00, 24:00)`, reconciled independently against t
 | Victoria | 1,813 | 1,813 | 572 | 578 |
 | London Bridge | 1,378 | 1,378 | 1,613 | 1,614 |
 | Euston | 2,333 | 2,338 | 282 | 287 |
+| King’s Cross | 3,192 | 3,191 | 215 | 218 |
+| St. Pancras International | 3,192 | 3,191 | 178 | 178 |
+| St Pancras Thameslink | 3,192 | 3,191 | 586 | 587 |
 
 These are scheduled passenger call events in the included sources, not people, unique journeys or observed movements. A train may supply both an arrival and a departure. Totals inherit source exclusions and the TfL timetable model; they are not a claim of complete real-world service.
 
@@ -54,7 +62,7 @@ TfL download failures do not clear available National Rail calls. A failed Natio
 
 ## Validation and remaining work
 
-Unit checks reconcile every permitted source call at all eight interchanges from the committed TfL manifest/day chunks and National Rail family fixtures, verify catalogue identities, preserve repeated visits and same-time services, reject the wrong source date, enforce source ownership, and test independent chunk boundaries. Browser checks compare the same service rows through both entry points at the five added gateways and cover Paddington’s Hammersmith & City alias, both movement renderers, reduced motion, independent failure/retry, partial operator coverage, the day boundary, existing station boards and passenger cards on desktop Chromium and iPhone WebKit.
+Unit checks reconcile every permitted source call at all eleven rail-area boards from the committed TfL manifest/day chunks and National Rail family fixtures, verify catalogue identities, preserve repeated visits and same-time services, reject the wrong source date, enforce source ownership, and test independent chunk boundaries. The three shared-Tube boards also reconcile disjoint National Rail visit identities and identical TfL visits. Browser checks cover area switching, source failure/retry, dismissal, exact rail entry, and movement selection; they compare the same service rows through both entry points at the five added gateways and cover Paddington’s Hammersmith & City alias, both movement renderers, reduced motion, independent failure/retry, partial operator coverage, the day boundary, existing station boards and passenger cards on desktop Chromium and iPhone WebKit.
 
 The combined board has a 6 KiB JavaScript / 3 KiB CSS gzip limit including its optional widget dependencies. The opening limit remains 344 KiB. Validate with Node 24, as CI does:
 
