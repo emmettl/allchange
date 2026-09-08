@@ -81,7 +81,7 @@ Compilation uses Python's standard library without network requests or workbook 
 
 The opening scene requests no passenger data. Station selection loads the small catalogue and the selected area only; later selections reuse valid downloads. Failed downloads retry, unsupported stations request no area file, and selection changes cannot display the previous station's counts. Both the card and pulse are lazy and share the validated data loader.
 
-Gzip limits are 4 KiB each for card and pulse JavaScript (including their optional dependencies), 2 KiB CSS each, 12 KiB catalogue, 2 KiB per source area, and 650 KiB for all profiles plus the catalogue. The full dataset is never requested as one browser payload. The existing 344 KiB opening JavaScript limit is unchanged.
+Gzip limits are 4 KiB each for card and pulse JavaScript (including their optional dependencies), 2 KiB CSS each, 12 KiB catalogue, 2 KiB per source area, and 650 KiB for all profiles plus the catalogue. The full dataset is never requested as one browser payload. The existing 345 KiB opening JavaScript limit is unchanged.
 
 Validation includes all 432 area files, identity and total reconciliation, source-area separation, missing/invalid metrics, zero and midnight semantics, mark proportions, reduced motion, playback/seek, loading races, retry, unsupported coverage, hero dismissal, and desktop Chromium/iPhone WebKit interaction. Physical-phone review remains outstanding; browser emulation is recorded separately.
 

@@ -12,7 +12,7 @@ const FILES = [
 const BUDGETS = {
   raw: 1_600 * 1024,
   gzip: 260 * 1024,
-  javaScript: 344 * 1024, // Airport selection shell; the board has a separate lazy budget.
+  javaScript: 345 * 1024, // Airport shell + screen-space picking; the board has a separate lazy budget.
   css: 14 * 1024,
   total: 650 * 1024,
   layoutRaw: 90 * 1024,

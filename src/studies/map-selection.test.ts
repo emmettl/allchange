@@ -1,12 +1,41 @@
 import { describe, expect, it } from 'vitest'
 import * as THREE from 'three'
 import type { NetworkTrain, StationIndexEntry } from '@motionstudies/core/domain/network'
-import { MapTapGesture, pickMapTarget } from './map-selection.ts'
+import { MapTapGesture, pickMapTarget, pickAirportTarget } from './map-selection.ts'
+import { LONDON_AIRPORTS } from '../editions/london-airports.ts'
 
 const station: StationIndexEntry = { name: 'Waterloo', stopIndexes: [0], trainIds: [], routes: [] }
 const train: NetworkTrain = { id: 'moving', route: 'Northern', shortName: '123', headsign: 'Morden', category: 'metro', start: 0, end: 100, stops: [] }
 const rect = { left: 90, top: 40, width: 800, height: 600 }
 const stations = new Map([[0, station]])
+
+it('keeps airport click and touch targets generous across zoom and pan', () => {
+  const { scene, camera, screen } = setup()
+  const airport = LONDON_AIRPORTS[0], marker = new THREE.Group()
+  marker.userData.londonAirport = airport
+  scene.add(marker); scene.updateMatrixWorld()
+  for (const height of [30, 10, 2]) {
+    camera.position.set(1, height, height * 0.6); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()
+    const [x, y] = screen(0, 0, 0)
+    expect(pickAirportTarget(scene, camera, rect, x + 21, y, false)).toBe(airport)
+    expect(pickAirportTarget(scene, camera, rect, x + 23, y, false)).toBeUndefined()
+    expect(pickAirportTarget(scene, camera, rect, x + 27, y, true)).toBe(airport)
+  }
+  marker.visible = false
+  expect(pickAirportTarget(scene, camera, rect, ...screen(0, 0, 0), false)).toBeUndefined()
+})
+
+it('makes the full visible airport label clickable and ignores hidden labels', () => {
+  const { scene, camera, screen } = setup(), airport = LONDON_AIRPORTS[0]
+  const label = new THREE.Sprite(new THREE.SpriteMaterial())
+  label.userData.londonAirport = airport
+  label.position.set(3, 1, 0); label.scale.set(5, 1, 1)
+  scene.add(label); scene.updateMatrixWorld()
+  const [x, y] = screen(4.5, 1, 0)
+  expect(pickAirportTarget(scene, camera, rect, x, y, false)).toBe(airport)
+  label.material.opacity = 0
+  expect(pickAirportTarget(scene, camera, rect, x, y, false)).toBeUndefined()
+})
 
 function setup() {
   const scene = new THREE.Scene()

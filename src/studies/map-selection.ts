@@ -1,16 +1,27 @@
 import * as THREE from 'three'
 import type { NetworkTrain, StationIndexEntry } from '@motionstudies/core/domain/network'
+import type { StudyAirport } from '@motionstudies/core/domain/airport'
 
 export type MapSelection =
   | { kind: 'station'; value: StationIndexEntry }
   | { kind: 'train'; value: NetworkTrain }
   | { kind: 'national-rail'; value: string }
+  | { kind: 'airport'; value: StudyAirport }
+
+/** Airport labels are overlays; pick them before aircraft at a different altitude.
+ * The marker has a 44px mouse / 56px touch target independent of camera zoom. */
+export function pickAirportTarget(scene: THREE.Scene, camera: THREE.Camera,
+  rect: { left: number; top: number; width: number; height: number },
+  clientX: number, clientY: number, touch: boolean): StudyAirport | undefined {
+  const target = pickMapTarget(scene, camera, rect, clientX, clientY, touch, undefined, true)
+  return target?.kind === 'airport' ? target.value : undefined
+}
 
 /** CSS-pixel picking: Three's world-space Points threshold grows with zoom. */
 export function pickMapTarget(scene: THREE.Scene, camera: THREE.Camera,
   rect: { left: number; top: number; width: number; height: number },
   clientX: number, clientY: number, touch: boolean,
-  stations: ReadonlyMap<number, StationIndexEntry>): MapSelection | undefined {
+  stations?: ReadonlyMap<number, StationIndexEntry>, airportsOnly = false): MapSelection | undefined {
   const x = clientX - rect.left, y = clientY - rect.top
   if (rect.width <= 0 || rect.height <= 0 || x < 0 || y < 0 || x > rect.width || y > rect.height) return
   const ray = new THREE.Raycaster()
@@ -18,9 +29,19 @@ export function pickMapTarget(scene: THREE.Scene, camera: THREE.Camera,
   const point = new THREE.Vector3()
   let marker: { target: MapSelection; distance: number; order: number } | undefined
   let label: { target: MapSelection; order: number } | undefined
+  let airportMarker: StudyAirport | undefined, nearestAirport = touch ? 28 : 22
   scene.traverseVisible(object => {
+    const airport = object.userData.londonAirport as StudyAirport | undefined
+    if (airportsOnly && !airport) return
+    if (airport && !(object instanceof THREE.Sprite)) {
+      object.getWorldPosition(point).project(camera)
+      if (point.z < -1 || point.z > 1) return
+      const distance = Math.hypot((point.x * 0.5 + 0.5) * rect.width - x, (0.5 - point.y * 0.5) * rect.height - y)
+      if (distance <= nearestAirport) { nearestAirport = distance; airportMarker = airport }
+      return
+    }
     if (object instanceof THREE.Sprite) {
-      const target = object.userData.londonTarget as MapSelection | undefined
+      const target: MapSelection | undefined = airport ? { kind: 'airport', value: airport } : object.userData.londonTarget
       if (!target || !object.material.visible || object.material.opacity < 0.1) return
       if (ray.intersectObject(object, false).length && (!label || object.renderOrder > label.order)) {
         label = { target, order: object.renderOrder }
@@ -37,7 +58,7 @@ export function pickMapTarget(scene: THREE.Scene, camera: THREE.Camera,
     // pixels from a vertex, so also test the rendered face itself.
     if (object instanceof THREE.Mesh && londonStops) {
       const hit = ray.intersectObject(object, false)[0]
-      const station = hit?.face && stations.get(londonStops[hit.face.a])
+      const station = hit?.face && stations?.get(londonStops[hit.face.a])
       if (station && (!marker || marker.distance > 0.5 || object.renderOrder > marker.order)) {
         marker = { target: { kind: 'station', value: station }, distance: 0, order: object.renderOrder }
       }
@@ -47,7 +68,7 @@ export function pickMapTarget(scene: THREE.Scene, camera: THREE.Camera,
     for (let index = geometry.drawRange.start; index < end; index++) {
       const train = londonTrains?.[index] as NetworkTrain | undefined
       const railId = londonRailIds?.[index] as string | undefined
-      const station = stations.get(londonStops?.[index])
+      const station = stations?.get(londonStops?.[index])
       if (!train && !railId && !station) continue
       point.fromBufferAttribute(positions, index).applyMatrix4(object.matrixWorld).project(camera)
       if (!Number.isFinite(point.x + point.y + point.z) || point.z < -1 || point.z > 1) continue
@@ -62,7 +83,7 @@ export function pickMapTarget(scene: THREE.Scene, camera: THREE.Camera,
   })
   // Labels render above markers. A station dot underneath a label must not
   // steal its click, even when that dot is exactly under the pointer.
-  return label?.target ?? marker?.target
+  return label?.target.kind === 'airport' ? label.target : airportMarker ? { kind: 'airport', value: airportMarker } : label?.target ?? marker?.target
 }
 
 /** Remember maximum travel, so a drag out and back can never become a click. */

@@ -1631,6 +1631,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               selectedAirTrack={selectedAirTrack}
               selectedAirport={selectedAirport}
               onSelectAirTrack={selectAirTrack}
+              onSelectAirport={airEnabled ? airport => activateChoice({ kind: 'airport', value: airport }) : undefined}
               roadTopology={roadEnabled ? roadTopology : undefined}
               nationalRoadSnapshot={
                 roadEnabled ? activeRoadSnapshot : undefined

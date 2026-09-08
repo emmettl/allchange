@@ -65,7 +65,7 @@ TfL download failures do not clear available National Rail calls. A failed Natio
 
 Unit checks reconcile every permitted source call at all twelve rail-area boards from the committed TfL manifest/day chunks and National Rail family fixtures, verify catalogue identities, preserve repeated visits and same-time services, reject the wrong source date, enforce source ownership, and test independent chunk boundaries. The four shared-Tube boards also reconcile disjoint National Rail visit identities and identical TfL visits. Browser checks cover area switching, source failure/retry, dismissal, exact rail entry, and movement selection; they compare the same service rows through both entry points at the five added gateways and cover Paddington’s Hammersmith & City alias, both movement renderers, reduced motion, independent failure/retry, partial operator coverage, the day boundary, existing station boards and passenger cards on desktop Chromium and iPhone WebKit.
 
-The combined board has a 6 KiB JavaScript / 3 KiB CSS gzip limit including its optional widget dependencies. The opening limit remains 344 KiB. Validate with Node 24, as CI does:
+The combined board has a 6 KiB JavaScript / 3 KiB CSS gzip limit including its optional widget dependencies. The opening limit remains 345 KiB. Validate with Node 24, as CI does:
 
 ```sh
 npm test

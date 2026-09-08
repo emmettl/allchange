@@ -5,6 +5,19 @@ export function londonSelectionRenderer(): Plugin {
   return {
     name: 'london-selection', enforce: 'pre',
     transform(source, id) {
+      if (id.split('?')[0].replaceAll('\\', '/').endsWith('/@motionstudies/three/AirTrafficLayer.js')) {
+        let code = source
+        for (const [before, after] of [
+          ['ref: marker, position: position, renderOrder: 19,', 'ref: marker, position: position, renderOrder: 19, userData: { londonAirport: airport },'],
+          ['ref: label, renderOrder: 30,', 'ref: label, renderOrder: 30, userData: { londonAirport: airport },'],
+          ['const aircraftRef = useRef(currentAircraft(snapshot, time, projection));', 'const { scene, camera, gl } = useThree();\n    const aircraftRef = useRef(currentAircraft(snapshot, time, projection));'],
+          ['onPointerDown: (event) => {\n                    if (event.instanceId === undefined)', 'onClick: (event) => {\n                    if (event.delta > 5 || pickMapTarget(scene, camera, gl.domElement.getBoundingClientRect(), event.clientX, event.clientY, event.pointerType === "touch", undefined, true)) return;\n                    if (event.instanceId === undefined)'],
+        ]) {
+          if (code.split(before).length !== 2) throw new Error(`London airport picking hook needs review: ${before}`)
+          code = code.replace(before, after)
+        }
+        return { code: 'import { pickMapTarget } from "/src/studies/map-selection.ts";\n' + code, map: null }
+      }
       if (!id.split('?')[0].replaceAll('\\', '/').endsWith('/@motionstudies/three/NationalNetworkScene.js')) return
       let code = source
       const replace = (before: string, after: string) => {
@@ -16,7 +29,7 @@ export function londonSelectionRenderer(): Plugin {
       if (start < 0 || end < 0) throw new Error('London selection component hook needs review')
       code = code.slice(0, start) + code.slice(end)
       replace('_jsx(StationTapTarget, { stations: props.stations, projectedStops: projectedStops, cameraFraming: props.cameraFraming, onSelectStation: props.airCategorySelected ? undefined : props.onSelectStation })',
-        '_jsx(LondonMapSelection, { stations: props.stations, onSelectStation: props.onSelectStation, onSelectTrain: props.onSelectTrain, onSelectNationalRail: props.onSelectNationalRail, disabled: props.quietMap || props.airCategorySelected || props.roadCategorySelected })')
+        '_jsx(LondonMapSelection, { stations: props.stations, onSelectStation: props.onSelectStation, onSelectTrain: props.onSelectTrain, onSelectNationalRail: props.onSelectNationalRail, onSelectAirport: props.onSelectAirport, disabled: props.quietMap || props.airCategorySelected || props.roadCategorySelected })')
       replace('sprite.position.copy(label.position);',
         "sprite.position.copy(label.position);\n            sprite.userData.londonTarget = { kind: 'station', value: label.station };")
       replace('sprite.position.set(candidate.position[0], 0.76 + comparisonOffset, candidate.position[2]);',
