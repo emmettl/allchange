@@ -533,6 +533,7 @@ const cycleComparisonKey = 'src/studies/LondonCycleComparison.tsx'
 const hubPulseKey = 'node_modules/@motionstudies/three/HubPulseScene.js'
 const passengerCardKey = 'src/studies/LondonPassengerDemand.tsx'
 const stationBoardKey = 'src/studies/LondonStationDepartures.tsx'
+const eurostarKey = 'src/data/eurostar.ts'
 const combinedBoardKey = 'src/studies/LondonCombinedStationBoard.tsx'
 const airportCardKey = 'src/studies/AirportCard.tsx'
 const railLayerKey = 'src/studies/LondonNationalRailLayer.tsx'
@@ -546,7 +547,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // Selected cards and alternate studies load only after interaction. Budget
   // them separately; retain their shared static dependencies in the opening.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![eurostarKey, airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -644,13 +645,17 @@ console.log(`All Change optional combined station board: ${kibibytes(combinedBoa
 if (combinedBoard.javaScript > 6 * 1024 || combinedBoard.css > 3 * 1024) throw new Error('Combined station board transfer budget exceeded')
 console.log(`All Change optional rail board (including station widget): ${kibibytes(railBoard.javaScript)} JavaScript / 6.0 KiB; ${kibibytes(railBoard.css)} CSS / 3.0 KiB`)
 if (railBoard.javaScript > 6 * 1024 || railBoard.css > 3 * 1024) throw new Error('Rail board transfer budget exceeded')
-const railCatalogue = JSON.parse(await readFile('fixtures/national-rail/catalogue.json', 'utf8'))
+const eurostarCode = await optionalCardSize(eurostarKey)
+const eurostarData = gzipSync(await readFile('public/data/all-change-national-rail-network-eurostar.json'), { level: 9 }).byteLength
+console.log(`All Change optional Eurostar: ${kibibytes(eurostarData)} data / 24.0 KiB; ${kibibytes(eurostarCode.javaScript)} validation / 2.0 KiB`)
+if (eurostarData > 24 * 1024 || eurostarCode.javaScript > 2 * 1024) throw new Error('Eurostar transfer budget exceeded')
+const railCatalogue = JSON.parse(await readFile('public/data/all-change-national-rail-catalogue.json', 'utf8'))
 let railTotal = 0, railLargest = 0
 for (const { file } of railCatalogue.corridors) {
   const compressed = gzipSync(await readFile(resolve('public/data', file)), { level: 9 }).byteLength
   railTotal += compressed; railLargest = Math.max(railLargest, compressed)
 }
-const railCatalogueSize = gzipSync(await readFile('fixtures/national-rail/catalogue.json'), { level: 9 }).byteLength
+const railCatalogueSize = gzipSync(await readFile('public/data/all-change-national-rail-catalogue.json'), { level: 9 }).byteLength
 console.log(`All Change optional rail data: ${kibibytes(railCatalogueSize)} catalogue / 12.0 KiB; ${kibibytes(railLargest)} largest family / 500.0 KiB; ${kibibytes(railTotal)} network / 3000.0 KiB`)
 if (railCatalogueSize > 12 * 1024 || railLargest > 500 * 1024 || railTotal > 3000 * 1024) throw new Error('Optional rail data transfer budget exceeded')
 const css = await totalGzipSize(styles)

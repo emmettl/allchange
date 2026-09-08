@@ -1,14 +1,15 @@
-export type RailCorridorId = 'paddington' | 'waterloo' | 'kings-cross' | 'thameslink' | 'southern' | 'southeastern' | 'liverpool-street' | 'euston' | 'marylebone' | 'fenchurch-street' | 'st-pancras'
+export type RailCorridorId = 'paddington' | 'waterloo' | 'kings-cross' | 'thameslink' | 'southern' | 'southeastern' | 'liverpool-street' | 'euston' | 'marylebone' | 'fenchurch-street' | 'st-pancras' | 'eurostar'
 export interface RailCorridor { readonly id: RailCorridorId; readonly operator: string }
 export const LONDON_RAIL_CORRIDORS: readonly RailCorridor[] = ([
   ['paddington', 'GWR · Heathrow Express'], ['waterloo', 'SWR'], ['kings-cross', 'GN · LNER + others'],
   ['thameslink', 'Thameslink'], ['southern', 'Southern · Gatwick Express'], ['southeastern', 'Southeastern · High Speed'],
   ['liverpool-street', 'Greater Anglia'], ['euston', 'Avanti · LNWR · Sleeper'], ['marylebone', 'Chiltern'],
-  ['fenchurch-street', 'c2c'], ['st-pancras', 'EMR'],
+  ['fenchurch-street', 'c2c'], ['st-pancras', 'EMR'], ['eurostar', 'Eurostar'],
 ] as const).map(([id, operator]) => ({ id, operator }))
 export interface RailBoardStation {
   readonly id: string
   readonly code: string
+  readonly stopId?: string
   readonly note?: string
   readonly name: string
   readonly stationName: string
@@ -18,11 +19,11 @@ export interface RailBoardStation {
 export type RailBoardStationId = string
 export interface RailCatalogue {
   readonly serviceDate: string
-  readonly stations: readonly { id: string; code: string; name: string; displayName?: string; longitude: number; latitude: number; corridors: readonly RailCorridorId[]; note?: string }[]
+  readonly stations: readonly { id: string; code: string; stopId?: string; name: string; displayName?: string; longitude: number; latitude: number; corridors: readonly RailCorridorId[]; note?: string }[]
 }
 
 export function railBoardStations(catalogue: RailCatalogue): readonly RailBoardStation[] {
-  return catalogue.stations.map(station => ({ id: station.id, code: station.code, note: station.note, name: station.displayName ?? station.name, stationName: station.name, corridors: station.corridors, focus: [station.longitude, station.latitude] as const }))
+  return catalogue.stations.map(station => ({ id: station.id, code: station.code, stopId: station.stopId, note: station.note, name: station.displayName ?? station.name, stationName: station.name, corridors: station.corridors, focus: [station.longitude, station.latitude] as const }))
 }
 /** Small gateway fallback, available before the optional station catalogue loads. */
 export const RAIL_BOARD_STATIONS: readonly RailBoardStation[] = railBoardStations({ serviceDate: '2026-09-04', stations: [

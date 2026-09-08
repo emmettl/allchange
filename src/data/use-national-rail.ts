@@ -21,7 +21,8 @@ export function useNationalRail(files: Readonly<Record<RailCorridorId, string>>,
           if (!response.ok) throw new Error('National Rail unavailable')
           return response.json() as Promise<NationalRailSnapshot>
         })
-        .then(value => {
+        .then(async value => {
+          if (id === 'eurostar') (await import('./eurostar.ts')).validateEurostar(value, serviceDate)
           if (controller.signal.aborted) return
           const snapshot = validateNationalRail(value, serviceDate)
           cache.current[id] = snapshot

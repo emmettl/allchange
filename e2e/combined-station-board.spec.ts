@@ -18,7 +18,7 @@ test('the shared Tube hero keeps King’s Cross and both St Pancras areas separa
   await open(page)
   await selectTflStation(page, "King's Cross St. Pancras")
   const areas = page.getByRole('combobox', { name: 'Rail station area', exact: true })
-  await expect(areas.locator('option')).toHaveText(['King’s Cross', 'St. Pancras International', 'St Pancras Thameslink'])
+  await expect(areas.locator('option')).toHaveText(['King’s Cross', 'St. Pancras International', 'St Pancras Thameslink', 'St Pancras Eurostar'])
   await expect(areas).toHaveValue('kings-cross')
   const combined = page.locator('.london-combined-board')
   for (const [id, name, route, excluded] of [
@@ -39,7 +39,7 @@ test('the shared Tube hero keeps King’s Cross and both St Pancras areas separa
   }
   await areas.selectOption('st-pancras')
   await expect(combined).toContainText('some National Rail services unavailable')
-  await expect(combined).toContainText('Eurostar is not included')
+  await expect(combined).toContainText('Eurostar and Thameslink have separate boards')
   await expect(combined.locator('.london-station-board-selection')).toHaveCount(0)
   await page.unroute('**/all-change-national-rail-network-st-pancras.json')
   await combined.getByRole('button', { name: 'Retry National Rail board' }).click()

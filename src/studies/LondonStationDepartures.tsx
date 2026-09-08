@@ -40,18 +40,22 @@ export function LondonStationDepartures({ snapshot, stationName, time, windowSta
     <SplitFlapBoard label={`${stationName} ${direction === 'departure' ? 'departures' : 'arrivals'}`} columns={[
       { key: 'time', label: 'Time', characters: 5 },
       { key: 'place', label: direction === 'departure' ? 'To' : 'From', characters: 18 },
-      { key: 'line', label: 'Line / service', characters: 12 },
-    ]} rows={error ? [] : upcoming.map(call => ({ id: call.id, cells: { time: formatServiceTime(call[direction]), place: direction === 'departure' ? call.destination : call.origin, line: call.train.route } }))}
+      { key: 'line', label: 'Line / service', characters: routes.includes('Eurostar') ? 13 : 12 },
+    ]} rows={error ? [] : upcoming.map(call => ({ id: call.id, cells: { time: formatServiceTime(call[direction]), place: direction === 'departure' ? call.destination : call.origin, line: serviceLabel(call) } }))}
       loading={loading} loadingRows={maxRows} loadingMessage="Loading station calls…"
       emptyMessage={error ? 'Timetable unavailable.' : outside ? 'Outside study window.' : emptyMessage ?? `No ${direction === 'departure' ? 'departures' : 'arrivals'} in this window.`}
       selectionColumn="place" selectedRowId={selected?.id}
       onSelectRow={id => { const call = upcoming.find(value => value.id === id)!; setSelectedCallId(id); onSelect(call) }} />
     {selected && onSeek && <div className="london-station-board-selection">
       <p>{direction === 'departure' ? selected.destination : `From ${selected.origin}`}</p>
-      <p>{selected.train.route} · {formatServiceTime(selected[direction])}</p>
-      <button type="button" onClick={() => onSeek(selected, direction)}>Show movement</button>
+      <p>{serviceLabel(selected)} · {formatServiceTime(selected[direction])}</p>
+      {selected.movementAvailable === false ? <p>Timetable only · London movement unavailable for this service.</p> : <button type="button" onClick={() => onSeek(selected, direction)}>Show movement</button>}
     </div>}
     {onPulse && <button className="london-station-board-pulse" type="button" onClick={onPulse}>Open {stationName} pulse</button>}
     <p className="london-station-board-note">Published times · not live{note && <> · {note}</>}</p>
   </section>
+}
+
+function serviceLabel(call: StationBoardCall) {
+  return call.train.route === 'Eurostar' ? `Eurostar ${call.train.shortName}` : call.train.route
 }

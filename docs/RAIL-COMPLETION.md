@@ -1,6 +1,6 @@
 # London passenger rail completion
 
-The timetable layer is complete for the study’s defined scope: domestic passenger National Rail across Greater London and its four-kilometre fading fringe, on Friday 4 September 2026. TfL services remain in the existing TfL layer. This is a published timetable study, with interpolated movement; it does not represent live running, temporary alterations, freight, empty stock or international Eurostar.
+The timetable layer is complete for the study’s defined scope: domestic passenger National Rail across Greater London and its four-kilometre fading fringe, on Friday 4 September 2026. TfL services remain in the existing TfL layer. This is a published timetable study, with interpolated movement; it does not represent live running, temporary alterations, freight, empty stock or international Eurostar within the domestic scope. The separate [Eurostar increment](EUROSTAR.md) adds 55 published calls and 40 reconciled London movements, with explicit limits.
 
 ## Coverage
 

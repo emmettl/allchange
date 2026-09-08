@@ -4,7 +4,7 @@ import type { RailCorridorId } from './london-national-rail.ts'
 export interface BoardInterchange {
   id: string; name: string; aliases: readonly string[]; tflStopIds: readonly string[]
   railCode: string; corridors: readonly RailCorridorId[]
-  tflArea?: string; note?: string
+  tflArea?: string; note?: string; railStopId?: string; railLabel?: string
 }
 export const BOARD_INTERCHANGES: readonly BoardInterchange[] = [
   { id: 'stratford', name: 'Stratford', aliases: ['Stratford', 'Stratford (London)'],
@@ -28,10 +28,13 @@ export const BOARD_INTERCHANGES: readonly BoardInterchange[] = [
     note: 'King’s Cross mainline calls. St Pancras has separate boards.' },
   { id: 'st-pancras', name: 'St. Pancras International', aliases: ['London St. Pancras International', 'St. Pancras International'],
     tflArea: "King's Cross St. Pancras", tflStopIds: ['940GZZLUKSX'], railCode: 'STP', corridors: ['southeastern', 'st-pancras'],
-    note: 'St Pancras domestic mainline and high-speed calls. Eurostar is not included; Thameslink has a separate board.' },
+    note: 'St Pancras domestic mainline and high-speed calls. Eurostar and Thameslink have separate boards.' },
   { id: 'st-pancras-thameslink', name: 'St Pancras Thameslink', aliases: ['St Pancras International', 'St Pancras Thameslink'],
     tflArea: "King's Cross St. Pancras", tflStopIds: ['940GZZLUKSX'], railCode: 'SPL', corridors: ['thameslink'],
     note: 'St Pancras Thameslink calls. Mainline and high-speed services have a separate board.' },
+  { id: 'eurostar', name: 'St Pancras Eurostar', aliases: ['St Pancras Eurostar'],
+    tflArea: "King's Cross St. Pancras", tflStopIds: ['940GZZLUKSX'], railCode: '7015400', railStopId: 'eurostar:7015400', railLabel: 'Eurostar', corridors: ['eurostar'],
+    note: 'London time. Departure times are not boarding or check-in deadlines.' },
 ]
 export const boardInterchanges = (name?: string) => BOARD_INTERCHANGES.filter(station => station.aliases.includes(name ?? '') || Boolean(name && station.tflArea === name))
 export const boardInterchange = (name?: string) => boardInterchanges(name)[0]

@@ -66,7 +66,7 @@ The pipeline reconciles 31 Network Rail working-timetable spreadsheets by servic
 
 Run `npm run data:london:national-rail` to rebuild from cached/public sources. Python 3 and Poppler’s `pdftotext` are required; `RAIL_CACHE` overrides `/tmp/allchange-rail-complete`. The build stages the resulting `network-*.json` files. The [rail completion record](docs/RAIL-COMPLETION.md) describes coverage, source audits, validation and the reproducible pipeline.
 
-This is a published timetable study with interpolated movement. Live Darwin data, temporary alterations, freight, empty stock and international Eurostar are outside this phase. A later server-side Darwin adapter can use the retained CRS, UID and originating-date identities.
+This is a published timetable study with interpolated movement. Live Darwin data, temporary alterations, freight and empty stock are outside this phase. Eurostar now has a separate dated integration: **55 St Pancras calls and 40 supported London HS1 movements**, with the other 15 calls explicitly timetable only. See [Eurostar sources, clocks and coverage](docs/EUROSTAR.md); rebuild its pinned sources with `npm run data:london:eurostar`. A later server-side Darwin adapter can use the retained CRS, UID and originating-date identities.
 
 ## Provenance
 
@@ -74,7 +74,7 @@ Extracted from [Gleislicht bdb1f3a](https://github.com/emmettl/gleislicht/commit
 
 ## Local validation
 
-Stratford, Liverpool Street, Clapham Junction, Paddington, Waterloo, Victoria, London Bridge and Euston have combined **TfL + National Rail** station boards. King’s Cross and St Pancras add three distinct rail-area boards, selectable from their shared Tube hero. Explicit source identities join their station areas; per-source time ranges, partial coverage and independent retries remain visible. Service selection and **Show movement** retain the correct renderer and shared clock. See [combined-board coverage and validation](docs/COMBINED-STATION-BOARDS.md).
+Stratford, Liverpool Street, Clapham Junction, Paddington, Waterloo, Victoria, London Bridge and Euston have combined **TfL + National Rail** station boards. King’s Cross and St Pancras add four distinct rail-area boards, including Eurostar, selectable from their shared Tube hero. Explicit source identities join their station areas; per-source time ranges, partial coverage and independent retries remain visible. Service selection and **Show movement** retain the correct renderer and shared clock. See [combined-board coverage and validation](docs/COMBINED-STATION-BOARDS.md).
 
 Unit and browser checks cover bus timetable/day selection, platform aliases, alternative route geometry, compact chunk round trips, exact route search, night services and recovery from damaged downloads. The bus catalogue is loaded separately; the opening transfer remains below the existing 650 KiB budget. The 670 active Friday bus routes use a 1,839.4 KiB manifest and at most 428.1 KiB per two-hour chunk (gzip), with an explicit audit of the two routes without Friday timetables and unavailable directional origins.
 

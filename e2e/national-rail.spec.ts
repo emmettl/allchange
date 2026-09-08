@@ -358,7 +358,7 @@ test('expanded gateways and branch stations open their own rail pulses', async (
   await expect(board.locator(':scope > details > summary')).toBeVisible()
   if (info.project.name === 'iphone-webkit') await board.locator(':scope > details > summary').click()
   const station = page.getByRole('combobox', { name: 'National Rail station' })
-  await expect(station.locator('option')).toHaveCount(301)
+  await expect(station.locator('option')).toHaveCount(302)
   for (const id of ['victoria', 'london-bridge', 'charing-cross', 'cannon-street', 'liverpool-street', 'euston', 'marylebone', 'fenchurch-street', 'st-pancras', 'st-pancras-thameslink', 'moorgate', 'rail:HXX', 'rail:CSS', 'rail:HYS', 'rail:WAE', 'rail:BCZ', 'rail:LEB']) {
     await station.selectOption(id)
     await expect.poll(() => board.locator('tbody tr:has(button)').count()).toBeGreaterThan(0)

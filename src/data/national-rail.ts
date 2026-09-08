@@ -14,6 +14,8 @@ export interface NationalRailSnapshot extends NetworkSnapshot {
   readonly trains: readonly NationalRailTrain[]
   readonly corridorPaths: readonly NetworkPath[]
   readonly fadeKilometres: number
+  /** Published calls may outnumber services with supported movement geometry. Never render this network. */
+  readonly board?: NetworkSnapshot
 }
 export function stationRailCalls(snapshot: NationalRailSnapshot, stationName: string, time: number, flow: 'arrival' | 'departure', windowEnd = 86400) {
   const station = snapshot.stops.findIndex(stop => stop[2] === stationName)

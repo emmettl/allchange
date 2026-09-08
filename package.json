@@ -8,6 +8,7 @@
     "node": ">=24.0.0"
   },
   "scripts": {
+    "data:london:eurostar": "python3 scripts/compile-eurostar.py",
     "data:london:national-rail": "node scripts/fetch-london-rail-sources.mjs && node scripts/compile-london-national-rail.mjs",
     "data:london:national-rail:swr": "node scripts/compile-swr-national-rail.mjs",
     "data:london:proof": "node scripts/ingest-tfl-line.mjs --line bakerloo --direction outbound --origin 940GZZLUEAC --service-date 2026-09-04 --output fixtures/tfl/all-change-bakerloo-morning.json",

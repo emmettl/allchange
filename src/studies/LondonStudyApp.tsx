@@ -1167,7 +1167,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         setNationalRailEnabled(true)
         activateLayout('geographic')
         const train = choice.kind === 'rail-train' ? choice.value : undefined
-        const station = choice.kind === 'rail-station' ? choice.value : railStations.find(station => train?.stops.some(([index]) => nationalRail?.stops[index][4] === `crs:${station.code}`))
+        const station = choice.kind === 'rail-station' ? choice.value : railStations.find(station => train?.stops.some(([index]) => nationalRail?.stops[index][4] === (station.stopId ?? `crs:${station.code}`)))
         if (station) { setNationalRailStationId(station.id); moveCamera('focus-location', station.focus, 0.25) }
         if (train) { setNationalRailSelectedId(train.id); setStudyWindow('day'); setTime(Math.max(0, Math.min(86399, train.start + 60))); setIsPlaying(false) }
         setQuery(train ? `${train.route} ${train.shortName}` : station?.name ?? '')

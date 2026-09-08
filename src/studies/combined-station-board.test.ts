@@ -11,6 +11,8 @@ import southeasternFixture from '../../fixtures/national-rail/network-southeaste
 import eustonFixture from '../../fixtures/national-rail/network-euston.json'
 import kingsCrossFixture from '../../fixtures/national-rail/network-kings-cross.json'
 import stPancrasFixture from '../../fixtures/national-rail/network-st-pancras.json'
+import eurostar from '../../fixtures/eurostar/network.json'
+import eurostarStation from '../../fixtures/eurostar/station.json'
 import catalogue from '../../fixtures/national-rail/catalogue.json'
 import { BOARD_INTERCHANGES, boardInterchange, boardInterchanges } from '../editions/london-board-interchanges.ts'
 import { combinedStationCalls } from './combined-station-board.ts'
@@ -26,14 +28,15 @@ const source = (snapshot: NetworkSnapshot, windowStart = 0, windowEnd = 86400) =
 describe('combined interchange boards', () => {
   it('audits exact stop identities and reconciles passenger calls independently for each source', () => {
     for (const station of BOARD_INTERCHANGES) {
-      const nr = catalogue.stations.find(value => value.code === station.railCode)!
+      const nr = [...catalogue.stations, eurostarStation].find(value => value.code === station.railCode)!
       expect(nr.id).toBe(station.id)
       expect([...nr.corridors].sort()).toEqual([...station.corridors].sort())
       expect(tfl.stops.filter(stop => station.tflStopIds.includes(stop[4]!))).toHaveLength(station.tflStopIds.length)
       for (const alias of station.aliases) expect(boardInterchange(alias)).toBe(station)
-      const calls = combinedStationCalls(station, '2026-09-04', source(tfl), source(rail))
+      const boardRail = station.id === 'eurostar' ? eurostar.board as unknown as NetworkSnapshot : rail
+      const calls = combinedStationCalls(station, '2026-09-04', source(tfl), source(boardRail))
       expect(new Set(calls.map(call => call.id)).size).toBe(calls.length)
-      for (const [kind, snapshot, ids] of [['tfl', tfl, station.tflStopIds], ['national-rail', rail, [`crs:${station.railCode}`]]] as const) {
+      for (const [kind, snapshot, ids] of [['tfl', tfl, station.tflStopIds], ['national-rail', boardRail, [station.railStopId ?? `crs:${station.railCode}`]]] as const) {
         for (const direction of ['arrival', 'departure'] as const) {
           let expected = 0
           for (const value of snapshot.trains) {
@@ -77,16 +80,17 @@ describe('combined interchange boards', () => {
     expect(calls.find(call => call.source === 'national-rail')!.train).toBe(national)
     expect(combinedStationCalls(station, '2026-09-05', source(tflSource), source(railSource))).toEqual([])
   })
-  it('keeps the three national-rail areas of the shared Tube station distinct', () => {
+  it('keeps the four rail areas of the shared Tube station distinct', () => {
     const areas = boardInterchanges("King's Cross St. Pancras")
-    expect(areas.map(area => area.railCode)).toEqual(['KGX', 'STP', 'SPL'])
+    expect(areas.map(area => area.railCode)).toEqual(['KGX', 'STP', 'SPL', '7015400'])
     const railVisits = new Set<string>()
     const tflVisits: string[][] = []
     for (const area of areas) {
-      const calls = combinedStationCalls(area, '2026-09-04', source(tfl), source(rail))
+      const boardRail = area.id === 'eurostar' ? eurostar.board as unknown as NetworkSnapshot : rail
+      const calls = combinedStationCalls(area, '2026-09-04', source(tfl), source(boardRail))
       tflVisits.push(calls.filter(call => call.source === 'tfl').map(call => call.id))
       for (const call of calls.filter(call => call.source === 'national-rail')) {
-        expect(rail.stops[call.train.stops[call.index][0]][4]).toBe(`crs:${area.railCode}`)
+        expect(boardRail.stops[call.train.stops[call.index][0]][4]).toBe(area.railStopId ?? `crs:${area.railCode}`)
         expect(railVisits.has(call.id)).toBe(false)
         railVisits.add(call.id)
       }
@@ -94,6 +98,7 @@ describe('combined interchange boards', () => {
     expect(tflVisits[0].length).toBeGreaterThan(0)
     expect(tflVisits[1]).toEqual(tflVisits[0])
     expect(tflVisits[2]).toEqual(tflVisits[0])
+    expect(tflVisits[3]).toEqual(tflVisits[0])
   })
   it('clips each source independently at a chunk boundary without losing the rest of the hour', () => {
     const calls = combinedStationCalls(BOARD_INTERCHANGES[0], '2026-09-04', source(tfl, 21600, 28800), source(rail))

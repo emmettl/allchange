@@ -12,6 +12,7 @@ export interface StationBoardCall {
   readonly destination: string
   readonly allowsArrival: boolean
   readonly allowsDeparture: boolean
+  readonly movementAvailable?: boolean
   readonly source?: 'tfl' | 'national-rail'
   readonly windowStart?: number
   readonly windowEnd?: number

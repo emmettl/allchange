@@ -1,4 +1,4 @@
-import { copyFile, mkdir, readFile, cp, rm } from 'node:fs/promises'
+import { copyFile, mkdir, readFile, writeFile, cp, rm } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 const files = new Set(['all-change-rail-led-morning.json', 'all-change-geography.json', 'all-change-diagram.json', 'all-change-surface-day.json'])
 for (const manifest of ['all-change-day-manifest.json', 'all-change-bus-day-manifest.json']) {
@@ -17,8 +17,13 @@ await copyFile(resolve('fixtures/national-rail/waterloo.json'), resolve('public/
 await copyFile(resolve('fixtures/national-rail/kings-cross.json'), resolve('public/data/all-change-national-rail-kings-cross.json'))
 
 const railCatalogue = JSON.parse(await readFile('fixtures/national-rail/catalogue.json', 'utf8'))
-await copyFile('fixtures/national-rail/catalogue.json', 'public/data/all-change-national-rail-catalogue.json')
+railCatalogue.stations.push(JSON.parse(await readFile('fixtures/eurostar/station.json', 'utf8')))
+const eurostar = JSON.parse(await readFile('fixtures/eurostar/network.json', 'utf8'))
+if (eurostar.metadata.serviceDate !== railCatalogue.serviceDate) throw new Error('Rail source dates differ')
+await copyFile('fixtures/eurostar/network.json', 'public/data/all-change-national-rail-network-eurostar.json')
 for (const corridor of railCatalogue.corridors) await copyFile(`fixtures/national-rail/network-${corridor.id}.json`, `public/data/${corridor.file}`)
+railCatalogue.corridors.push({ id: 'eurostar', file: 'all-change-national-rail-network-eurostar.json', journeys: eurostar.trains.length, stations: 1 })
+await writeFile('public/data/all-change-national-rail-catalogue.json', JSON.stringify(railCatalogue))
 
 await rm('public/data/all-change-passenger-demand.json', { force: true })
 await rm('public/data/all-change-passenger-demand', { recursive: true, force: true })
