@@ -87,6 +87,33 @@ export function planPdfCoverage(catalogue, modes = ['overground', 'elizabeth-lin
     }))))
 }
 
+/** A topology branch may describe only part of another branch's same service.
+ * Keep the maximal calling sequence, using exact station IDs and clocks so
+ * separate platforms or nearby departures never collapse into one train. */
+export function uniquePdfJourneys(trains) {
+  const retained = []
+  const containing = new Map()
+  const callKey = call => call.join(':')
+  for (const train of [...trains].sort((a, b) => b.stops.length - a.stops.length)) {
+    const calls = train.stops.map(callKey)
+    const key = `${train.route}|${calls[0]}`
+    const candidates = containing.get(key) ?? []
+    if (candidates.some(parent => {
+      const start = parent.indexOf(calls[0])
+      return calls.every((call, index) => parent[start + index] === call)
+    })) continue
+    retained.push(train)
+    for (const call of calls) {
+      const key = `${train.route}|${call}`
+      const parents = containing.get(key) ?? []
+      parents.push(calls)
+      containing.set(key, parents)
+    }
+  }
+  const unique = new Set(retained)
+  return trains.filter(train => unique.has(train))
+}
+
 export async function compilePdfLattice({
   catalogue,
   serviceDate,
@@ -103,7 +130,9 @@ export async function compilePdfLattice({
   const lineIds = [...new Set(plan.map(({ lineId }) => lineId))]
   const pdfByLine = new Map(await Promise.all(lineIds.map(async (lineId) => {
     const bytes = await loadPdf(SOURCES[lineId])
-    return [lineId, { bytes, text: await extractPdfText(bytes, 1, 1000) }]
+    // Fixed physical spacing keeps Elizabeth's proportional-font rows in
+    // the same timetable columns even where pdftotext would compress blanks.
+    return [lineId, { bytes, text: await extractPdfText(bytes, 1, 1000, lineId === 'elizabeth' ? { fixedPitch: 3 } : {}) }]
   })))
   const routeByDirection = new Map()
   for (const task of plan) {
@@ -148,6 +177,12 @@ export async function compilePdfLattice({
     retrievedAt,
     note: 'Every advertised London Overground and Elizabeth line branch was audited against the current TfL public timetable PDFs. Active weekday branch patterns are compiled; topology-only or non-through branches are recorded explicitly.',
   })
+  const originalCount = merged.trains.length
+  merged.trains = uniquePdfJourneys(merged.trains)
+  merged.metadata.journeyDeduplication = {
+    model: 'Exact contiguous station/time subjourneys retain the longest published service',
+    removed: originalCount - merged.trains.length,
+  }
   merged.metadata.coverage = {
     status: inactiveBranches.length ? 'audited-with-inactive-branches' : 'complete-active-branch-family',
     modes,

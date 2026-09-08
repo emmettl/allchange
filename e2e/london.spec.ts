@@ -419,7 +419,9 @@ test('the complete Friday loads progressively without changing the opening paylo
     response.url().includes('all-change-day-chunks/06-08.json'),
   )
   await page.getByRole('button', { name: '24-hour study' }).click()
-  expect((await manifestResponse).ok()).toBe(true)
+  const manifest = await manifestResponse
+  expect(manifest.ok()).toBe(true)
+  const { tripCount } = await manifest.json()
   expect((await morningChunkResponse).ok()).toBe(true)
 
   const experience = page.locator('.london-experience')
@@ -427,7 +429,7 @@ test('the complete Friday loads progressively without changing the opening paylo
   await expect(experience).toHaveAttribute('data-day-loading', 'false')
   await expect(page.locator('.london-transport')).toContainText('00:00')
   await expect(page.locator('.london-transport')).toContainText('24:00')
-  await expect(page.locator('.london-status-card')).toContainText('10,825 scheduled journeys')
+  await expect(page.locator('.london-status-card')).toContainText(`${tripCount.toLocaleString('en-GB')} scheduled journeys`)
 
   await page.getByRole('button', { name: 'Pause motion' }).click()
   await expect(page.getByRole('button', { name: 'Resume motion' })).toBeVisible()

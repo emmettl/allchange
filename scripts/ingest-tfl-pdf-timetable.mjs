@@ -49,7 +49,7 @@ async function fetchJson(url) {
   return JSON.parse((await fetchBytes(url)).toString('utf8'))
 }
 
-export async function extractPdfText(pdfBytes, firstPage, lastPage) {
+export async function extractPdfText(pdfBytes, firstPage, lastPage, { fixedPitch } = {}) {
   const directory = await mkdtemp(join(tmpdir(), 'all-change-pdf-'))
   const pdfPath = join(directory, 'timetable.pdf')
   await writeFile(pdfPath, pdfBytes)
@@ -58,6 +58,7 @@ export async function extractPdfText(pdfBytes, firstPage, lastPage) {
       '-f', String(firstPage),
       '-l', String(lastPage),
       '-layout',
+      ...(fixedPitch ? ['-fixed', String(fixedPitch)] : []),
       pdfPath,
       '-',
     ], { maxBuffer: 16 * 1024 * 1024 })
@@ -110,13 +111,22 @@ function stationRows(page, stops) {
   const aliases = stops
     .flatMap((stop) => {
       const label = cleanStationName(stop.name)
-      return [
+      const platforms = {
+        '910GPADTON': ['Paddington Plts 11 & 12'],
+        '910GPADTLL': ['Paddington Plts A & B'],
+        '910GLIVST': ['Liverpool St Plts 15–17'],
+        '910GLIVSTLL': ['Liverpool St Plts A & B'],
+      }
+      // The Elizabeth PDF distinguishes surface and tunnel platforms. A bare
+      // station-name match would turn through services into surface terminators.
+      const labels = platforms[stop.id] && /Plts\s/i.test(page) ? platforms[stop.id] : [
         label,
         label.replace(/^London /, ''),
         label.replace(/ \(London\)$/, ''),
         label.replace(/ \([^)]*\)$/, ''),
         label.replaceAll(/\bStreet\b/g, 'St').replaceAll(/\bRoad\b/g, 'Rd'),
-      ].map((candidate) => ({ stop, label: candidate }))
+      ]
+      return labels.map((candidate) => ({ stop, label: candidate }))
     })
     .sort((first, second) => second.label.length - first.label.length)
   const rows = new Map()
@@ -125,11 +135,15 @@ function stationRows(page, stops) {
     const normalisedLine = normaliseName(trimmed)
     const plainLine = line.toLowerCase().replaceAll('’', "'")
     const matches = []
-    const leadingAlias = aliases.find(({ label }) => normalisedLine.startsWith(normaliseName(label)))
+    const leadingAlias = aliases.find(({ label }) => normalisedLine.startsWith(`${normaliseName(label)} `))
     if (leadingAlias) matches.push({ alias: leadingAlias, start: line.length - trimmed.length })
     for (const alias of aliases) {
-      const start = plainLine.indexOf(alias.label.toLowerCase().replaceAll('’', "'"), 1)
-      if (start >= 0 && !matches.some((match) => match.alias.stop.id === alias.stop.id && match.start === start)) {
+      const label = alias.label.toLowerCase().replaceAll('’', "'")
+      const start = plainLine.indexOf(label, 1)
+      // A second grid may begin later on the same line, but a station name
+      // cannot start inside another word (Iver is a substring of Liverpool).
+      const bounded = start >= 0 && /\s/.test(plainLine[start - 1]) && /\s/.test(plainLine[start + label.length] ?? '')
+      if (bounded && !matches.some((match) => match.alias.stop.id === alias.stop.id && match.start === start)) {
         matches.push({ alias, start })
       }
     }
@@ -177,7 +191,8 @@ export function parsePdfGridJourneys({
   const journeys = []
   const pages = text.split('\f')
   for (const page of pages) {
-    if (!page.toLowerCase().includes(sectionTitle.toLowerCase()) || !dayPattern.test(page)) continue
+    const headingText = page.replaceAll(/\s+/g, ' ')
+    if (!headingText.toLowerCase().includes(sectionTitle.toLowerCase()) || !dayPattern.test(headingText)) continue
     const rows = stationRows(page, stops)
     const originRows = rows.get(originId)
     if (!originRows) continue
@@ -186,20 +201,24 @@ export function parsePdfGridJourneys({
     for (const originTime of originTimes) {
       const calls = []
       let previous
+      let invalidColumn = false
       for (const stop of stops) {
         const values = timeAtColumn(rows.get(stop.id) ?? [], originTime.column, originTime.lineIndex)
         if (!values?.length) continue
         const times = values.map((value) => timeFromPdf(value, previous))
         const arrival = Math.min(...times)
         const departure = Math.max(...times)
-        if (previous !== undefined && arrival < previous) continue
+        if (previous !== undefined && arrival < previous) {
+          invalidColumn = true
+          break
+        }
         calls.push({ stopId: stop.id, arrival, departure })
         previous = departure
       }
       const hasCompleteCallingPattern = calls.length === stops.length
       const hasBoundedCallingPattern = calls.length >= 2 &&
         calls[0]?.stopId === originId && calls.at(-1)?.stopId === destinationId
-      if ((!allowSkippedStops && !hasCompleteCallingPattern) || !hasBoundedCallingPattern) continue
+      if (invalidColumn || (!allowSkippedStops && !hasCompleteCallingPattern) || !hasBoundedCallingPattern) continue
       journeys.push({ column: originTime.column, calls })
     }
   }
@@ -342,7 +361,7 @@ async function main() {
     routeSequencePath ? JSON.parse(await readFile(routeSequencePath, 'utf8')) : fetchJson(routeUrl),
     pdfPath ? readFile(pdfPath) : fetchBytes(pdfUrl),
   ])
-  const pdfText = await extractPdfText(pdfBytes, firstPage, lastPage)
+  const pdfText = await extractPdfText(pdfBytes, firstPage, lastPage, line === 'elizabeth' ? { fixedPitch: 3 } : {})
   const snapshot = compileTflPdfProof({
     routeSequence,
     pdfText,

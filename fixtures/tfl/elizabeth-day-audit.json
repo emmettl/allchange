@@ -1,0 +1,232 @@
+{
+  "model": "Fixed physical PDF columns, bounded station names, distinct surface/tunnel platforms, and maximal unique calling sequences",
+  "sourceSha256": "03125084baa03f0cf1c58abb1074b8d4c93f68639c43e8e0c9dab53a2f820387",
+  "sources": [
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/outbound",
+      "geometrySourceSha256": "3db046e2ff5bfb20ae69556b0770c884cbc9ee16dddd90d1a2b13e8713aebc2c",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Westbound, weekday service; 67 Abbey Wood to Heathrow Terminal 4 journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/outbound",
+      "geometrySourceSha256": "3db046e2ff5bfb20ae69556b0770c884cbc9ee16dddd90d1a2b13e8713aebc2c",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Westbound, weekday service; 3 Abbey Wood to Heathrow Terminal 5 journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/outbound",
+      "geometrySourceSha256": "3db046e2ff5bfb20ae69556b0770c884cbc9ee16dddd90d1a2b13e8713aebc2c",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Westbound, weekday service; 46 Abbey Wood to Reading journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/outbound",
+      "geometrySourceSha256": "3db046e2ff5bfb20ae69556b0770c884cbc9ee16dddd90d1a2b13e8713aebc2c",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Westbound, weekday service; 4 London Paddington to Heathrow Terminal 4 journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/outbound",
+      "geometrySourceSha256": "3db046e2ff5bfb20ae69556b0770c884cbc9ee16dddd90d1a2b13e8713aebc2c",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Westbound, weekday service; 3 London Paddington to Heathrow Terminal 5 journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/outbound",
+      "geometrySourceSha256": "3db046e2ff5bfb20ae69556b0770c884cbc9ee16dddd90d1a2b13e8713aebc2c",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Westbound, weekday service; 3 London Paddington to Reading journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/outbound",
+      "geometrySourceSha256": "3db046e2ff5bfb20ae69556b0770c884cbc9ee16dddd90d1a2b13e8713aebc2c",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Westbound, weekday service; 2 Shenfield to London Liverpool Street journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/outbound",
+      "geometrySourceSha256": "3db046e2ff5bfb20ae69556b0770c884cbc9ee16dddd90d1a2b13e8713aebc2c",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Westbound, weekday service; 32 Shenfield to Heathrow Terminal 5 journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/inbound",
+      "geometrySourceSha256": "a09cb2f120e2ec13bfd31216b8f4b121d568b1f085aeb97abe1617dfbcf27dba",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Eastbound, weekday service; 1 Heathrow Terminal 4 to London Paddington journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/inbound",
+      "geometrySourceSha256": "a09cb2f120e2ec13bfd31216b8f4b121d568b1f085aeb97abe1617dfbcf27dba",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Eastbound, weekday service; 68 Heathrow Terminal 4 to Abbey Wood journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/inbound",
+      "geometrySourceSha256": "a09cb2f120e2ec13bfd31216b8f4b121d568b1f085aeb97abe1617dfbcf27dba",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Eastbound, weekday service; 2 Heathrow Terminal 4 to Shenfield journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/inbound",
+      "geometrySourceSha256": "a09cb2f120e2ec13bfd31216b8f4b121d568b1f085aeb97abe1617dfbcf27dba",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Eastbound, weekday service; 1 Heathrow Terminal 5 to London Paddington journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/inbound",
+      "geometrySourceSha256": "a09cb2f120e2ec13bfd31216b8f4b121d568b1f085aeb97abe1617dfbcf27dba",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Eastbound, weekday service; 3 Heathrow Terminal 5 to Abbey Wood journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/inbound",
+      "geometrySourceSha256": "a09cb2f120e2ec13bfd31216b8f4b121d568b1f085aeb97abe1617dfbcf27dba",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Eastbound, weekday service; 34 Heathrow Terminal 5 to Shenfield journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/inbound",
+      "geometrySourceSha256": "a09cb2f120e2ec13bfd31216b8f4b121d568b1f085aeb97abe1617dfbcf27dba",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Eastbound, weekday service; 4 London Liverpool Street to Shenfield journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/inbound",
+      "geometrySourceSha256": "a09cb2f120e2ec13bfd31216b8f4b121d568b1f085aeb97abe1617dfbcf27dba",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Eastbound, weekday service; 166 Paddington to Shenfield journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/inbound",
+      "geometrySourceSha256": "a09cb2f120e2ec13bfd31216b8f4b121d568b1f085aeb97abe1617dfbcf27dba",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Eastbound, weekday service; 1 Reading to London Paddington journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    },
+    {
+      "modes": [
+        "elizabeth-line"
+      ],
+      "sourceUrl": "https://content.tfl.gov.uk/elizabeth-line-17-may-12-december-2026.pdf",
+      "sourceSha256": "1e57ae4ca5a5ba9c3869e71d3d19a580dac20748a5ab9ad716ba201ac6665b4d",
+      "geometrySourceUrl": "https://api.tfl.gov.uk/Line/elizabeth/Route/Sequence/inbound",
+      "geometrySourceSha256": "a09cb2f120e2ec13bfd31216b8f4b121d568b1f085aeb97abe1617dfbcf27dba",
+      "model": "TfL public timetable PDF grid extraction / not realtime",
+      "note": "Elizabeth line – Eastbound, weekday service; 48 Reading to Abbey Wood journeys. PDF columns require both endpoints, official route order and monotonic times; documented non-calling stops may be omitted."
+    }
+  ],
+  "coverage": {
+    "status": "audited-with-inactive-branches",
+    "modes": [
+      "elizabeth-line"
+    ],
+    "lineCount": 1,
+    "directionCount": 2,
+    "advertisedBranchCount": 19,
+    "compiledBranchCount": 18,
+    "inactiveBranches": [
+      {
+        "lineId": "elizabeth",
+        "lineName": "Elizabeth line",
+        "mode": "elizabeth-line",
+        "direction": "outbound",
+        "originId": "910GSHENFLD",
+        "destinationId": "910GHTRWTM4",
+        "sectionTitle": "Elizabeth line – Westbound",
+        "advertisedStopCount": 27,
+        "reason": "TfL PDF timetable produced no auditable journeys in the study window"
+      }
+    ]
+  },
+  "journeyDeduplication": {
+    "model": "Exact contiguous station/time subjourneys retain the longest published service",
+    "removed": 35
+  },
+  "journeys": 453
+}
