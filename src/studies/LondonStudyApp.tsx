@@ -50,7 +50,7 @@ import {
   dayChunkForTime,
   networkSnapshotForDayChunk,
 } from '@motionstudies/core/domain/network-day'
-import { mergeNetworkLayers } from '@motionstudies/core/domain/network-layers'
+import { assembleVehicleNetwork, countableVehicleTrains, activeTimetableVehicleCount, vehicleCountStatus } from './vehicle-counts.ts'
 import {
   operationsAgeSeconds,
   operationsServiceTime,
@@ -440,37 +440,10 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         : morningNetwork,
     [activeDayChunk, dayManifest, morningNetwork, studyWindow],
   )
-  const assembledNetwork = useMemo(() => {
-    if (!baseNetwork) return undefined
-    // Keep the study bounds and clock when TfL is hidden, including when no
-    // other layers are enabled. Each added layer supplies its own geometry.
-    const layers: NetworkSnapshot[] = [tflEnabled ? baseNetwork : {
-      ...baseNetwork,
-      stops: [],
-      edges: [],
-      paths: [],
-      edgePaths: [],
-      trains: [],
-    }]
-    if (
-      surfaceEnabled &&
-      surfaceNetwork &&
-      baseNetwork.metadata.windowStart === surfaceNetwork.metadata.windowStart &&
-      baseNetwork.metadata.windowEnd === surfaceNetwork.metadata.windowEnd
-    ) {
-      layers.push(surfaceNetwork)
-    }
-    if (
-      busEnabled &&
-      busDay.chunkReady &&
-      busDay.network &&
-      baseNetwork.metadata.windowStart === busDay.network.metadata.windowStart &&
-      baseNetwork.metadata.windowEnd === busDay.network.metadata.windowEnd
-    ) {
-      layers.push(busDay.network)
-    }
-    return layers.length === 1 ? layers[0] : mergeNetworkLayers(layers)
-  }, [
+  const assembledNetwork = useMemo(() => assembleVehicleNetwork(
+    baseNetwork, { tflEnabled, surfaceEnabled, busEnabled },
+    surfaceNetwork, busDay.chunkReady ? busDay.network : undefined,
+  ), [
     baseNetwork,
     tflEnabled,
     busDay.chunkReady,
@@ -735,24 +708,11 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         : undefined,
     [routes, selectedRoute],
   )
-  const countableTrains = useMemo(() => {
-    const stationTrainIds = selectedStation
-      ? new Set(stations.find((station) => station.name === selectedStation.name)?.trainIds ?? [])
-      : undefined
-    return sceneNetwork?.trains.filter((train) =>
-      (!selectedCategory || train.category === selectedCategory) &&
-      (!stationTrainIds || stationTrainIds.has(train.id)) &&
-      (!selectedRoute || (train.route === selectedRoute.name && train.category === selectedRoute.category)),
-    ) ?? []
-  }, [sceneNetwork, selectedCategory, selectedRoute, selectedStation, stations])
+  const countableTrains = useMemo(() => countableVehicleTrains(sceneNetwork, stations, {
+    category: selectedCategory, station: selectedStation, route: selectedRoute,
+  }), [sceneNetwork, selectedCategory, selectedRoute, selectedStation, stations])
   const activeTrainCount = useMemo(
-    () =>
-      countableTrains.reduce(
-        (count, train) =>
-          count + Number(train.realtime?.status !== 'cancelled' && train.stops.length >= 2
-            && sceneTime >= train.start && sceneTime <= train.end),
-        0,
-      ),
+    () => activeTimetableVehicleCount(countableTrains, sceneTime),
     [countableTrains, sceneTime],
   )
   const boundary = useMemo(
@@ -1501,8 +1461,6 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       : 'Planned timetable fallback'
   const operationsEngaged =
     operationsMode === 'observed' || operationsRequested
-  const quietMap = Boolean(webglAvailable && sceneNetwork && !loadError && !pulseHub &&
-    !tflEnabled && !airEnabled && !roadEnabled && !busEnabled && !surfaceEnabled && !nationalRailEnabled)
   const scheduledJourneyCount =
     studyWindow === 'day' && dayManifest
       ? (tflEnabled ? dayManifest.tripCount : 0) +
@@ -1510,15 +1468,13 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         (busEnabled ? (busDay.manifest?.tripCount ?? 0) : 0)
       : network?.trains.length
   const networkSelection = Boolean(selectedCategory || selectedStation || selectedRoute || selectedTrain)
-  const networkLayersEnabled = tflEnabled || surfaceEnabled || busEnabled || nationalRailEnabled
-  const airStatus = airCategorySelected || (airEnabled && !roadEnabled && !networkLayersEnabled)
-  const roadStatus = roadCategorySelected || (roadEnabled && !airEnabled && !networkLayersEnabled)
-  const activeVehicleCount = networkSelection
-    ? activeTrainCount
-    : activeTrainCount + activeNationalRailCount + activeAircraftCount + reconstructedRoadVehicleCount
-  const vehicleCountLabel = surfaceEnabled || busEnabled || (!networkSelection && (airEnabled || roadEnabled))
-    ? 'vehicles in motion'
-    : 'trains in motion'
+  const vehicleStatus = vehicleCountStatus(
+    { tflEnabled, airEnabled, roadEnabled, busEnabled, surfaceEnabled, nationalRailEnabled },
+    { network: activeTrainCount, nationalRail: activeNationalRailCount, air: activeAircraftCount, road: reconstructedRoadVehicleCount },
+    { network: networkSelection, air: airCategorySelected, road: roadCategorySelected },
+  )
+  const { airStatus, roadStatus } = vehicleStatus
+  const quietMap = Boolean(webglAvailable && sceneNetwork && !loadError && !pulseHub && vehicleStatus.quiet)
   const journeySummary = [
     ...(tflEnabled || surfaceEnabled || busEnabled ? [`${scheduledJourneyCount?.toLocaleString('en-GB')} scheduled journeys`] : []),
     ...(!networkSelection && nationalRailEnabled ? [`${activeNationalRailCount.toLocaleString('en-GB')} National Rail trains`] : []),
@@ -2154,14 +2110,12 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                   : selectedRoad
                   ? selectedRoad.label
                   : roadStatus
-                    ? reconstructedRoadVehicleCount.toLocaleString('en-GB')
+                    ? vehicleStatus.count.toLocaleString('en-GB')
                   : selectedAirIndexEntry
                   ? selectedAirIndexEntry.callsign
-                  : airStatus
-                    ? activeAircraftCount.toLocaleString('en-GB')
-                    : activeVehicleCount.toLocaleString('en-GB')}
+                    : vehicleStatus.count.toLocaleString('en-GB')}
               </strong>
-              <span>{pulseHub ? pulseLens === 'all' ? 'movements in orbit' : `${pulseLens} movements` : operationsMode === 'observed' ? 'vehicles observed' : selectedRoad ? 'motorway selected' : roadStatus ? 'vehicles reconstructed' : selectedAirport ? 'airport movements' : selectedAirIndexEntry || airStatus ? 'aircraft observed' : vehicleCountLabel}</span>
+              <span>{pulseHub ? pulseLens === 'all' ? 'movements in orbit' : `${pulseLens} movements` : operationsMode === 'observed' ? 'vehicles observed' : selectedRoad ? 'motorway selected' : roadStatus ? vehicleStatus.label : selectedAirport ? 'airport movements' : selectedAirIndexEntry ? 'aircraft observed' : vehicleStatus.label}</span>
             </div>
             <p>
               {pulseHub

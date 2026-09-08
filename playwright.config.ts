@@ -1,9 +1,8 @@
 import { defineConfig, devices } from '@playwright/test'
 
-const environment = (globalThis as { process?: { env?: { CI?: string; E2E_SUITE?: string } } }).process?.env
+const environment = (globalThis as { process?: { env?: { CI?: string; E2E_SUITE?: string; E2E_PREBUILT?: string } } }).process?.env
 const runningInCi = Boolean(environment?.CI)
-const suiteName = (globalThis as { process?: { env?: { E2E_SUITE?: string } } })
-  .process?.env?.E2E_SUITE || 'all'
+const suiteName = environment?.E2E_SUITE || 'all'
 
 export default defineConfig({
   testDir: './e2e',
@@ -11,13 +10,11 @@ export default defineConfig({
   timeout: 90_000,
   expect: { timeout: 15_000 },
   forbidOnly: true,
-  // Hosted WebKit occasionally loses a software-rendered WebGL context while
-  // the Chromium project is rendering in parallel. Retry that isolated test
-  // once in CI; local runs remain strict and immediate.
+  // Retry transient hosted software-renderer failures once in CI.
   retries: runningInCi ? 1 : 0,
   // Two continuously rendered WebGL editions can starve Chromium's input and
   // animation loop on the shared CI runner. Keep local feedback parallel, but
-  // make the publication gate deterministic.
+  // run CI browsers on separate runners with one worker each.
   workers: runningInCi ? 1 : 2,
   reporter: runningInCi
     ? [
@@ -46,7 +43,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build && npm run preview -- --host 127.0.0.1 --port 4177 --strictPort',
+    // CI downloads the checked build; local runs still build automatically.
+    command: `${environment?.E2E_PREBUILT === '1' ? '' : 'npm run build && '}npm run preview -- --host 127.0.0.1 --port 4177 --strictPort`,
     url: 'http://127.0.0.1:4177',
     reuseExistingServer: false,
     timeout: 120_000,

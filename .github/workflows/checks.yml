@@ -17,23 +17,54 @@ jobs:
       - run: npm ci
       - run: npm run check:boundary && npm run typecheck && npm run lint && npm test
       - run: npm run worker:check && npm run worker:build
-      - run: npx playwright install --with-deps chromium webkit
+      - run: npm run build && npm run check:bundle
+      - uses: actions/upload-artifact@v7
+        with:
+          name: allchange-site
+          path: dist
+          include-hidden-files: true
+
+  e2e:
+    needs: check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { project: desktop-chromium, browser: chromium }
+          - { project: iphone-webkit, browser: webkit }
+    env:
+      E2E_PREBUILT: '1'
+      E2E_PROJECT: ${{ matrix.project }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm install --global npm@11.19.0 --ignore-scripts
+      - run: npm ci
+      - uses: actions/download-artifact@v8
+        with:
+          name: allchange-site
+          path: dist
+      - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: E2E tests
         id: e2e
         env:
           E2E_SUITE: functional
-        run: npx playwright test --grep-invert @frame-cadence
+        run: npx playwright test --grep-invert @frame-cadence --project="$E2E_PROJECT" --workers=1
       - name: E2E frame cadence
-        if: ${{ !cancelled() && (steps.e2e.outcome == 'success' || steps.e2e.outcome == 'failure') }}
+        if: ${{ !cancelled() && matrix.browser == 'webkit' && (steps.e2e.outcome == 'success' || steps.e2e.outcome == 'failure') }}
         env:
           E2E_SUITE: frame-cadence
-        run: npx playwright test --grep @frame-cadence --workers=1
+        run: npx playwright test --grep @frame-cadence --project="$E2E_PROJECT" --workers=1
       - name: Upload E2E report, screenshots and traces
         id: e2e-report
         if: ${{ !cancelled() && (steps.e2e.outcome == 'success' || steps.e2e.outcome == 'failure') }}
         uses: actions/upload-artifact@v7
         with:
-          name: e2e-report
+          name: e2e-report-${{ matrix.project }}
           path: |
             playwright-report/
             test-results/
@@ -45,9 +76,3 @@ jobs:
           REPORT_URL: ${{ steps.e2e-report.outputs.artifact-url }}
         run: |
           printf '\n[Download E2E reports, screenshots and traces](%s)\n' "$REPORT_URL" >> "$GITHUB_STEP_SUMMARY"
-      - run: npm run build && npm run check:bundle
-      - uses: actions/upload-artifact@v7
-        with:
-          name: allchange-site
-          path: dist
-          include-hidden-files: true

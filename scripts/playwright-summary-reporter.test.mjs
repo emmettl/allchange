@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { describe, expect, it } from 'vitest'
+import PlaywrightSummaryReporter from './playwright-summary-reporter.mjs'
 
 const reporter = fileURLToPath(new URL('./playwright-summary-reporter.mjs', import.meta.url))
 const playwright = fileURLToPath(new URL('../node_modules/@playwright/test/index.mjs', import.meta.url))
@@ -33,6 +34,37 @@ function runFixture(source, globalSetup) {
 }
 
 describe('Playwright Actions summary', () => {
+  it('ranks slow tests by the total of all attempts', () => {
+    const directory = mkdtempSync(join(tmpdir(), 'allchange-e2e-timings-'))
+    const previousSummary = process.env.GITHUB_STEP_SUMMARY
+    const summary = join(directory, 'summary.md')
+    process.env.GITHUB_STEP_SUMMARY = summary
+    try {
+      const makeTest = (title, durations) => ({
+        title,
+        titlePath: () => ['', 'synthetic-browser', 'report.spec.mjs', title],
+        parent: { project: () => ({ name: 'synthetic-browser' }) },
+        outcome: () => 'expected',
+        results: durations.map(duration => ({ duration, status: 'passed' })),
+      })
+      const reporter = new PlaywrightSummaryReporter()
+      reporter.onBegin({}, { allTests: () => [
+        makeTest('single attempt', [2000]),
+        makeTest('multiple attempts', [1500, 1500]),
+      ] })
+      reporter.onEnd({ status: 'passed', duration: 6000 })
+      const contents = readFileSync(summary, 'utf8')
+      expect(contents).toContain('Wall time: **6.0s**. Test time including retries: **5.0s**.')
+      expect(contents.indexOf('multiple attempts')).toBeLessThan(contents.indexOf('single attempt'))
+      expect(contents).toContain('**3.0s**')
+      expect(contents).toContain('multiple attempts</code> (2 attempt(s))')
+    } finally {
+      if (previousSummary === undefined) delete process.env.GITHUB_STEP_SUMMARY
+      else process.env.GITHUB_STEP_SUMMARY = previousSummary
+      rmSync(directory, { recursive: true, force: true })
+    }
+  })
+
   it('reports final failures, flaky retries and unexpected passes without hiding a failing exit code', () => {
     const result = runFixture(`
       test('passing case', () => expect(1).toBe(1));
@@ -53,6 +85,13 @@ describe('Playwright Actions summary', () => {
     expect(result.summary).toContain('2 attempt(s)')
     expect(result.summary).toContain('Expected this test to fail, but it passed.')
     expect(result.summary).toContain('### Flaky tests')
+    expect(result.summary).toMatch(/Wall time: \*\*\d+\.\ds\*\*/)
+    expect(result.summary).toContain('Test time including retries:')
+    expect(result.summary).toContain('### Slowest tests (including retries)')
+    const timings = result.summary.split('### Slowest tests (including retries)')[1]
+    expect(timings).toContain('passing case')
+    expect(timings).toContain('flaky case</code> (2 attempt(s))')
+    expect(timings).not.toContain('skipped case')
     expect(result.summary).not.toContain('\u001b[')
   }, 30_000)
 
