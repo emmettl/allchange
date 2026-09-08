@@ -3,7 +3,7 @@ import { setMobileControls } from './mobile-controls.ts'
 
 async function selectTflStation(page: Page, name: string) {
   await page.getByRole('searchbox').fill(name)
-  await page.getByRole('option').filter({ has: page.locator('strong', { hasText: new RegExp(`^${name}$`) }) }).filter({ hasText: /\d+ lines/ }).click()
+  await page.getByRole('option').filter({ has: page.getByText(name, { exact: true }) }).filter({ hasText: /\d+ lines/ }).click()
 }
 async function open(page: Page) {
   await page.goto('/')
@@ -11,6 +11,36 @@ async function open(page: Page) {
   await page.getByRole('button', { name: 'Pause motion', exact: true }).click()
   await page.locator('.london-transport input[type="range"]').fill('27900')
 }
+
+test('gateway boards join audited station areas through TfL and rail entry points', async ({ page }, info) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await open(page)
+  for (const [name, code, railRoute, tflRoute] of [
+    ['Paddington', 'PAD', 'GWR', 'Elizabeth line'],
+    ['Waterloo', 'WAT', 'South Western Railway', 'Waterloo & City'],
+    ['Victoria', 'VIC', 'Southern', 'Victoria'],
+    ['London Bridge', 'LBG', 'Thameslink', 'Northern'],
+    ['Euston', 'EUS', 'Avanti West Coast', 'Lioness'],
+  ]) {
+    await selectTflStation(page, name)
+    const board = page.getByRole('region', { name: `${name} timetable`, exact: true })
+    const filter = board.getByRole('combobox', { name: `${name} board line` })
+    await expect(filter.locator('option')).toContainText([railRoute])
+    await expect(filter.locator('option')).toContainText([tflRoute])
+    await filter.selectOption(railRoute)
+    await expect(board.locator('tbody tr:has(button)')).toHaveCount(4)
+    const calls = await board.locator('tbody tr').allTextContents()
+    await page.getByRole('searchbox').fill(code)
+    await page.getByRole('option').filter({ hasText: `NATIONAL RAIL · ${code}` }).click()
+    const railCard = page.getByRole('region', { name: `National Rail at ${name}`, exact: true })
+    if (info.project.name === 'iphone-webkit') await railCard.locator(':scope > details > summary').click()
+    await railCard.getByRole('combobox', { name: `${name} board line` }).selectOption(railRoute)
+    await expect(railCard.locator('tbody tr')).toHaveText(calls)
+    await expect(page.locator('.london-transport input[type="range"]')).toHaveValue('27900')
+  }
+  await selectTflStation(page, 'Paddington (H&C Line)-Underground')
+  await expect(page.getByRole('region', { name: 'Paddington timetable', exact: true })).toBeVisible()
+})
 
 test('Stratford joins its aliases, keeps TfL on rail failure and seeks the selected rail service', async ({ page }, info) => {
   const requests: string[] = [], errors: string[] = []

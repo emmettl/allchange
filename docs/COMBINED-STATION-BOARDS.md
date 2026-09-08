@@ -1,6 +1,6 @@
 # Combined interchange boards
 
-Stratford, Liverpool Street and Clapham Junction now show one **TfL + National Rail** timetable, whether entered through a TfL station hero or the National Rail station picker. The existing split-flap board retains arrivals/departures, line/service filtering, selection, the shared study clock, movement seeking, pulse links and hero dismissal. Selecting a TfL station suppresses the separate National Rail card while its combined board is visible.
+Eight interchanges—Stratford, Liverpool Street, Clapham Junction, Paddington, Waterloo, Victoria, London Bridge and Euston—now show one **TfL + National Rail** timetable, whether entered through a TfL station hero or the National Rail station picker. The existing split-flap board retains arrivals/departures, line/service filtering, selection, the shared study clock, movement seeking, pulse links and hero dismissal. Selecting a TfL station suppresses the separate National Rail card while its combined board is visible.
 
 ## Audited identities
 
@@ -11,8 +11,13 @@ The join is explicit in `src/editions/london-board-interchanges.ts`. It uses ret
 | Stratford | `940GZZLUSTD`, `940GZZDLSTD`, `910GSTFD` | `crs:SRA` | Liverpool Street |
 | Liverpool Street | `940GZZLULVT`, `910GLIVSTLL`, `910GLIVST` | `crs:LST` | Liverpool Street |
 | Clapham Junction | `910GCLPHMJC`, `910GCLPHMJ1` | `crs:CLJ` | Waterloo, Southern |
+| Paddington | `940GZZLUPAC`, `940GZZLUPAH`, `910GPADTLL`, `910GPADTON` | `crs:PAD` | Paddington |
+| Waterloo | `940GZZLUWLO` | `crs:WAT` | Waterloo |
+| Victoria | `940GZZLUVIC` | `crs:VIC` | Southern, Southeastern |
+| London Bridge | `940GZZLULNB` | `crs:LBG` | Thameslink, Southern, Southeastern |
+| Euston | `940GZZLUEUS`, `910GEUSTON` | `crs:EUS` | Euston |
 
-Stratford’s `Stratford` and `Stratford (London)` names resolve to the same board. Stratford International and Stratford High Street remain separate. Liverpool Street includes both `Liverpool Street` and `London Liverpool Street`; it does not expand to adjacent stations. These boards combine station areas, not platforms: visitors must allow time to transfer, and the study does not promise a connection.
+Stratford’s `Stratford` and `Stratford (London)` names resolve to the same board. Stratford International and Stratford High Street remain separate. Liverpool Street includes both `Liverpool Street` and `London Liverpool Street`; it does not expand to adjacent stations. Paddington includes its Hammersmith & City station area and both Elizabeth line identities. Waterloo excludes Waterloo East; Euston excludes Euston Square; Victoria excludes Royal Victoria. London-prefixed terminal names resolve to the same board. These boards combine station areas, not platforms: visitors must allow time to transfer, and the study does not promise a connection.
 
 Both sources describe **4 September 2026**. TfL calls come from the existing recurring/public-PDF timetable composition; National Rail calls come from the retained passenger WTT/eNRT compilation. The [rail completion record](RAIL-COMPLETION.md) documents service identity, source reconciliation and exclusions. No new live feed or passenger observations are introduced.
 
@@ -23,6 +28,11 @@ Full-day permitted calls in `[00:00, 24:00)`, reconciled independently against t
 | Stratford | 1,280 | 1,795 | 379 | 336 |
 | Liverpool Street | 1,794 | 1,831 | 338 | 336 |
 | Clapham Junction | 80 | 79 | 1,690 | 1,805 |
+| Paddington | 1,688 | 1,812 | 282 | 276 |
+| Waterloo | 1,827 | 1,822 | 646 | 652 |
+| Victoria | 1,813 | 1,813 | 572 | 578 |
+| London Bridge | 1,378 | 1,378 | 1,613 | 1,614 |
+| Euston | 2,333 | 2,338 | 282 | 287 |
 
 These are scheduled passenger call events in the included sources, not people, unique journeys or observed movements. A train may supply both an arrival and a departure. Totals inherit source exclusions and the TfL timetable model; they are not a claim of complete real-world service.
 
@@ -44,7 +54,7 @@ TfL download failures do not clear available National Rail calls. A failed Natio
 
 ## Validation and remaining work
 
-Unit checks reconcile every permitted source call at all three interchanges, verify catalogue identities, preserve repeated visits and same-time services, reject the wrong source date, enforce source ownership, and test independent chunk boundaries. Browser checks cover both entry points, both movement renderers, reduced motion, independent failure/retry, partial operator coverage, the day boundary, existing station boards and passenger cards on desktop Chromium and iPhone WebKit.
+Unit checks reconcile every permitted source call at all eight interchanges from the committed TfL manifest/day chunks and National Rail family fixtures, verify catalogue identities, preserve repeated visits and same-time services, reject the wrong source date, enforce source ownership, and test independent chunk boundaries. Browser checks compare the same service rows through both entry points at the five added gateways and cover Paddington’s Hammersmith & City alias, both movement renderers, reduced motion, independent failure/retry, partial operator coverage, the day boundary, existing station boards and passenger cards on desktop Chromium and iPhone WebKit.
 
 The combined board has a 6 KiB JavaScript / 3 KiB CSS gzip limit including its optional widget dependencies. The opening limit remains 344 KiB. Validate with Node 24, as CI does:
 
@@ -52,7 +62,7 @@ The combined board has a 6 KiB JavaScript / 3 KiB CSS gzip limit including its o
 npm test
 npm run build
 npm run check:bundle
-npm exec playwright test e2e/combined-station-board.spec.ts e2e/station-board.spec.ts e2e/passenger-demand.spec.ts -- --workers=1
+npm exec playwright test e2e/combined-station-board.spec.ts e2e/station-board.spec.ts e2e/passenger-demand.spec.ts e2e/national-rail.spec.ts e2e/hero-dismiss.spec.ts -- --workers=1
 ```
 
 Other stations retain their existing separate timetable scopes until their source identities and coverage are verified. Physical-device and shared widget-lab review remain outstanding. Platforms, live predictions, cancellations and freshness require their own supported sources.

@@ -74,7 +74,7 @@ Extracted from [Gleislicht bdb1f3a](https://github.com/emmettl/gleislicht/commit
 
 ## Local validation
 
-Stratford, Liverpool Street and Clapham Junction have combined **TfL + National Rail** station boards. Explicit source identities join their station areas; per-source time ranges, partial coverage and independent retries remain visible. Service selection and **Show movement** retain the correct renderer and shared clock. See [combined-board coverage and validation](docs/COMBINED-STATION-BOARDS.md).
+Stratford, Liverpool Street, Clapham Junction, Paddington, Waterloo, Victoria, London Bridge and Euston have combined **TfL + National Rail** station boards. Explicit source identities join their station areas; per-source time ranges, partial coverage and independent retries remain visible. Service selection and **Show movement** retain the correct renderer and shared clock. See [combined-board coverage and validation](docs/COMBINED-STATION-BOARDS.md).
 
 Unit and browser checks cover bus timetable/day selection, platform aliases, alternative route geometry, compact chunk round trips, exact route search, night services and recovery from damaged downloads. The bus catalogue is loaded separately; the opening transfer remains below the existing 650 KiB budget. The 670 active Friday bus routes use a 1,839.4 KiB manifest and at most 428.1 KiB per two-hour chunk (gzip), with an explicit audit of the two routes without Friday timetables and unavailable directional origins.
 
