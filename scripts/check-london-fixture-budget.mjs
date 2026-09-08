@@ -533,6 +533,7 @@ const cycleComparisonKey = 'src/studies/LondonCycleComparison.tsx'
 const hubPulseKey = 'node_modules/@motionstudies/three/HubPulseScene.js'
 const passengerCardKey = 'src/studies/LondonPassengerDemand.tsx'
 const stationBoardKey = 'src/studies/LondonStationDepartures.tsx'
+const combinedBoardKey = 'src/studies/LondonCombinedStationBoard.tsx'
 const airportCardKey = 'src/studies/AirportCard.tsx'
 const railLayerKey = 'src/studies/LondonNationalRailLayer.tsx'
 const visit = (key) => {
@@ -545,7 +546,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // Selected cards and alternate studies load only after interaction. Budget
   // them separately; retain their shared static dependencies in the opening.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -638,6 +639,9 @@ const stationBoard = await optionalCardSize(stationBoardKey)
 console.log(`All Change optional station board: ${kibibytes(stationBoard.javaScript)} JavaScript / 4.0 KiB; ${kibibytes(stationBoard.css)} CSS / 3.0 KiB`)
 if (stationBoard.javaScript > 4 * 1024 || stationBoard.css > 3 * 1024) throw new Error('Station board transfer budget exceeded')
 const railBoard = await optionalCardSize(railBoardKey)
+const combinedBoard = await optionalCardSize(combinedBoardKey)
+console.log(`All Change optional combined station board: ${kibibytes(combinedBoard.javaScript)} JavaScript / 6.0 KiB; ${kibibytes(combinedBoard.css)} CSS / 3.0 KiB`)
+if (combinedBoard.javaScript > 6 * 1024 || combinedBoard.css > 3 * 1024) throw new Error('Combined station board transfer budget exceeded')
 console.log(`All Change optional rail board (including station widget): ${kibibytes(railBoard.javaScript)} JavaScript / 6.0 KiB; ${kibibytes(railBoard.css)} CSS / 3.0 KiB`)
 if (railBoard.javaScript > 6 * 1024 || railBoard.css > 3 * 1024) throw new Error('Rail board transfer budget exceeded')
 const railCatalogue = JSON.parse(await readFile('fixtures/national-rail/catalogue.json', 'utf8'))

@@ -110,6 +110,7 @@ import { useProgressiveRoadStudy } from '@motionstudies/web/use-progressive-road
 import { useObservedOperations } from '@motionstudies/web/use-observed-operations'
 import { useNationalRail, useRailCatalogue } from '../data/use-national-rail.ts'
 import { LONDON_RAIL_CORRIDORS, type RailBoardStation, type RailBoardStationId } from '../editions/london-national-rail.ts'
+import { boardInterchange } from '../editions/london-board-interchanges.ts'
 const AirportHeroCard = lazy(() => import('./AirportCard.tsx'))
 
 const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
@@ -120,6 +121,7 @@ const LondonPassengerPulse = lazy(() => import('./LondonPassengerPulse.tsx'))
 const LondonCycleStudy = lazy(() => import('./LondonCycleStudy.tsx'))
 const LondonPassengerDemand = lazy(() => import('./LondonPassengerDemand.tsx'))
 const LondonStationDepartures = lazy(() => import('./LondonStationDepartures.tsx').then(module => ({ default: module.LondonStationDepartures })))
+const LondonCombinedStationBoard = lazy(() => import('./LondonCombinedStationBoard.tsx'))
 import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
 import type { MapSelectionSceneExtension } from './LondonMapSelection.tsx'
 import '../styles/london-quiet-map.css'
@@ -334,7 +336,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const [pulseView, setPulseView] = useState<'services' | 'passengers'>('services')
   const [cycleEnabled, setCycleEnabled] = useState(false)
   const [pulseHubId, setPulseHubId] = useState<LondonHubId>()
-  const railCatalogue = useRailCatalogue(nationalRailEnabled || Boolean(pulseHubId) || searchOpen, morningNetwork?.metadata.serviceDate)
+  const selectedBoard = operationsMode === 'plan' ? boardInterchange(selectedStation?.name) : undefined
+  const railCatalogue = useRailCatalogue(nationalRailEnabled || Boolean(pulseHubId) || Boolean(selectedBoard) || searchOpen, morningNetwork?.metadata.serviceDate)
   const railStations = railCatalogue.stations
   const pulseHubs = useMemo(() => railPulseHubs(railStations), [railStations])
   const pulseHub = pulseHubs.find(hub => hub.id === pulseHubId)
@@ -342,12 +345,13 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const hasPassengerPulse = pulseHub?.id === 'bank' || pulseHub?.id === 'stratford'
   const isPassengerPulse = hasPassengerPulse && pulseView === 'passengers'
   const railFeed = useNationalRail(edition.data.nationalRail,
-    nationalRailEnabled || (searchOpen && query.trim().length >= 2) ? LONDON_RAIL_CORRIDORS.map(corridor => corridor.id) : pulseHub?.nationalRail ?? [],
+    nationalRailEnabled || (searchOpen && query.trim().length >= 2) ? LONDON_RAIL_CORRIDORS.map(corridor => corridor.id) : selectedBoard?.corridors ?? pulseHub?.nationalRail ?? [],
     morningNetwork?.metadata.serviceDate,
   )
   const nationalRail = railFeed.snapshot
   const nationalRailError = railFeed.error
   const railStation = railStations.find(station => station.id === nationalRailStationId) ?? railStations[0]
+  const railBoardInterchange = operationsMode === 'plan' ? boardInterchange(railStation.stationName) : undefined
   const railBoardSnapshot = railStation.corridors.some(id => railFeed.snapshots[id]) ? nationalRail : undefined
   const pulseRailSnapshot = pulseHub?.nationalRail?.some(id => railFeed.snapshots[id]) ? nationalRail : undefined
   const pulseRailOperator = pulseHub?.nationalRail?.filter(id => railFeed.snapshots[id]).map(id => LONDON_RAIL_CORRIDORS.find(corridor => corridor.id === id)!.operator).join(' · ')
@@ -1486,6 +1490,29 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     ...(!networkSelection && roadEnabled ? [`${reconstructedRoadVehicleCount.toLocaleString('en-GB')} vehicles reconstructed`] : []),
   ].join(' · ')
 
+  const activeBoard = selectedBoard ?? railBoardInterchange
+  const combinedBoard = activeBoard && baseNetwork && network && <LondonCombinedStationBoard key={activeBoard.id}
+    station={activeBoard} tfl={baseNetwork} rail={nationalRail} snapshots={railFeed.snapshots} errors={railFeed.errors}
+    time={time} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd}
+    tflStart={studyWindow === 'day' ? activeDayChunk?.windowStart ?? network.metadata.windowStart : network.metadata.windowStart}
+    tflEnd={studyWindow === 'day' ? Math.min(network.metadata.windowEnd, activeDayChunk?.windowEnd ?? network.metadata.windowEnd) : network.metadata.windowEnd}
+    tflLoading={dayLoading} tflError={dayError && !activeDayChunk}
+    onTflRetry={() => { setDayError(false); setDayAttempt(value => value + 1) }} onRailRetry={railFeed.retry}
+    selectedId={nationalRailSelectedId ?? selectedTrain?.id} animate={!isPlaying || playbackRate <= 30}
+    onSelect={call => {
+      setNationalRailSelectedId(call.source === 'national-rail' ? call.train.id : undefined)
+      setSelectedTrain(call.source === 'tfl' ? network.trains.find(train => train.id === call.train.id) ?? call.train : undefined)
+    }}
+    onSeek={(call, direction) => {
+      if (call.source === 'national-rail') {
+        selectNationalRail(call.train.id); setNationalRailEnabled(true); setNationalRailStationId(activeBoard.id)
+        activateLayout('geographic'); setDismissedRail(true)
+      } else { selectTrain(network.trains.find(train => train.id === call.train.id) ?? call.train); setTflEnabled(true); setDismissedRail(true) }
+      setTime(Math.max(network.metadata.windowStart, Math.min(network.metadata.windowEnd - 1, call[direction])))
+      setIsPlaying(false)
+    }}
+    onPulse={() => { clearSelection(); setPulseLens('all'); setPulseHubId(activeBoard.id) }} />
+
   if (cycleEnabled) return <Suspense fallback={<main className="cycle-opening" role="status">Loading cycle study… <button onClick={() => setCycleEnabled(false)}>Back to rail</button></main>}>
     <LondonCycleStudy time={time} onTime={setTime} isPlaying={isPlaying} onPlaying={setIsPlaying} rate={playbackRate} onRate={setPlaybackRate} geography={geography} railStops={morningNetwork?.stops}
       onClose={() => { setCycleEnabled(false); if (network && (time < network.metadata.windowStart || time > network.metadata.windowEnd)) setStudyWindow('day') }} />
@@ -1502,6 +1529,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       data-layout-transitioning={layoutTransitioning}
       data-selected-airport={selectedAirport?.id}
       data-selected-road={selectedRoad?.id}
+      data-selected-rail-service={nationalRailSelectedId}
+      data-selected-tfl-service={selectedTrain?.id}
       data-surface-enabled={surfaceEnabled}
       data-tfl-enabled={tflEnabled}
       data-quiet-map={quietMap}
@@ -2183,7 +2212,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
             } : undefined} />
         </Suspense>}
         {selectedStation && !pulseHub && network && operationsMode === 'plan' && <Suspense fallback={<p role="status">Loading station board…</p>}>
-          <LondonStationDepartures key={selectedStation.name} snapshot={network} stationName={selectedStation.name}
+          {selectedBoard ? combinedBoard : <LondonStationDepartures key={selectedStation.name} snapshot={network} stationName={selectedStation.name}
             time={time} windowStart={network.metadata.windowStart}
             windowEnd={studyWindow === 'day' ? Math.min(network.metadata.windowEnd, activeDayChunk?.windowEnd ?? network.metadata.windowEnd) : network.metadata.windowEnd}
             loading={dayLoading} error={dayError && !activeDayChunk ? 'Timetable download failed.' : undefined}
@@ -2200,7 +2229,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               const hub = pulseHubs.find(value => value.name === selectedStation.name || value.aliases?.includes(selectedStation.name))!
               clearSelection(); setPulseLens('all'); setPulseHubId(hub.id)
             } : undefined}
-          />
+          />}
         </Suspense>}
       </section>
       )}
@@ -2271,7 +2300,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       )}
 
       {(nationalRailEnabled || pulseHub || searchOpen) && railCatalogue.error && <p className="london-layout-status" role="status">Rail station list unavailable · <button type="button" onClick={railCatalogue.retry}>Retry station list</button></p>}
-      {nationalRailEnabled && !railBoardSnapshot && !pulseHub && (
+      {nationalRailEnabled && !selectedBoard && !railBoardSnapshot && !railBoardInterchange && !pulseHub && (
         <section className="london-national-rail-board" aria-label="National Rail loading" data-hero-dismissed={dismissedRail}>
           <HeroCardDismiss name={`${railStation.name} National Rail`} dismissed={dismissedRail} onToggle={() => setDismissedRail(value => !value)} />
           <label className="london-rail-station-picker">Station
@@ -2283,10 +2312,11 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           {railStation.corridors.some(id => railFeed.errors[id]) && <button type="button" onClick={railFeed.retry}>Retry National Rail</button>}
         </section>
       )}
-      {nationalRailEnabled && railBoardSnapshot && !pulseHub && network && (
+      {nationalRailEnabled && !selectedBoard && (railBoardSnapshot || railBoardInterchange) && !pulseHub && network && (
         <Suspense fallback={<span className="london-layout-status" role="status">Loading rail board…</span>}><LondonNationalRailBoard
           dismissed={dismissedRail} dismissControl={<HeroCardDismiss name={`${railStation.name} National Rail`} dismissed={dismissedRail} onToggle={() => setDismissedRail(value => !value)} />}
-          snapshot={railBoardSnapshot} stations={railStations} stationId={nationalRailStationId} time={time} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd}
+          snapshot={railBoardSnapshot ?? { ...network, trains: [], corridorPaths: [], fadeKilometres: 4 }} stations={railStations} stationId={nationalRailStationId} time={time} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd}
+          boardContent={railBoardInterchange ? combinedBoard : undefined}
           passengerContent={operationsMode === 'plan' ? <Suspense fallback={<p>Loading passenger profile…</p>}><LondonPassengerDemand key={railStation.id} stationName={railStation.stationName} onPulse={railStation.id === 'stratford' ? () => { clearSelection(); setPulseHubId('stratford'); setPulseView('passengers'); setDismissedHero(true) } : undefined} time={time} /></Suspense> : undefined}
           partial={railStation.corridors.some(id => !railFeed.snapshots[id])} animate={!isPlaying || playbackRate <= 30}
           onStation={id => {

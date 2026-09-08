@@ -1,0 +1,38 @@
+import { useMemo } from 'react'
+import { formatServiceTime, type NetworkSnapshot } from '@motionstudies/core/domain/network'
+import type { BoardInterchange } from '../editions/london-board-interchanges.ts'
+import type { RailCorridorId } from '../editions/london-national-rail.ts'
+import type { NationalRailSnapshot } from '../data/national-rail.ts'
+import { combinedStationCalls } from './combined-station-board.ts'
+import { LondonStationDepartures } from './LondonStationDepartures.tsx'
+import type { StationBoardCall, StationBoardDirection } from './station-board.ts'
+
+export default function LondonCombinedStationBoard({ station, tfl, rail, snapshots, errors, time, windowStart, windowEnd, tflStart, tflEnd, tflLoading, tflError, onTflRetry, onRailRetry, selectedId, onSelect, onSeek, onPulse, animate }: {
+  station: BoardInterchange; tfl: NetworkSnapshot; rail?: NationalRailSnapshot
+  snapshots: Partial<Record<RailCorridorId, NationalRailSnapshot>>; errors: Partial<Record<RailCorridorId, boolean>>
+  time: number; windowStart: number; windowEnd: number; tflStart: number; tflEnd: number
+  tflLoading: boolean; tflError: boolean; onTflRetry: () => void; onRailRetry: () => void
+  selectedId?: string; onSelect: (call: StationBoardCall) => void
+  onSeek: (call: StationBoardCall, direction: StationBoardDirection) => void; onPulse: () => void; animate: boolean
+}) {
+  const tflReady = !tflLoading && !tflError
+  const railReady = station.corridors.some(id => snapshots[id]) && rail?.metadata.serviceDate === tfl.metadata.serviceDate
+  const missing = station.corridors.filter(id => !snapshots[id])
+  const railError = missing.some(id => errors[id])
+  const tflPartial = tflStart > time || tflEnd < Math.min(windowEnd, time + 3600)
+  const calls = useMemo(() => combinedStationCalls(station, tfl.metadata.serviceDate,
+    tflReady ? { snapshot: tfl, windowStart: tflStart, windowEnd: tflEnd } : undefined,
+    railReady && rail ? { snapshot: rail, windowStart, windowEnd } : undefined),
+  [station, tfl, tflReady, tflStart, tflEnd, rail, railReady, windowStart, windowEnd])
+  return <div className="london-combined-board">
+    <p className="london-station-board-note">TfL + National Rail · {station.name}</p>
+    <p className="london-station-board-message" role="status">{tflError ? <>TfL timetable unavailable. <button onClick={onTflRetry}>Retry TfL board</button></> : tflLoading ? 'TfL timetable loading…' : `TfL calls loaded: ${formatServiceTime(tflStart)}–${formatServiceTime(tflEnd)}.`}</p>
+    <p className="london-station-board-message" role="status">{missing.length ? <>Partial board · {railError ? 'some National Rail services unavailable.' : 'National Rail services loading…'}{railError && <> <button onClick={onRailRetry}>Retry National Rail board</button></>}</> : `National Rail calls loaded: ${formatServiceTime(windowStart)}–${formatServiceTime(windowEnd)}.`}</p>
+    {tflReady && tflPartial && time < windowEnd && <p className="london-station-board-message">Partial board · TfL coverage does not span this whole window.</p>}
+    <LondonStationDepartures snapshot={tfl} stationName={station.name} providedCalls={calls} time={time}
+      windowStart={windowStart} windowEnd={windowEnd} selectedId={selectedId} onSelect={onSelect} onSeek={onSeek} onPulse={onPulse}
+      animate={animate} loading={!tflReady && !railReady && (tflLoading || (missing.length > 0 && !railError))}
+      emptyMessage={missing.length || !tflReady || tflPartial ? 'No calls in available data · coverage incomplete.' : undefined}
+      note="Separate station areas; allow time to transfer. Loaded calls only." />
+  </div>
+}

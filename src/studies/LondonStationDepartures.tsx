@@ -5,21 +5,22 @@ import { stationBoardCalls, upcomingStationCalls, type StationBoardCall, type St
 import '@motionstudies/web/split-flap-board.css'
 import './station-board.css'
 
-export function LondonStationDepartures({ snapshot, stationName, time, windowStart, windowEnd, selectedId, onSelect, onSeek, onPulse, loading = false, error, onRetry, note, emptyMessage, maxRows = 4, animate = true, onDirection }: {
+export function LondonStationDepartures({ snapshot, stationName, time, windowStart, windowEnd, selectedId, onSelect, onSeek, onPulse, loading = false, error, onRetry, note, emptyMessage, maxRows = 4, animate = true, onDirection, providedCalls }: {
   snapshot: NetworkSnapshot; stationName: string; time: number; windowStart: number; windowEnd: number
   selectedId?: string; onSelect: (call: StationBoardCall) => void; onSeek?: (call: StationBoardCall, direction: StationBoardDirection) => void
   onPulse?: () => void; loading?: boolean; error?: string; onRetry?: () => void; note?: string; emptyMessage?: string
   maxRows?: number; animate?: boolean; onDirection?: (direction: StationBoardDirection) => void
+  providedCalls?: readonly StationBoardCall[]
 }) {
   const [direction, setDirection] = useState<StationBoardDirection>('departure')
   const [route, setRoute] = useState('')
   const [selectedCallId, setSelectedCallId] = useState<string>()
-  const calls = useMemo(() => stationBoardCalls(snapshot, stationName), [snapshot, stationName])
+  const calls = useMemo(() => providedCalls ?? stationBoardCalls(snapshot, stationName), [providedCalls, snapshot, stationName])
   const routes = useMemo(() => [...new Set(calls.map(call => call.train.route))].sort(), [calls])
   // A route can disappear when the loaded two-hour chunk changes.
   const activeRoute = routes.includes(route) ? route : ''
   const upcoming = useMemo(() => upcomingStationCalls(calls, direction, time, windowStart, windowEnd, activeRoute, maxRows), [calls, direction, time, windowStart, windowEnd, activeRoute, maxRows])
-  const selected = !error && !loading ? calls.find(call => call.id === selectedCallId && call.train.id === selectedId) : undefined
+  const selected = !error && !loading ? calls.find(call => call.id === selectedCallId && call.train.id === selectedId && (direction === 'arrival' ? call.allowsArrival : call.allowsDeparture)) : undefined
   const end = Math.min(windowEnd, time + 3600)
   const outside = time < windowStart || time >= windowEnd
   return <section className="london-station-departures" aria-label={`${stationName} timetable`} data-animate={animate}>

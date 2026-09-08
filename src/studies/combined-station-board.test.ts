@@ -1,0 +1,77 @@
+import { describe, expect, it } from 'vitest'
+import type { NetworkSnapshot, NetworkTrain } from '@motionstudies/core/domain/network'
+import { mergeNetworkLayers } from '@motionstudies/core/domain/network-layers'
+import tflFixture from '../../fixtures/tfl/all-change-rail-led-day.json'
+import angliaFixture from '../../fixtures/national-rail/network-liverpool-street.json'
+import swrFixture from '../../fixtures/national-rail/network-waterloo.json'
+import southernFixture from '../../fixtures/national-rail/network-southern.json'
+import catalogue from '../../fixtures/national-rail/catalogue.json'
+import { BOARD_INTERCHANGES, boardInterchange } from '../editions/london-board-interchanges.ts'
+import { combinedStationCalls } from './combined-station-board.ts'
+import { upcomingStationCalls } from './station-board.ts'
+import type { NationalRailTrain } from '../data/national-rail.ts'
+
+const tfl = tflFixture as unknown as NetworkSnapshot
+const rail = mergeNetworkLayers([angliaFixture, swrFixture, southernFixture] as unknown as NetworkSnapshot[])
+const source = (snapshot: NetworkSnapshot, windowStart = 0, windowEnd = 86400) => ({ snapshot, windowStart, windowEnd })
+
+describe('combined interchange boards', () => {
+  it('audits exact stop identities and reconciles passenger calls independently for each source', () => {
+    for (const station of BOARD_INTERCHANGES) {
+      const nr = catalogue.stations.find(value => value.code === station.railCode)!
+      expect(nr.id).toBe(station.id)
+      expect([...nr.corridors].sort()).toEqual([...station.corridors].sort())
+      expect(tfl.stops.filter(stop => station.tflStopIds.includes(stop[4]!))).toHaveLength(station.tflStopIds.length)
+      const calls = combinedStationCalls(station, '2026-09-04', source(tfl), source(rail))
+      expect(new Set(calls.map(call => call.id)).size).toBe(calls.length)
+      for (const [kind, snapshot, ids] of [['tfl', tfl, station.tflStopIds], ['national-rail', rail, [`crs:${station.railCode}`]]] as const) {
+        for (const direction of ['arrival', 'departure'] as const) {
+          let expected = 0
+          for (const value of snapshot.trains) {
+            const train = value as NationalRailTrain
+            train.stops.forEach(([stop, arrival, departure], i) => {
+              if (!(ids as readonly string[]).includes(snapshot.stops[stop][4]!) || train.passIndexes?.includes(i)) return
+              if (direction === 'arrival' ? i === 0 || train.pickupOnlyIndexes?.includes(i) : i === train.stops.length - 1 || train.setDownOnlyIndexes?.includes(i)) return
+              const time = direction === 'arrival' ? arrival : departure
+              if (time >= 0 && time < 86400) expected++
+            })
+          }
+          const actual = calls.filter(call => call.source === kind && call[direction] >= 0 && call[direction] < 86400 && (direction === 'arrival' ? call.allowsArrival : call.allowsDeparture))
+          expect(actual.length, `${station.name} ${kind} ${direction}`).toBe(expected)
+          expect(actual.length).toBeGreaterThan(0)
+        }
+      }
+      const routes = [...new Set(calls.map(call => call.train.route))]
+      if (station.id === 'stratford') expect(routes.sort()).toEqual(['Central', 'DLR', 'Elizabeth line', 'Greater Anglia', 'Jubilee', 'Mildmay'])
+      if (station.id === 'clapham-junction') expect(routes).toEqual(expect.arrayContaining(['Mildmay', 'Windrush', 'Southern', 'South Western Railway']))
+    }
+    expect(boardInterchange('Stratford International')).toBeUndefined()
+    expect(boardInterchange('Stratford High Street')).toBeUndefined()
+    expect(boardInterchange('Stratford (London)')?.id).toBe('stratford')
+  })
+  it('retains repeated visits and same-time services, deduplicates IDs and honours source ownership', () => {
+    const station = BOARD_INTERCHANGES[0]
+    const snapshot: NetworkSnapshot = { ...tfl, stops: [[0, 0, 'Start', '', 'start'], [0, 0, 'Alias', '', station.tflStopIds[0]], [0, 0, 'Elsewhere', '', 'other'], [0, 0, 'Rail', '', 'crs:SRA'], [0, 0, 'End', '', 'end']], trains: [] }
+    const train: NetworkTrain = { id: 'same-id', route: 'Central', headsign: 'End', mode: 'tube', shortName: 'A', category: 'metro', start: -60, end: 400, stops: [[0, -60, -60], [1, 0, 10], [2, 100, 100], [1, 200, 210], [4, 400, 400]] }
+    const national: NationalRailTrain = { ...train, mode: 'national-rail', route: 'Greater Anglia', direction: 'outbound', source: { table: 'test', column: 1 }, stops: [[0, -60, -60], [3, 0, 10], [2, 100, 100], [3, 200, 210], [4, 400, 400]], pickupOnlyIndexes: [1], setDownOnlyIndexes: [3] }
+    const tflSource = { ...snapshot, trains: [train, train, { ...train, id: 'second-train' }, national] }
+    const railSource = { ...snapshot, trains: [national, national, { ...national, id: 'wrong-owner', mode: 'elizabeth-line' as const }] }
+    const calls = combinedStationCalls(station, '2026-09-04', source(tflSource), source(railSource))
+    expect(calls).toHaveLength(6)
+    expect(calls.filter(call => call.train.id === train.id)).toHaveLength(4)
+    expect(upcomingStationCalls(calls, 'arrival', 0, 0, 86400).filter(call => call.source === 'national-rail').map(call => call.index)).toEqual([3])
+    expect(upcomingStationCalls(calls, 'departure', 0, 0, 86400, 'Greater Anglia').map(call => call.index)).toEqual([1])
+    expect(calls.find(call => call.source === 'national-rail')!.train).toBe(national)
+    expect(combinedStationCalls(station, '2026-09-05', source(tflSource), source(railSource))).toEqual([])
+  })
+  it('clips each source independently at a chunk boundary without losing the rest of the hour', () => {
+    const calls = combinedStationCalls(BOARD_INTERCHANGES[0], '2026-09-04', source(tfl, 21600, 28800), source(rail))
+    const upcoming = upcomingStationCalls(calls, 'departure', 27900, 0, 86400, '', 1000)
+    expect(upcoming.some(call => call.source === 'tfl')).toBe(true)
+    expect(upcoming.filter(call => call.source === 'tfl').every(call => call.departure < 28800)).toBe(true)
+    expect(upcoming.some(call => call.source === 'national-rail' && call.departure >= 28800)).toBe(true)
+    expect(upcomingStationCalls(calls, 'arrival', 86400, 0, 86400)).toEqual([])
+    const partial = combinedStationCalls(BOARD_INTERCHANGES[0], '2026-09-04', undefined, source(rail))
+    expect(partial.every(call => call.source === 'national-rail')).toBe(true)
+  })
+})
