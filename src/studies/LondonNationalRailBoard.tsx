@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, type ReactNode } from 'react'
 import { formatServiceTime } from '@motionstudies/core/domain/network'
 import { type NationalRailSnapshot } from '../data/national-rail.ts'
 import { LONDON_RAIL_CORRIDORS, type RailBoardStation, type RailBoardStationId } from '../editions/london-national-rail.ts'
 import { LondonStationDepartures } from './LondonStationDepartures.tsx'
 
-export function LondonNationalRailBoard({ snapshot, stations, stationId, time, windowStart, windowEnd, selectedId, onStation, onSelect, onSeek, onPulse, partial, animate }: {
+export function LondonNationalRailBoard({ snapshot, stations, stationId, time, windowStart, windowEnd, selectedId, onStation, onSelect, onSeek, onPulse, partial, animate, passengerContent }: {
   snapshot: NationalRailSnapshot; stations: readonly RailBoardStation[]; stationId: RailBoardStationId; time: number; windowStart: number; windowEnd: number; selectedId?: string
+  passengerContent?: ReactNode
   partial?: boolean; animate?: boolean
   onStation: (id: RailBoardStationId) => void; onSelect: (id: string | undefined) => void; onSeek: (time: number) => void; onPulse: () => void
 }) {
@@ -25,6 +26,7 @@ export function LondonNationalRailBoard({ snapshot, stations, stationId, time, w
           {stations.map(value => <option key={value.id} value={value.id}>{value.name}</option>)}
         </select>
       </label>
+      {passengerContent}
       <LondonStationDepartures key={station.id} snapshot={snapshot} stationName={station.stationName} time={time}
         windowStart={windowStart} windowEnd={windowEnd} maxRows={3} selectedId={selectedId} animate={animate}
         onDirection={setDirection} emptyMessage={station.note}

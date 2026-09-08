@@ -527,6 +527,7 @@ const styles = new Set()
 const visited = new Set()
 const roadDetailKey = 'src/studies/LondonRoadObservations.tsx'
 const railBoardKey = 'src/studies/LondonNationalRailBoard.tsx'
+const passengerCardKey = 'src/studies/LondonPassengerDemand.tsx'
 const stationBoardKey = 'src/studies/LondonStationDepartures.tsx'
 const airportCardKey = 'src/studies/AirportCard.tsx'
 const railLayerKey = 'src/studies/LondonNationalRailLayer.tsx'
@@ -540,7 +541,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // This panel is requested only after road selection. Budget its own payload
   // separately; it is not part of the opening network scene's transfer.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, railLayerKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, railLayerKey, passengerCardKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -588,6 +589,10 @@ if (!railLayer?.isDynamicEntry || railLayer.imports?.some(key => !visited.has(ke
 const railLayerSize = await totalGzipSize([railLayer.file])
 console.log(`All Change optional rail renderer: ${kibibytes(railLayerSize)} / 6.0 KiB`)
 if (railLayerSize > 6 * 1024) throw new Error('Rail renderer transfer budget exceeded')
+const passengerCard = await optionalCardSize(passengerCardKey)
+const passengerBytes = gzipSync(await readFile('fixtures/passenger-demand/numbat-2025-friday.json'), { level: 9 }).byteLength
+console.log(`All Change optional passenger profile: ${kibibytes(passengerCard.javaScript)} JS / 4.0 KiB; ${kibibytes(passengerCard.css)} CSS / 2.0 KiB; ${kibibytes(passengerBytes)} data / 4.0 KiB`)
+if (passengerCard.javaScript > 4 * 1024 || passengerCard.css > 2 * 1024 || passengerBytes > 4 * 1024) throw new Error('Passenger profile transfer budget exceeded')
 const stationBoard = await optionalCardSize(stationBoardKey)
 console.log(`All Change optional station board: ${kibibytes(stationBoard.javaScript)} JavaScript / 4.0 KiB; ${kibibytes(stationBoard.css)} CSS / 3.0 KiB`)
 if (stationBoard.javaScript > 4 * 1024 || stationBoard.css > 3 * 1024) throw new Error('Station board transfer budget exceeded')

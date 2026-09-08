@@ -115,6 +115,8 @@ const AirportHeroCard = lazy(() => import('./AirportCard.tsx'))
 const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
 import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
 const LondonNationalRailBoard = lazy(() => import('./LondonNationalRailBoard.tsx').then(module => ({ default: module.LondonNationalRailBoard })))
+import { passengerStationId } from '../editions/london-passenger-stations.ts'
+const LondonPassengerDemand = lazy(() => import('./LondonPassengerDemand.tsx'))
 const LondonStationDepartures = lazy(() => import('./LondonStationDepartures.tsx').then(module => ({ default: module.LondonStationDepartures })))
 import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
 import type { MapSelectionSceneExtension } from './LondonMapSelection.tsx'
@@ -330,6 +332,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const railStations = railCatalogue.stations
   const pulseHubs = useMemo(() => railPulseHubs(railStations), [railStations])
   const pulseHub = pulseHubs.find(hub => hub.id === pulseHubId)
+  const passengerId = operationsMode === 'plan' ? passengerStationId(pulseHub?.name ?? selectedStation?.name) : undefined
   const railFeed = useNationalRail(edition.data.nationalRail,
     nationalRailEnabled || (searchOpen && query.trim().length >= 2) ? LONDON_RAIL_CORRIDORS.map(corridor => corridor.id) : pulseHub?.nationalRail ?? [],
     morningNetwork?.metadata.serviceDate,
@@ -2063,8 +2066,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         /></Suspense>
       ) : (
       <section
-        className={`london-status-card${selectedStation && !pulseHub && operationsMode === 'plan' ? ' has-station-board' : ''}${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
-        aria-live={selectedStation ? 'off' : 'polite'}
+        className={`london-status-card${passengerId ? ' has-passenger-demand' : ''}${selectedStation && !pulseHub && operationsMode === 'plan' ? ' has-station-board' : ''}${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
+        aria-live={selectedStation || passengerId ? 'off' : 'polite'}
       >
         {pulseHub && (
           <>
@@ -2178,6 +2181,9 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         ) : (
           <p>Drawing London…</p>
         )}
+        {passengerId && <Suspense fallback={<p>Loading passenger profile…</p>}>
+          <LondonPassengerDemand stationId={passengerId} time={time} />
+        </Suspense>}
         {selectedStation && !pulseHub && network && operationsMode === 'plan' && <Suspense fallback={<p role="status">Loading station board…</p>}>
           <LondonStationDepartures key={selectedStation.name} snapshot={network} stationName={selectedStation.name}
             time={time} windowStart={network.metadata.windowStart}
@@ -2281,6 +2287,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       {nationalRailEnabled && railBoardSnapshot && !pulseHub && network && (
         <Suspense fallback={<span className="london-layout-status" role="status">Loading rail board…</span>}><LondonNationalRailBoard
           snapshot={railBoardSnapshot} stations={railStations} stationId={nationalRailStationId} time={time} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd}
+          passengerContent={operationsMode === 'plan' && passengerStationId(railStation.stationName) ? <Suspense fallback={<p>Loading passenger profile…</p>}><LondonPassengerDemand key={railStation.id} stationId={passengerStationId(railStation.stationName)!} time={time} /></Suspense> : undefined}
           partial={railStation.corridors.some(id => !railFeed.snapshots[id])} animate={!isPlaying || playbackRate <= 30}
           onStation={id => {
             clearSelection()

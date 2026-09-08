@@ -1,0 +1,1274 @@
+{
+  "source": {
+    "url": "https://crowding.data.tfl.gov.uk/NUMBAT/NUMBAT%202025/NBT25FRI_Outputs.xlsx",
+    "sha256": "22eeb8fe2fd5ee2c974aaff81c7f3e114c53e39f46cd03c273c072974f5d9b5c",
+    "year": 2025,
+    "dayType": "Friday",
+    "season": "autumn",
+    "published": "2026-08-10",
+    "retrieved": "2026-09-08"
+  },
+  "stations": {
+    "bank": {
+      "entries": {
+        "sheet": "Station_Entries",
+        "row": 25,
+        "total": 49893.338473036725
+      },
+      "exits": {
+        "sheet": "Station_Exits",
+        "row": 25,
+        "total": 51329.58512516916
+      },
+      "interchanges": {
+        "sheet": "Station_Flows",
+        "total": 101135.80140900835,
+        "links": [
+          {
+            "row": 210,
+            "id": "10514>10528",
+            "from": "Central // EB",
+            "to": "Northern // NB",
+            "total": 672.0959041199999
+          },
+          {
+            "row": 211,
+            "id": "10514>10529",
+            "from": "Central // EB",
+            "to": "Northern // SB",
+            "total": 3596.4208482999993
+          },
+          {
+            "row": 212,
+            "id": "10514>10534",
+            "from": "Central // EB",
+            "to": "Waterloo & City // WB",
+            "total": 135.259876089
+          },
+          {
+            "row": 213,
+            "id": "10514>10590",
+            "from": "Central // EB",
+            "to": "DLR // OB",
+            "total": 5905.696971299998
+          },
+          {
+            "row": 214,
+            "id": "10514>11316",
+            "from": "Central // EB",
+            "to": "Cir+Dis // EB",
+            "total": 436.58235937099994
+          },
+          {
+            "row": 215,
+            "id": "10514>11317",
+            "from": "Central // EB",
+            "to": "Cir+Dis // WB",
+            "total": 55.59611449199998
+          },
+          {
+            "row": 217,
+            "id": "10515>10528",
+            "from": "Central // WB",
+            "to": "Northern // NB",
+            "total": 2640.4038795999995
+          },
+          {
+            "row": 218,
+            "id": "10515>10529",
+            "from": "Central // WB",
+            "to": "Northern // SB",
+            "total": 8505.172965
+          },
+          {
+            "row": 219,
+            "id": "10515>10534",
+            "from": "Central // WB",
+            "to": "Waterloo & City // WB",
+            "total": 4201.067181999999
+          },
+          {
+            "row": 220,
+            "id": "10515>10590",
+            "from": "Central // WB",
+            "to": "DLR // OB",
+            "total": 1505.9462811999997
+          },
+          {
+            "row": 221,
+            "id": "10515>11316",
+            "from": "Central // WB",
+            "to": "Cir+Dis // EB",
+            "total": 3.0002254122047893
+          },
+          {
+            "row": 222,
+            "id": "10515>11317",
+            "from": "Central // WB",
+            "to": "Cir+Dis // WB",
+            "total": 225.92149719500011
+          },
+          {
+            "row": 224,
+            "id": "10528>10514",
+            "from": "Northern // NB",
+            "to": "Central // EB",
+            "total": 9146.136331999998
+          },
+          {
+            "row": 225,
+            "id": "10528>10515",
+            "from": "Northern // NB",
+            "to": "Central // WB",
+            "total": 4452.4299584
+          },
+          {
+            "row": 226,
+            "id": "10528>10534",
+            "from": "Northern // NB",
+            "to": "Waterloo & City // WB",
+            "total": 0.3252773159209
+          },
+          {
+            "row": 227,
+            "id": "10528>10590",
+            "from": "Northern // NB",
+            "to": "DLR // OB",
+            "total": 3781.5038360000003
+          },
+          {
+            "row": 228,
+            "id": "10528>11316",
+            "from": "Northern // NB",
+            "to": "Cir+Dis // EB",
+            "total": 2602.9326113
+          },
+          {
+            "row": 229,
+            "id": "10528>11317",
+            "from": "Northern // NB",
+            "to": "Cir+Dis // WB",
+            "total": 782.5572929
+          },
+          {
+            "row": 231,
+            "id": "10529>10514",
+            "from": "Northern // SB",
+            "to": "Central // EB",
+            "total": 2396.7164948
+          },
+          {
+            "row": 232,
+            "id": "10529>10515",
+            "from": "Northern // SB",
+            "to": "Central // WB",
+            "total": 619.61829794
+          },
+          {
+            "row": 233,
+            "id": "10529>10534",
+            "from": "Northern // SB",
+            "to": "Waterloo & City // WB",
+            "total": 580.6765132499999
+          },
+          {
+            "row": 234,
+            "id": "10529>10590",
+            "from": "Northern // SB",
+            "to": "DLR // OB",
+            "total": 8360.138006000001
+          },
+          {
+            "row": 235,
+            "id": "10529>11316",
+            "from": "Northern // SB",
+            "to": "Cir+Dis // EB",
+            "total": 2019.5128031000006
+          },
+          {
+            "row": 236,
+            "id": "10529>11317",
+            "from": "Northern // SB",
+            "to": "Cir+Dis // WB",
+            "total": 890.6936766000002
+          },
+          {
+            "row": 238,
+            "id": "10535>10514",
+            "from": "Waterloo & City // EB",
+            "to": "Central // EB",
+            "total": 4510.0489798
+          },
+          {
+            "row": 239,
+            "id": "10535>10515",
+            "from": "Waterloo & City // EB",
+            "to": "Central // WB",
+            "total": 159.03883083229996
+          },
+          {
+            "row": 240,
+            "id": "10535>10528",
+            "from": "Waterloo & City // EB",
+            "to": "Northern // NB",
+            "total": 641.1888264879079
+          },
+          {
+            "row": 241,
+            "id": "10535>10590",
+            "from": "Waterloo & City // EB",
+            "to": "DLR // OB",
+            "total": 672.5739966999998
+          },
+          {
+            "row": 242,
+            "id": "10535>11316",
+            "from": "Waterloo & City // EB",
+            "to": "Cir+Dis // EB",
+            "total": 80.41625753400001
+          },
+          {
+            "row": 243,
+            "id": "10535>11317",
+            "from": "Waterloo & City // EB",
+            "to": "Cir+Dis // WB",
+            "total": 0.13386137310000001
+          },
+          {
+            "row": 245,
+            "id": "10591>10514",
+            "from": "DLR // IB",
+            "to": "Central // EB",
+            "total": 1463.0335181000007
+          },
+          {
+            "row": 246,
+            "id": "10591>10515",
+            "from": "DLR // IB",
+            "to": "Central // WB",
+            "total": 5351.737458549999
+          },
+          {
+            "row": 247,
+            "id": "10591>10528",
+            "from": "DLR // IB",
+            "to": "Northern // NB",
+            "total": 7579.203823700001
+          },
+          {
+            "row": 248,
+            "id": "10591>10529",
+            "from": "DLR // IB",
+            "to": "Northern // SB",
+            "total": 3474.3433704999993
+          },
+          {
+            "row": 249,
+            "id": "10591>10534",
+            "from": "DLR // IB",
+            "to": "Waterloo & City // WB",
+            "total": 626.0866995500004
+          },
+          {
+            "row": 250,
+            "id": "10591>11316",
+            "from": "DLR // IB",
+            "to": "Cir+Dis // EB",
+            "total": 480.281904173
+          },
+          {
+            "row": 251,
+            "id": "10591>11317",
+            "from": "DLR // IB",
+            "to": "Cir+Dis // WB",
+            "total": 2230.0290732000017
+          },
+          {
+            "row": 253,
+            "id": "11316>10514",
+            "from": "Cir+Dis // EB",
+            "to": "Central // EB",
+            "total": 198.78574819000005
+          },
+          {
+            "row": 254,
+            "id": "11316>10515",
+            "from": "Cir+Dis // EB",
+            "to": "Central // WB",
+            "total": 61.733573121
+          },
+          {
+            "row": 255,
+            "id": "11316>10528",
+            "from": "Cir+Dis // EB",
+            "to": "Northern // NB",
+            "total": 1090.5285476229997
+          },
+          {
+            "row": 256,
+            "id": "11316>10529",
+            "from": "Cir+Dis // EB",
+            "to": "Northern // SB",
+            "total": 674.9498203200001
+          },
+          {
+            "row": 257,
+            "id": "11316>10534",
+            "from": "Cir+Dis // EB",
+            "to": "Waterloo & City // WB",
+            "total": 0.08991424657666605
+          },
+          {
+            "row": 258,
+            "id": "11316>10590",
+            "from": "Cir+Dis // EB",
+            "to": "DLR // OB",
+            "total": 2055.3101696000003
+          },
+          {
+            "row": 260,
+            "id": "11317>10514",
+            "from": "Cir+Dis // WB",
+            "to": "Central // EB",
+            "total": 1.3497086231000002
+          },
+          {
+            "row": 261,
+            "id": "11317>10515",
+            "from": "Cir+Dis // WB",
+            "to": "Central // WB",
+            "total": 793.7225122100001
+          },
+          {
+            "row": 262,
+            "id": "11317>10528",
+            "from": "Cir+Dis // WB",
+            "to": "Northern // NB",
+            "total": 2491.0728240000003
+          },
+          {
+            "row": 263,
+            "id": "11317>10529",
+            "from": "Cir+Dis // WB",
+            "to": "Northern // SB",
+            "total": 2324.8117276999997
+          },
+          {
+            "row": 264,
+            "id": "11317>10534",
+            "from": "Cir+Dis // WB",
+            "to": "Waterloo & City // WB",
+            "total": 99.19075878925248
+          },
+          {
+            "row": 265,
+            "id": "11317>10590",
+            "from": "Cir+Dis // WB",
+            "to": "DLR // OB",
+            "total": 559.7343004
+          }
+        ]
+      }
+    },
+    "stratford": {
+      "entries": {
+        "sheet": "Station_Entries",
+        "row": 386,
+        "total": 84316.6632565038
+      },
+      "exits": {
+        "sheet": "Station_Exits",
+        "row": 386,
+        "total": 86358.11246527598
+      },
+      "interchanges": {
+        "sheet": "Station_Flows",
+        "total": 154881.99788291022,
+        "links": [
+          {
+            "row": 2961,
+            "id": "110514>110522",
+            "from": "Central // EB",
+            "to": "Jubilee // NB",
+            "total": 2147.014177341999
+          },
+          {
+            "row": 2962,
+            "id": "110514>110576",
+            "from": "Central // EB",
+            "to": "Elizabeth Line // EB",
+            "total": 6657.585358999998
+          },
+          {
+            "row": 2963,
+            "id": "110514>110577",
+            "from": "Central // EB",
+            "to": "Elizabeth Line // WB",
+            "total": 74.04253371800002
+          },
+          {
+            "row": 2964,
+            "id": "110514>110582",
+            "from": "Central // EB",
+            "to": "NR Great Eastern // DN",
+            "total": 1370.49707893993
+          },
+          {
+            "row": 2965,
+            "id": "110514>110583",
+            "from": "Central // EB",
+            "to": "NR Great Eastern // UP",
+            "total": 55.5542606530308
+          },
+          {
+            "row": 2966,
+            "id": "110514>110584",
+            "from": "Central // EB",
+            "to": "NR West Anglia // DN",
+            "total": 1239.6056417400002
+          },
+          {
+            "row": 2967,
+            "id": "110514>110589",
+            "from": "Central // EB",
+            "to": "LO Mildmay // WB",
+            "total": 1852.6246711000001
+          },
+          {
+            "row": 2968,
+            "id": "110514>110590",
+            "from": "Central // EB",
+            "to": "DLR (Stratford route) // OB",
+            "total": 1640.3892458940002
+          },
+          {
+            "row": 2969,
+            "id": "110514>110592",
+            "from": "Central // EB",
+            "to": "DLR (Stratford Int'l route) // OB",
+            "total": 1133.1923897463198
+          },
+          {
+            "row": 2970,
+            "id": "110514>110593",
+            "from": "Central // EB",
+            "to": "DLR (Stratford Int'l route) // IB",
+            "total": 919.5956113500001
+          },
+          {
+            "row": 2972,
+            "id": "110515>110522",
+            "from": "Central // WB",
+            "to": "Jubilee // NB",
+            "total": 10648.19462479
+          },
+          {
+            "row": 2973,
+            "id": "110515>110576",
+            "from": "Central // WB",
+            "to": "Elizabeth Line // EB",
+            "total": 982.1489594800001
+          },
+          {
+            "row": 2974,
+            "id": "110515>110577",
+            "from": "Central // WB",
+            "to": "Elizabeth Line // WB",
+            "total": 6808.889651139385
+          },
+          {
+            "row": 2975,
+            "id": "110515>110582",
+            "from": "Central // WB",
+            "to": "NR Great Eastern // DN",
+            "total": 128.65956566619485
+          },
+          {
+            "row": 2976,
+            "id": "110515>110583",
+            "from": "Central // WB",
+            "to": "NR Great Eastern // UP",
+            "total": 142.54129173981
+          },
+          {
+            "row": 2977,
+            "id": "110515>110584",
+            "from": "Central // WB",
+            "to": "NR West Anglia // DN",
+            "total": 741.6891164
+          },
+          {
+            "row": 2978,
+            "id": "110515>110589",
+            "from": "Central // WB",
+            "to": "LO Mildmay // WB",
+            "total": 2733.3275486000007
+          },
+          {
+            "row": 2979,
+            "id": "110515>110590",
+            "from": "Central // WB",
+            "to": "DLR (Stratford route) // OB",
+            "total": 1720.5588033200002
+          },
+          {
+            "row": 2980,
+            "id": "110515>110592",
+            "from": "Central // WB",
+            "to": "DLR (Stratford Int'l route) // OB",
+            "total": 997.0024533558002
+          },
+          {
+            "row": 2981,
+            "id": "110515>110593",
+            "from": "Central // WB",
+            "to": "DLR (Stratford Int'l route) // IB",
+            "total": 119.54384392900005
+          },
+          {
+            "row": 2983,
+            "id": "110523>110514",
+            "from": "Jubilee // SB",
+            "to": "Central // EB",
+            "total": 7340.533305009999
+          },
+          {
+            "row": 2984,
+            "id": "110523>110515",
+            "from": "Jubilee // SB",
+            "to": "Central // WB",
+            "total": 1577.815338308001
+          },
+          {
+            "row": 2985,
+            "id": "110523>110576",
+            "from": "Jubilee // SB",
+            "to": "Elizabeth Line // EB",
+            "total": 5717.063121772921
+          },
+          {
+            "row": 2986,
+            "id": "110523>110577",
+            "from": "Jubilee // SB",
+            "to": "Elizabeth Line // WB",
+            "total": 1421.2160097699993
+          },
+          {
+            "row": 2987,
+            "id": "110523>110582",
+            "from": "Jubilee // SB",
+            "to": "NR Great Eastern // DN",
+            "total": 949.3819290729996
+          },
+          {
+            "row": 2988,
+            "id": "110523>110583",
+            "from": "Jubilee // SB",
+            "to": "NR Great Eastern // UP",
+            "total": 254.78731013419
+          },
+          {
+            "row": 2989,
+            "id": "110523>110584",
+            "from": "Jubilee // SB",
+            "to": "NR West Anglia // DN",
+            "total": 3567.5481032999987
+          },
+          {
+            "row": 2990,
+            "id": "110523>110589",
+            "from": "Jubilee // SB",
+            "to": "LO Mildmay // WB",
+            "total": 4259.673373799999
+          },
+          {
+            "row": 2991,
+            "id": "110523>110590",
+            "from": "Jubilee // SB",
+            "to": "DLR (Stratford route) // OB",
+            "total": 1044.0298409399998
+          },
+          {
+            "row": 2992,
+            "id": "110523>110592",
+            "from": "Jubilee // SB",
+            "to": "DLR (Stratford Int'l route) // OB",
+            "total": 69.57942817355341
+          },
+          {
+            "row": 2993,
+            "id": "110523>110593",
+            "from": "Jubilee // SB",
+            "to": "DLR (Stratford Int'l route) // IB",
+            "total": 695.5454203199998
+          },
+          {
+            "row": 2995,
+            "id": "110576>110514",
+            "from": "Elizabeth Line // EB",
+            "to": "Central // EB",
+            "total": 5767.43719634
+          },
+          {
+            "row": 2996,
+            "id": "110576>110515",
+            "from": "Elizabeth Line // EB",
+            "to": "Central // WB",
+            "total": 53.485167982229996
+          },
+          {
+            "row": 2997,
+            "id": "110576>110522",
+            "from": "Elizabeth Line // EB",
+            "to": "Jubilee // NB",
+            "total": 2035.4857185115304
+          },
+          {
+            "row": 2998,
+            "id": "110576>110582",
+            "from": "Elizabeth Line // EB",
+            "to": "NR Great Eastern // DN",
+            "total": 1636.6734450500005
+          },
+          {
+            "row": 2999,
+            "id": "110576>110583",
+            "from": "Elizabeth Line // EB",
+            "to": "NR Great Eastern // UP",
+            "total": 71.548829032
+          },
+          {
+            "row": 3000,
+            "id": "110576>110584",
+            "from": "Elizabeth Line // EB",
+            "to": "NR West Anglia // DN",
+            "total": 1028.879153688
+          },
+          {
+            "row": 3001,
+            "id": "110576>110585",
+            "from": "Elizabeth Line // EB",
+            "to": "NR West Anglia // UP",
+            "total": 0.0
+          },
+          {
+            "row": 3002,
+            "id": "110576>110589",
+            "from": "Elizabeth Line // EB",
+            "to": "LO Mildmay // WB",
+            "total": 1257.8660591113699
+          },
+          {
+            "row": 3003,
+            "id": "110576>110590",
+            "from": "Elizabeth Line // EB",
+            "to": "DLR (Stratford route) // OB",
+            "total": 1447.6447700300002
+          },
+          {
+            "row": 3004,
+            "id": "110576>110592",
+            "from": "Elizabeth Line // EB",
+            "to": "DLR (Stratford Int'l route) // OB",
+            "total": 1083.8103809400002
+          },
+          {
+            "row": 3005,
+            "id": "110576>110593",
+            "from": "Elizabeth Line // EB",
+            "to": "DLR (Stratford Int'l route) // IB",
+            "total": 787.6044109320001
+          },
+          {
+            "row": 3007,
+            "id": "110577>110514",
+            "from": "Elizabeth Line // WB",
+            "to": "Central // EB",
+            "total": 915.8334913000001
+          },
+          {
+            "row": 3008,
+            "id": "110577>110515",
+            "from": "Elizabeth Line // WB",
+            "to": "Central // WB",
+            "total": 5465.933590359995
+          },
+          {
+            "row": 3009,
+            "id": "110577>110522",
+            "from": "Elizabeth Line // WB",
+            "to": "Jubilee // NB",
+            "total": 7618.159531099996
+          },
+          {
+            "row": 3010,
+            "id": "110577>110582",
+            "from": "Elizabeth Line // WB",
+            "to": "NR Great Eastern // DN",
+            "total": 76.94373509608194
+          },
+          {
+            "row": 3011,
+            "id": "110577>110583",
+            "from": "Elizabeth Line // WB",
+            "to": "NR Great Eastern // UP",
+            "total": 534.0642502400001
+          },
+          {
+            "row": 3012,
+            "id": "110577>110584",
+            "from": "Elizabeth Line // WB",
+            "to": "NR West Anglia // DN",
+            "total": 1467.47184351
+          },
+          {
+            "row": 3013,
+            "id": "110577>110585",
+            "from": "Elizabeth Line // WB",
+            "to": "NR West Anglia // UP",
+            "total": 0.0
+          },
+          {
+            "row": 3014,
+            "id": "110577>110589",
+            "from": "Elizabeth Line // WB",
+            "to": "LO Mildmay // WB",
+            "total": 2660.2084117000013
+          },
+          {
+            "row": 3015,
+            "id": "110577>110590",
+            "from": "Elizabeth Line // WB",
+            "to": "DLR (Stratford route) // OB",
+            "total": 1681.8078673000005
+          },
+          {
+            "row": 3016,
+            "id": "110577>110592",
+            "from": "Elizabeth Line // WB",
+            "to": "DLR (Stratford Int'l route) // OB",
+            "total": 574.81142732
+          },
+          {
+            "row": 3017,
+            "id": "110577>110593",
+            "from": "Elizabeth Line // WB",
+            "to": "DLR (Stratford Int'l route) // IB",
+            "total": 128.41257750199995
+          },
+          {
+            "row": 3019,
+            "id": "110582>110514",
+            "from": "NR Great Eastern // DN",
+            "to": "Central // EB",
+            "total": 249.2225634492201
+          },
+          {
+            "row": 3020,
+            "id": "110582>110515",
+            "from": "NR Great Eastern // DN",
+            "to": "Central // WB",
+            "total": 67.55266378927003
+          },
+          {
+            "row": 3021,
+            "id": "110582>110522",
+            "from": "NR Great Eastern // DN",
+            "to": "Jubilee // NB",
+            "total": 259.08954015999996
+          },
+          {
+            "row": 3022,
+            "id": "110582>110576",
+            "from": "NR Great Eastern // DN",
+            "to": "Elizabeth Line // EB",
+            "total": 534.8663013772999
+          },
+          {
+            "row": 3023,
+            "id": "110582>110577",
+            "from": "NR Great Eastern // DN",
+            "to": "Elizabeth Line // WB",
+            "total": 21.907555441619994
+          },
+          {
+            "row": 3024,
+            "id": "110582>110584",
+            "from": "NR Great Eastern // DN",
+            "to": "NR West Anglia // DN",
+            "total": 23.5968234435972
+          },
+          {
+            "row": 3025,
+            "id": "110582>110589",
+            "from": "NR Great Eastern // DN",
+            "to": "LO Mildmay // WB",
+            "total": 78.8391339934041
+          },
+          {
+            "row": 3026,
+            "id": "110582>110590",
+            "from": "NR Great Eastern // DN",
+            "to": "DLR (Stratford route) // OB",
+            "total": 59.83361644783002
+          },
+          {
+            "row": 3027,
+            "id": "110582>110592",
+            "from": "NR Great Eastern // DN",
+            "to": "DLR (Stratford Int'l route) // OB",
+            "total": 149.08397333219997
+          },
+          {
+            "row": 3028,
+            "id": "110582>110593",
+            "from": "NR Great Eastern // DN",
+            "to": "DLR (Stratford Int'l route) // IB",
+            "total": 123.8423003736
+          },
+          {
+            "row": 3030,
+            "id": "110583>110514",
+            "from": "NR Great Eastern // UP",
+            "to": "Central // EB",
+            "total": 123.44755493765199
+          },
+          {
+            "row": 3031,
+            "id": "110583>110515",
+            "from": "NR Great Eastern // UP",
+            "to": "Central // WB",
+            "total": 1077.4380759958394
+          },
+          {
+            "row": 3032,
+            "id": "110583>110522",
+            "from": "NR Great Eastern // UP",
+            "to": "Jubilee // NB",
+            "total": 882.0107282499998
+          },
+          {
+            "row": 3033,
+            "id": "110583>110576",
+            "from": "NR Great Eastern // UP",
+            "to": "Elizabeth Line // EB",
+            "total": 61.10895597148468
+          },
+          {
+            "row": 3034,
+            "id": "110583>110577",
+            "from": "NR Great Eastern // UP",
+            "to": "Elizabeth Line // WB",
+            "total": 853.608585101
+          },
+          {
+            "row": 3035,
+            "id": "110583>110584",
+            "from": "NR Great Eastern // UP",
+            "to": "NR West Anglia // DN",
+            "total": 157.76133049540007
+          },
+          {
+            "row": 3036,
+            "id": "110583>110589",
+            "from": "NR Great Eastern // UP",
+            "to": "LO Mildmay // WB",
+            "total": 267.235359232624
+          },
+          {
+            "row": 3037,
+            "id": "110583>110590",
+            "from": "NR Great Eastern // UP",
+            "to": "DLR (Stratford route) // OB",
+            "total": 121.958706692377
+          },
+          {
+            "row": 3038,
+            "id": "110583>110592",
+            "from": "NR Great Eastern // UP",
+            "to": "DLR (Stratford Int'l route) // OB",
+            "total": 103.81499293766618
+          },
+          {
+            "row": 3039,
+            "id": "110583>110593",
+            "from": "NR Great Eastern // UP",
+            "to": "DLR (Stratford Int'l route) // IB",
+            "total": 16.76270139409999
+          },
+          {
+            "row": 3042,
+            "id": "110585>110514",
+            "from": "NR West Anglia // UP",
+            "to": "Central // EB",
+            "total": 688.0787849000001
+          },
+          {
+            "row": 3043,
+            "id": "110585>110515",
+            "from": "NR West Anglia // UP",
+            "to": "Central // WB",
+            "total": 1365.6442547999995
+          },
+          {
+            "row": 3044,
+            "id": "110585>110522",
+            "from": "NR West Anglia // UP",
+            "to": "Jubilee // NB",
+            "total": 3743.372191
+          },
+          {
+            "row": 3045,
+            "id": "110585>110576",
+            "from": "NR West Anglia // UP",
+            "to": "Elizabeth Line // EB",
+            "total": 1234.7463803999997
+          },
+          {
+            "row": 3046,
+            "id": "110585>110577",
+            "from": "NR West Anglia // UP",
+            "to": "Elizabeth Line // WB",
+            "total": 966.2593454300005
+          },
+          {
+            "row": 3047,
+            "id": "110585>110582",
+            "from": "NR West Anglia // UP",
+            "to": "NR Great Eastern // DN",
+            "total": 195.80374528170054
+          },
+          {
+            "row": 3048,
+            "id": "110585>110583",
+            "from": "NR West Anglia // UP",
+            "to": "NR Great Eastern // UP",
+            "total": 25.019947065401695
+          },
+          {
+            "row": 3049,
+            "id": "110585>110589",
+            "from": "NR West Anglia // UP",
+            "to": "LO Mildmay // WB",
+            "total": 202.59418847400008
+          },
+          {
+            "row": 3050,
+            "id": "110585>110590",
+            "from": "NR West Anglia // UP",
+            "to": "DLR (Stratford route) // OB",
+            "total": 784.2069228000003
+          },
+          {
+            "row": 3051,
+            "id": "110585>110592",
+            "from": "NR West Anglia // UP",
+            "to": "DLR (Stratford Int'l route) // OB",
+            "total": 1122.8637537999996
+          },
+          {
+            "row": 3052,
+            "id": "110585>110593",
+            "from": "NR West Anglia // UP",
+            "to": "DLR (Stratford Int'l route) // IB",
+            "total": 67.1728564685
+          },
+          {
+            "row": 3054,
+            "id": "110588>110514",
+            "from": "LO Mildmay // EB",
+            "to": "Central // EB",
+            "total": 2369.7103266999998
+          },
+          {
+            "row": 3055,
+            "id": "110588>110515",
+            "from": "LO Mildmay // EB",
+            "to": "Central // WB",
+            "total": 1566.4927021999993
+          },
+          {
+            "row": 3056,
+            "id": "110588>110522",
+            "from": "LO Mildmay // EB",
+            "to": "Jubilee // NB",
+            "total": 4034.923050000001
+          },
+          {
+            "row": 3057,
+            "id": "110588>110576",
+            "from": "LO Mildmay // EB",
+            "to": "Elizabeth Line // EB",
+            "total": 2515.143498800001
+          },
+          {
+            "row": 3058,
+            "id": "110588>110577",
+            "from": "LO Mildmay // EB",
+            "to": "Elizabeth Line // WB",
+            "total": 1263.0624780299995
+          },
+          {
+            "row": 3059,
+            "id": "110588>110582",
+            "from": "LO Mildmay // EB",
+            "to": "NR Great Eastern // DN",
+            "total": 281.8353481318001
+          },
+          {
+            "row": 3060,
+            "id": "110588>110583",
+            "from": "LO Mildmay // EB",
+            "to": "NR Great Eastern // UP",
+            "total": 50.78128086336865
+          },
+          {
+            "row": 3061,
+            "id": "110588>110584",
+            "from": "LO Mildmay // EB",
+            "to": "NR West Anglia // DN",
+            "total": 241.72505676166006
+          },
+          {
+            "row": 3062,
+            "id": "110588>110590",
+            "from": "LO Mildmay // EB",
+            "to": "DLR (Stratford route) // OB",
+            "total": 889.9623862000003
+          },
+          {
+            "row": 3063,
+            "id": "110588>110592",
+            "from": "LO Mildmay // EB",
+            "to": "DLR (Stratford Int'l route) // OB",
+            "total": 1153.1463308000007
+          },
+          {
+            "row": 3064,
+            "id": "110588>110593",
+            "from": "LO Mildmay // EB",
+            "to": "DLR (Stratford Int'l route) // IB",
+            "total": 80.07806370272709
+          },
+          {
+            "row": 3066,
+            "id": "110591>110514",
+            "from": "DLR (Stratford route) // IB",
+            "to": "Central // EB",
+            "total": 1430.0227293
+          },
+          {
+            "row": 3067,
+            "id": "110591>110515",
+            "from": "DLR (Stratford route) // IB",
+            "to": "Central // WB",
+            "total": 1992.3181729999994
+          },
+          {
+            "row": 3068,
+            "id": "110591>110522",
+            "from": "DLR (Stratford route) // IB",
+            "to": "Jubilee // NB",
+            "total": 1346.5048649899998
+          },
+          {
+            "row": 3069,
+            "id": "110591>110576",
+            "from": "DLR (Stratford route) // IB",
+            "to": "Elizabeth Line // EB",
+            "total": 1326.4354285000002
+          },
+          {
+            "row": 3070,
+            "id": "110591>110577",
+            "from": "DLR (Stratford route) // IB",
+            "to": "Elizabeth Line // WB",
+            "total": 1907.9842015149998
+          },
+          {
+            "row": 3071,
+            "id": "110591>110582",
+            "from": "DLR (Stratford route) // IB",
+            "to": "NR Great Eastern // DN",
+            "total": 162.01117868438
+          },
+          {
+            "row": 3072,
+            "id": "110591>110583",
+            "from": "DLR (Stratford route) // IB",
+            "to": "NR Great Eastern // UP",
+            "total": 37.69511978023502
+          },
+          {
+            "row": 3073,
+            "id": "110591>110584",
+            "from": "DLR (Stratford route) // IB",
+            "to": "NR West Anglia // DN",
+            "total": 670.5701849
+          },
+          {
+            "row": 3074,
+            "id": "110591>110589",
+            "from": "DLR (Stratford route) // IB",
+            "to": "LO Mildmay // WB",
+            "total": 964.8793189999997
+          },
+          {
+            "row": 3075,
+            "id": "110591>110592",
+            "from": "DLR (Stratford route) // IB",
+            "to": "DLR (Stratford Int'l route) // OB",
+            "total": 144.93155108800002
+          },
+          {
+            "row": 3076,
+            "id": "110591>110593",
+            "from": "DLR (Stratford route) // IB",
+            "to": "DLR (Stratford Int'l route) // IB",
+            "total": 234.10504562999998
+          },
+          {
+            "row": 3078,
+            "id": "110592>110514",
+            "from": "DLR (Stratford Int'l route) // OB",
+            "to": "Central // EB",
+            "total": 80.62872868811625
+          },
+          {
+            "row": 3079,
+            "id": "110592>110515",
+            "from": "DLR (Stratford Int'l route) // OB",
+            "to": "Central // WB",
+            "total": 1108.9488212065003
+          },
+          {
+            "row": 3080,
+            "id": "110592>110522",
+            "from": "DLR (Stratford Int'l route) // OB",
+            "to": "Jubilee // NB",
+            "total": 772.0394494400003
+          },
+          {
+            "row": 3081,
+            "id": "110592>110576",
+            "from": "DLR (Stratford Int'l route) // OB",
+            "to": "Elizabeth Line // EB",
+            "total": 121.92390582647599
+          },
+          {
+            "row": 3082,
+            "id": "110592>110577",
+            "from": "DLR (Stratford Int'l route) // OB",
+            "to": "Elizabeth Line // WB",
+            "total": 966.2369941782001
+          },
+          {
+            "row": 3083,
+            "id": "110592>110582",
+            "from": "DLR (Stratford Int'l route) // OB",
+            "to": "NR Great Eastern // DN",
+            "total": 19.401871720325005
+          },
+          {
+            "row": 3084,
+            "id": "110592>110583",
+            "from": "DLR (Stratford Int'l route) // OB",
+            "to": "NR Great Eastern // UP",
+            "total": 64.93977497888007
+          },
+          {
+            "row": 3085,
+            "id": "110592>110584",
+            "from": "DLR (Stratford Int'l route) // OB",
+            "to": "NR West Anglia // DN",
+            "total": 48.04122782569998
+          },
+          {
+            "row": 3086,
+            "id": "110592>110589",
+            "from": "DLR (Stratford Int'l route) // OB",
+            "to": "LO Mildmay // WB",
+            "total": 109.35032917213002
+          },
+          {
+            "row": 3087,
+            "id": "110592>110590",
+            "from": "DLR (Stratford Int'l route) // OB",
+            "to": "DLR (Stratford route) // OB",
+            "total": 246.23702772200002
+          },
+          {
+            "row": 3089,
+            "id": "110593>110514",
+            "from": "DLR (Stratford Int'l route) // IB",
+            "to": "Central // EB",
+            "total": 780.3950543999999
+          },
+          {
+            "row": 3090,
+            "id": "110593>110515",
+            "from": "DLR (Stratford Int'l route) // IB",
+            "to": "Central // WB",
+            "total": 869.4783692599998
+          },
+          {
+            "row": 3091,
+            "id": "110593>110522",
+            "from": "DLR (Stratford Int'l route) // IB",
+            "to": "Jubilee // NB",
+            "total": 348.26758078740016
+          },
+          {
+            "row": 3092,
+            "id": "110593>110576",
+            "from": "DLR (Stratford Int'l route) // IB",
+            "to": "Elizabeth Line // EB",
+            "total": 583.1959310999999
+          },
+          {
+            "row": 3093,
+            "id": "110593>110577",
+            "from": "DLR (Stratford Int'l route) // IB",
+            "to": "Elizabeth Line // WB",
+            "total": 1073.1106432696151
+          },
+          {
+            "row": 3094,
+            "id": "110593>110582",
+            "from": "DLR (Stratford Int'l route) // IB",
+            "to": "NR Great Eastern // DN",
+            "total": 99.47343642337754
+          },
+          {
+            "row": 3095,
+            "id": "110593>110583",
+            "from": "DLR (Stratford Int'l route) // IB",
+            "to": "NR Great Eastern // UP",
+            "total": 52.95710235119999
+          },
+          {
+            "row": 3096,
+            "id": "110593>110584",
+            "from": "DLR (Stratford Int'l route) // IB",
+            "to": "NR West Anglia // DN",
+            "total": 726.4239712249703
+          },
+          {
+            "row": 3097,
+            "id": "110593>110589",
+            "from": "DLR (Stratford Int'l route) // IB",
+            "to": "LO Mildmay // WB",
+            "total": 1038.0311690600004
+          },
+          {
+            "row": 3098,
+            "id": "110593>110590",
+            "from": "DLR (Stratford Int'l route) // IB",
+            "to": "DLR (Stratford route) // OB",
+            "total": 175.94247691200002
+          }
+        ]
+      }
+    }
+  }
+}

@@ -19,3 +19,5 @@ await copyFile(resolve('fixtures/national-rail/kings-cross.json'), resolve('publ
 const railCatalogue = JSON.parse(await readFile('fixtures/national-rail/catalogue.json', 'utf8'))
 await copyFile('fixtures/national-rail/catalogue.json', 'public/data/all-change-national-rail-catalogue.json')
 for (const corridor of railCatalogue.corridors) await copyFile(`fixtures/national-rail/network-${corridor.id}.json`, `public/data/${corridor.file}`)
+
+await copyFile('fixtures/passenger-demand/numbat-2025-friday.json', 'public/data/all-change-passenger-demand.json')

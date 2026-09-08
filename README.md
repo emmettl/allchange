@@ -84,6 +84,12 @@ After ingesting the base air study, regenerate the enrichment with `npm run data
 
 Selecting a TfL station in the planned study opens a lazy split-flap board in its status card. Departures and arrivals follow the study clock, show up to four calls over the next hour, and stop at the loaded timetable boundary. A line filter narrows busy interchanges; selecting a destination reveals the full name and a link to its movement. Supported interchanges also link to their pulse. The National Rail card uses the same widget, retaining its station picker, three-call list and movement controls.
 
-The boards show published times, with source date and available window. They retain repeated station visits and respect origin/terminal, passing, pickup-only and set-down-only restrictions. Missing day data has a retry action; partial National Rail operator coverage is identified. TfL and National Rail remain separate board scopes in this first implementation. Passenger-demand profiles, combined operator boards, platforms and live prediction/status fields remain future work.
+The boards show published times, with source date and available window. They retain repeated station visits and respect origin/terminal, passing, pickup-only and set-down-only restrictions. Missing day data has a retry action; partial National Rail operator coverage is identified. TfL and National Rail remain separate board scopes in this first implementation. Combined operator boards, platforms and live prediction/status fields remain future work.
 
 The board and its styles load on selection, with a separate dependency-inclusive transfer budget. Flap motion is suppressed during faster playback and respects reduced-motion preferences. Unit checks cover call semantics and bounded time filtering; browser checks cover station selection, filtering, movement, retry and phone layouts.
+
+### Passenger rhythm
+
+Bank/Monument and Stratford now show typical Friday entry, exit and interchange demand on their station hero cards and pulse views. Select a metric to see its daily profile; the marker and approximate 15-minute counts follow the study clock. Stratford’s National Rail hero uses the same profile. The data is NUMBAT autumn 2025, clearly distinguished from the September 2026 timetable. It describes passenger movements, without inferring train occupancy.
+
+The full source traffic day runs from Friday 05:00 to Saturday 05:00. Before 05:00 in the Friday study, counts are unavailable rather than borrowed from Saturday. Source identities, aggregation, confidence, reproduction and tests are documented in [the passenger-demand audit](docs/PASSENGER-DEMAND.md). The profile, styles and small two-station artifact load only on supported selection and have their own transfer budgets.
