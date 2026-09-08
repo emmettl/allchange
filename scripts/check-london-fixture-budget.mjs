@@ -529,6 +529,7 @@ const roadDetailKey = 'src/studies/LondonRoadObservations.tsx'
 const railBoardKey = 'src/studies/LondonNationalRailBoard.tsx'
 const passengerPulseKey = 'src/studies/LondonPassengerPulse.tsx'
 const cycleStudyKey = 'src/studies/LondonCycleStudy.tsx'
+const hubPulseKey = 'node_modules/@motionstudies/three/HubPulseScene.js'
 const passengerCardKey = 'src/studies/LondonPassengerDemand.tsx'
 const stationBoardKey = 'src/studies/LondonStationDepartures.tsx'
 const airportCardKey = 'src/studies/AirportCard.tsx'
@@ -541,9 +542,9 @@ const visit = (key) => {
   if (chunk.file.endsWith('.js')) scripts.add(chunk.file)
   for (const cssFile of chunk.css ?? []) styles.add(cssFile)
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
-  // This panel is requested only after road selection. Budget its own payload
-  // separately; it is not part of the opening network scene's transfer.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey].includes(importedKey)) visit(importedKey)
+  // Selected cards and alternate studies load only after interaction. Budget
+  // them separately; retain their shared static dependencies in the opening.
+  for (const importedKey of chunk.dynamicImports ?? []) if (![airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -592,6 +593,9 @@ const railLayerSize = await totalGzipSize([railLayer.file])
 console.log(`All Change optional rail renderer: ${kibibytes(railLayerSize)} / 6.0 KiB`)
 if (railLayerSize > 6 * 1024) throw new Error('Rail renderer transfer budget exceeded')
 const passengerCard = await optionalCardSize(passengerCardKey)
+const hubPulse = await optionalCardSize(hubPulseKey)
+console.log(`All Change optional interchange pulse: ${kibibytes(hubPulse.javaScript)} JavaScript / 5 KiB; ${kibibytes(hubPulse.css)} CSS / 2 KiB`)
+if (hubPulse.javaScript > 5 * 1024 || hubPulse.css > 2 * 1024) throw new Error('Interchange pulse transfer budget exceeded')
 const cycleStudy = await optionalCardSize(cycleStudyKey)
 const cycleManifestBytes = await readFile('fixtures/cycle-hire/manifest.json')
 const cycleManifestSize = gzipSync(cycleManifestBytes, { level: 9 }).byteLength

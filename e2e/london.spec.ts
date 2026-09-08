@@ -32,6 +32,7 @@ test('boots as a separate edition without loading Swiss network data', async ({
   expect(resources.some((url) => url.includes('all-change-air-'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-road-'))).toBe(false)
   expect(resources.some((url) => url.includes('LondonRoadObservations'))).toBe(false)
+  expect(resources.some((url) => url.includes('HubPulseScene'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-surface-'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-bus-'))).toBe(false)
   expect(resources.some((url) => url.includes('swiss-rail-morning.json'))).toBe(false)
@@ -550,7 +551,9 @@ test('limited chrome leaves the visualization and timeline in control', async ({
 test('interchange pulse preserves the shared clock and switches character', async ({
   page,
 }) => {
+  const pulseResponse = page.waitForResponse(response => response.url().includes('/assets/HubPulseScene-'))
   await page.getByRole('button', { name: 'Interchange pulse' }).click()
+  expect((await pulseResponse).ok()).toBe(true)
   const experience = page.locator('.london-experience')
   await expect(experience).toHaveClass(/is-pulse-study/)
   await expect(page.locator('.london-status-card')).toContainText("King's Cross")
