@@ -1,0 +1,4485 @@
+{
+  "date": "2026-05-29",
+  "source": {
+    "url": "https://cycling.data.tfl.gov.uk/usage-stats/444JourneyDataExtract17May2026-31May2026.csv",
+    "sha256": "20ff75281aefebd034883b59d3535a081b9b20862d4e1fceb9c666e5d9b8c97a",
+    "published": "2026-06-09",
+    "retrieved": "2026-09-08",
+    "stationsUrl": "https://api.tfl.gov.uk/BikePoint",
+    "stationsSha256": "22c498c90d42425bcf955b30c7ddcfb687fed349225f858004545f44321cf9cf",
+    "frozenStationsSha256": "2304345a1adfe5fec9499b906a0adbbc63f6af1c2c7834ec25a35f93127b9bc0",
+    "stationsRetrieved": "2026-09-08"
+  },
+  "counts": {
+    "sourceRows": 436202,
+    "overlappingRows": 31542,
+    "sourceDepartures": 31317,
+    "sourceReturns": 31204,
+    "departures": 31096,
+    "returns": 30983,
+    "carryIn": 145,
+    "carryOut": 248,
+    "sameDock": 1375,
+    "sameMinute": 145
+  },
+  "sourceStartDates": {
+    "2026-05-17": 21082,
+    "2026-05-18": 27899,
+    "2026-05-19": 26618,
+    "2026-05-20": 29995,
+    "2026-05-21": 31886,
+    "2026-05-22": 30762,
+    "2026-05-23": 28300,
+    "2026-05-24": 27615,
+    "2026-05-25": 26321,
+    "2026-05-26": 32308,
+    "2026-05-27": 33261,
+    "2026-05-28": 34277,
+    "2026-05-29": 31317,
+    "2026-05-30": 29045,
+    "2026-05-31": 25513,
+    "2026-06-01": 3
+  },
+  "mappedStations": 792,
+  "includedJourneys": 31247,
+  "exclusionsByReason": {
+    "duration exceeds bounded 24-hour replay": 90,
+    "unmapped terminal": 185,
+    "terminal name mismatch (possible reused identity)": 20
+  },
+  "excluded": [
+    {
+      "row": 54618,
+      "id": "158391733",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 23:55",
+      "end": "2026-06-02 21:21",
+      "from": [
+        "200144",
+        "Sea Containers, South Bank"
+      ],
+      "to": [
+        "200210",
+        "Westbridge Road, Battersea"
+      ]
+    },
+    {
+      "row": 54668,
+      "id": "158391671",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 23:51",
+      "end": "2026-06-02 09:49",
+      "from": [
+        "300009",
+        "World's End Place, West Chelsea"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 54725,
+      "id": "158391600",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 23:45",
+      "end": "2026-05-29 23:54",
+      "from": [
+        "001091",
+        "St. John's Wood Church, The Regent's Park"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 54787,
+      "id": "158391566",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 23:41",
+      "end": "2026-05-29 23:46",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001135",
+        "Claverton Street, Pimlico"
+      ]
+    },
+    {
+      "row": 54804,
+      "id": "158391525",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 23:39",
+      "end": "2026-05-30 00:27",
+      "from": [
+        "300037",
+        "Ravenscourt Park Station, Hammersmith"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 54897,
+      "id": "158391453",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 23:32",
+      "end": "2026-05-29 23:56",
+      "from": [
+        "001207",
+        "Tavistock Street, Covent Garden"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 54914,
+      "id": "158391423",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 23:30",
+      "end": "2026-05-29 23:56",
+      "from": [
+        "001207",
+        "Tavistock Street, Covent Garden"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 54966,
+      "id": "158391381",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 23:26",
+      "end": "2026-05-29 23:51",
+      "from": [
+        "003450",
+        "Great Titchfield Street, Fitzrovia"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 54967,
+      "id": "158391382",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 23:26",
+      "end": "2026-05-29 23:51",
+      "from": [
+        "003450",
+        "Great Titchfield Street, Fitzrovia"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 55105,
+      "id": "158391214",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 23:16",
+      "end": "2026-05-29 23:32",
+      "from": [
+        "001098",
+        "Lower Thames Street, Monument"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 55149,
+      "id": "158391187",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 23:15",
+      "end": "2026-05-29 23:17",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "300243",
+        "Good's Way, King's Cross"
+      ]
+    },
+    {
+      "row": 55401,
+      "id": "158390911",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 22:58",
+      "end": "2026-05-29 23:14",
+      "from": [
+        "300031",
+        "Islington Green, Angel"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 57361,
+      "id": "158388910",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 21:13",
+      "end": "2026-05-29 21:45",
+      "from": [
+        "002691",
+        "Howland Street, Fitzrovia"
+      ],
+      "to": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ]
+    },
+    {
+      "row": 57363,
+      "id": "158388912",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 21:13",
+      "end": "2026-05-29 21:45",
+      "from": [
+        "002691",
+        "Howland Street, Fitzrovia"
+      ],
+      "to": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ]
+    },
+    {
+      "row": 57652,
+      "id": "158388596",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 21:00",
+      "end": "2026-05-29 21:27",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "200226",
+        "Kingsway Southbound, Strand"
+      ]
+    },
+    {
+      "row": 57676,
+      "id": "158388575",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 20:59",
+      "end": "2026-05-29 21:27",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "200226",
+        "Kingsway Southbound, Strand"
+      ]
+    },
+    {
+      "row": 57693,
+      "id": "158388562",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 20:59",
+      "end": "2026-05-29 21:27",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "200226",
+        "Kingsway Southbound, Strand"
+      ]
+    },
+    {
+      "row": 57895,
+      "id": "158388333",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 20:49",
+      "end": "2026-05-29 21:11",
+      "from": [
+        "002641",
+        "New North Road 2, Hoxton"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 58560,
+      "id": "158387692",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 20:25",
+      "end": "2026-05-30 17:38",
+      "from": [
+        "003430",
+        "Central House, Aldgate"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 58587,
+      "id": "158387655",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 20:23",
+      "end": "2026-05-29 20:32",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001112",
+        "Nutford Place, Marylebone"
+      ]
+    },
+    {
+      "row": 58797,
+      "id": "158387448",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 20:16",
+      "end": "2026-05-31 09:09",
+      "from": [
+        "003469",
+        "Cadogan Place, Knightsbridge"
+      ],
+      "to": [
+        "300247",
+        "Cranmer Road, Stockwell"
+      ]
+    },
+    {
+      "row": 58834,
+      "id": "158387372",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 20:14",
+      "end": "2026-06-01 15:05",
+      "from": [
+        "001217",
+        "Serpentine Car Park, Hyde Park"
+      ],
+      "to": [
+        "001121",
+        "Lexham Gardens, Kensington"
+      ]
+    },
+    {
+      "row": 58888,
+      "id": "158387295",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 20:12",
+      "end": "2026-05-29 20:23",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "300249",
+        "Westminster Pier, Westminster"
+      ]
+    },
+    {
+      "row": 58901,
+      "id": "158387309",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 20:12",
+      "end": "2026-05-29 20:23",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "300249",
+        "Westminster Pier, Westminster"
+      ]
+    },
+    {
+      "row": 59026,
+      "id": "158387201",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 20:08",
+      "end": "2026-05-29 20:22",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "003425",
+        "Northington Street , Holborn"
+      ]
+    },
+    {
+      "row": 59040,
+      "id": "158387161",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 20:07",
+      "end": "2026-05-29 20:14",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "200198",
+        "Seymour Place, Marylebone"
+      ]
+    },
+    {
+      "row": 59141,
+      "id": "158387080",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 20:04",
+      "end": "2026-05-29 20:09",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001106",
+        "Rampayne Street, Pimlico"
+      ]
+    },
+    {
+      "row": 59366,
+      "id": "158386838",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 19:56",
+      "end": "2026-06-08 17:31",
+      "from": [
+        "000980",
+        "Malet Street, Bloomsbury"
+      ],
+      "to": [
+        "200129",
+        "Charlotte Terrace, Angel"
+      ]
+    },
+    {
+      "row": 59376,
+      "id": "158386849",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 19:56",
+      "end": "2026-05-31 15:12",
+      "from": [
+        "000980",
+        "Malet Street, Bloomsbury"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 59742,
+      "id": "158386413",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 19:43",
+      "end": "2026-05-29 19:57",
+      "from": [
+        "200178",
+        "Buckingham Gate, Westminster"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 59944,
+      "id": "158386213",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 19:37",
+      "end": "2026-05-29 19:46",
+      "from": [
+        "001108",
+        "North Wharf Road, Paddington"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 59954,
+      "id": "158386223",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 19:37",
+      "end": "2026-05-29 19:41",
+      "from": [
+        "001033",
+        "Paddington Street, Marylebone"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 60068,
+      "id": "158386087",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 19:33",
+      "end": "2026-05-29 19:44",
+      "from": [
+        "200017",
+        "Lancaster Gate , Bayswater"
+      ],
+      "to": [
+        "200015",
+        "Ladbroke Grove Central, Ladbroke Grove"
+      ]
+    },
+    {
+      "row": 60191,
+      "id": "158385952",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 19:30",
+      "end": "2026-06-02 11:08",
+      "from": [
+        "001004",
+        "Doric Way , Somers Town"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 60443,
+      "id": "158385711",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 19:24",
+      "end": "2026-05-29 19:46",
+      "from": [
+        "001088",
+        "Triangle Car Park, Hyde Park"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 60449,
+      "id": "158385718",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 19:24",
+      "end": "2026-05-29 19:34",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001218",
+        "Flood Street, Chelsea"
+      ]
+    },
+    {
+      "row": 61027,
+      "id": "158385139",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 19:12",
+      "end": "2026-05-29 19:15",
+      "from": [
+        "001174",
+        "Alderney Street, Pimlico"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 61112,
+      "id": "158385033",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 19:09",
+      "end": "2026-05-29 19:35",
+      "from": [
+        "001191",
+        "Barbican Centre, Barbican"
+      ],
+      "to": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ]
+    },
+    {
+      "row": 61277,
+      "id": "158384842",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 19:05",
+      "end": "2026-05-29 19:11",
+      "from": [
+        "003420",
+        "Sedding Street, Sloane Square"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 61457,
+      "id": "158384668",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 19:01",
+      "end": "2026-06-04 13:21",
+      "from": [
+        "001077",
+        "Royal London Hospital, Whitechapel"
+      ],
+      "to": [
+        "300228",
+        "Westferry Circus, Canary Wharf"
+      ]
+    },
+    {
+      "row": 61498,
+      "id": "158384573",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:59",
+      "end": "2026-05-29 19:04",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "003494",
+        "Foley Street, Fitzrovia"
+      ]
+    },
+    {
+      "row": 61540,
+      "id": "158384534",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 18:58",
+      "end": "2026-05-31 07:00",
+      "from": [
+        "001077",
+        "Royal London Hospital, Whitechapel"
+      ],
+      "to": [
+        "001049",
+        "Finsbury Leisure Centre, St. Luke's"
+      ]
+    },
+    {
+      "row": 61634,
+      "id": "158384440",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 18:56",
+      "end": "2026-05-29 19:05",
+      "from": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ],
+      "to": [
+        "300083",
+        "Duke Street Hill, London Bridge"
+      ]
+    },
+    {
+      "row": 61772,
+      "id": "158384275",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:53",
+      "end": "2026-05-29 18:55",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "003460",
+        "Warwick Square, Pimlico"
+      ]
+    },
+    {
+      "row": 61773,
+      "id": "158384276",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:53",
+      "end": "2026-05-29 19:14",
+      "from": [
+        "001036",
+        "Crawford Street, Marylebone"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 61787,
+      "id": "158384291",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:53",
+      "end": "2026-05-29 19:14",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "022160",
+        "Chelsea Bridge, Pimlico"
+      ]
+    },
+    {
+      "row": 61909,
+      "id": "158384216",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 18:52",
+      "end": "2026-05-31 16:22",
+      "from": [
+        "001077",
+        "Royal London Hospital, Whitechapel"
+      ],
+      "to": [
+        "200064",
+        "Regent's Row , Haggerston"
+      ]
+    },
+    {
+      "row": 61977,
+      "id": "158384103",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 18:49",
+      "end": "2026-05-29 19:06",
+      "from": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ],
+      "to": [
+        "001211",
+        "Bunhill Row, Moorgate"
+      ]
+    },
+    {
+      "row": 62157,
+      "id": "158383919",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:45",
+      "end": "2026-05-29 18:48",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "022159",
+        "Ebury Bridge, Pimlico"
+      ]
+    },
+    {
+      "row": 62198,
+      "id": "158383837",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:44",
+      "end": "2026-05-29 18:50",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "001004",
+        "Doric Way , Somers Town"
+      ]
+    },
+    {
+      "row": 62637,
+      "id": "158383368",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:35",
+      "end": "2026-05-29 19:06",
+      "from": [
+        "300243",
+        "Good's Way, King's Cross"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 62649,
+      "id": "158383381",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:35",
+      "end": "2026-05-29 19:06",
+      "from": [
+        "300243",
+        "Good's Way, King's Cross"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 62852,
+      "id": "158383197",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:31",
+      "end": "2026-05-29 18:49",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001107",
+        "Gloucester Road Station, South Kensington"
+      ]
+    },
+    {
+      "row": 62883,
+      "id": "158383127",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:30",
+      "end": "2026-05-29 18:36",
+      "from": [
+        "001164",
+        "Portland Place, Marylebone"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 62938,
+      "id": "158383085",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:29",
+      "end": "2026-05-29 18:33",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001195",
+        "St. George's Square, Pimlico"
+      ]
+    },
+    {
+      "row": 62961,
+      "id": "158383108",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:29",
+      "end": "2026-05-29 18:52",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001041",
+        "Westbourne Grove, Bayswater"
+      ]
+    },
+    {
+      "row": 63129,
+      "id": "158382947",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:26",
+      "end": "2026-05-29 18:29",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "003428",
+        "Pancras Road, King's Cross"
+      ]
+    },
+    {
+      "row": 63197,
+      "id": "158382893",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:26",
+      "end": "2026-05-29 18:43",
+      "from": [
+        "000996",
+        "Borough High Street, The Borough"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 63676,
+      "id": "158382336",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:15",
+      "end": "2026-05-29 19:08",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "300081",
+        "Haggerston Road, Haggerston"
+      ]
+    },
+    {
+      "row": 63692,
+      "id": "158382352",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:15",
+      "end": "2026-05-29 20:55",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "200214",
+        "Woodstock Grove, Shepherd's Bush"
+      ]
+    },
+    {
+      "row": 63707,
+      "id": "158382367",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:15",
+      "end": "2026-05-29 18:41",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "003488",
+        "Charles II Street, West End"
+      ]
+    },
+    {
+      "row": 63778,
+      "id": "158382205",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:13",
+      "end": "2026-05-29 18:29",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001052",
+        "Soho Square , Soho"
+      ]
+    },
+    {
+      "row": 63796,
+      "id": "158382224",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 18:13",
+      "end": "2026-05-29 18:26",
+      "from": [
+        "001062",
+        "Braham Street, Aldgate"
+      ],
+      "to": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ]
+    },
+    {
+      "row": 63845,
+      "id": "158382137",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:12",
+      "end": "2026-05-29 18:19",
+      "from": [
+        "003482",
+        "Beaumont Street, Marylebone"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 64213,
+      "id": "158381781",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:05",
+      "end": "2026-05-29 18:24",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001160",
+        "Craven Street, Strand"
+      ]
+    },
+    {
+      "row": 64247,
+      "id": "158381817",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 18:05",
+      "end": "2026-05-29 18:16",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001175",
+        "Mallory Street, Marylebone"
+      ]
+    },
+    {
+      "row": 64624,
+      "id": "158381397",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 17:57",
+      "end": "2026-05-29 18:03",
+      "from": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ],
+      "to": [
+        "001093",
+        "Kennington Cross, Kennington"
+      ]
+    },
+    {
+      "row": 64763,
+      "id": "158381235",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:54",
+      "end": "2026-05-29 17:56",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 64764,
+      "id": "158381236",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:54",
+      "end": "2026-05-29 18:14",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001134",
+        "Warwick Road, Olympia"
+      ]
+    },
+    {
+      "row": 64883,
+      "id": "158381146",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 17:52",
+      "end": "2026-05-29 18:07",
+      "from": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ],
+      "to": [
+        "001163",
+        "Wardour Street, Soho"
+      ]
+    },
+    {
+      "row": 65042,
+      "id": "158380991",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:49",
+      "end": "2026-05-29 18:01",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "300243",
+        "Good's Way, King's Cross"
+      ]
+    },
+    {
+      "row": 65052,
+      "id": "158380905",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:48",
+      "end": "2026-05-29 17:59",
+      "from": [
+        "000982",
+        "Holborn Circus, Holborn"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 65115,
+      "id": "158380870",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 17:47",
+      "end": "2026-05-30 19:23",
+      "from": [
+        "300227",
+        "Timber Lodge, Queen Elizabeth Olympic Park"
+      ],
+      "to": [
+        "300200",
+        "East Village, Queen Elizabeth Olympic Park"
+      ]
+    },
+    {
+      "row": 65180,
+      "id": "158380826",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 17:46",
+      "end": "2026-05-30 19:23",
+      "from": [
+        "300227",
+        "Timber Lodge, Queen Elizabeth Olympic Park"
+      ],
+      "to": [
+        "300200",
+        "East Village, Queen Elizabeth Olympic Park"
+      ]
+    },
+    {
+      "row": 65201,
+      "id": "158380849",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:47",
+      "end": "2026-05-29 18:06",
+      "from": [
+        "001067",
+        "St. James's Square, St. James's"
+      ],
+      "to": [
+        "200015",
+        "Ladbroke Grove Central, Ladbroke Grove"
+      ]
+    },
+    {
+      "row": 65390,
+      "id": "158380581",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:42",
+      "end": "2026-05-29 18:05",
+      "from": [
+        "200142",
+        "Hammersmith Road, Hammersmith"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 65437,
+      "id": "158380530",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:41",
+      "end": "2026-05-29 18:05",
+      "from": [
+        "001070",
+        "Bricklayers Arms, Borough"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 65507,
+      "id": "158380488",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:40",
+      "end": "2026-05-30 17:40",
+      "from": [
+        "000971",
+        "Godliman Street, St. Paul's"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 65793,
+      "id": "158380231",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:36",
+      "end": "2026-05-29 17:49",
+      "from": [
+        "200016",
+        "Castlehaven Road, Camden Town"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 65814,
+      "id": "158380137",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:34",
+      "end": "2026-05-29 17:39",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "022161",
+        "Vincent Street, Pimlico"
+      ]
+    },
+    {
+      "row": 65997,
+      "id": "158380005",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:31",
+      "end": "2026-05-29 17:55",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001070",
+        "Bricklayers Arms, Borough"
+      ]
+    },
+    {
+      "row": 66134,
+      "id": "158379819",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:28",
+      "end": "2026-05-29 17:37",
+      "from": [
+        "000972",
+        "Hampstead Road, Euston"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 66250,
+      "id": "158379741",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:26",
+      "end": "2026-05-29 17:38",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "200016",
+        "Castlehaven Road, Camden Town"
+      ]
+    },
+    {
+      "row": 66509,
+      "id": "158379443",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:20",
+      "end": "2026-05-29 17:39",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "000965",
+        "Tachbrook Street, Victoria"
+      ]
+    },
+    {
+      "row": 66530,
+      "id": "158379465",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:21",
+      "end": "2026-05-29 17:39",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "000965",
+        "Tachbrook Street, Victoria"
+      ]
+    },
+    {
+      "row": 66544,
+      "id": "158379380",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:19",
+      "end": "2026-05-29 17:22",
+      "from": [
+        "001174",
+        "Alderney Street, Pimlico"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 66629,
+      "id": "158379288",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:17",
+      "end": "2026-05-29 17:19",
+      "from": [
+        "003460",
+        "Warwick Square, Pimlico"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 66691,
+      "id": "158379209",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:16",
+      "end": "2026-05-29 17:38",
+      "from": [
+        "200080",
+        "Russell Gardens, Olympia"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 66810,
+      "id": "158379114",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:14",
+      "end": "2026-05-29 17:30",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "300001",
+        "Sandilands Road, Walham Green"
+      ]
+    },
+    {
+      "row": 66835,
+      "id": "158379141",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:15",
+      "end": "2026-05-29 17:32",
+      "from": [
+        "200203",
+        "King Edward Street, St Pauls"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 66968,
+      "id": "158378995",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:12",
+      "end": "2026-05-29 17:33",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "300210",
+        "Halford Road, West Kensington"
+      ]
+    },
+    {
+      "row": 67126,
+      "id": "158378860",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:09",
+      "end": "2026-05-29 17:15",
+      "from": [
+        "200195",
+        "St Martins Close, Camden Town"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 67143,
+      "id": "158378768",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:07",
+      "end": "2026-05-29 17:10",
+      "from": [
+        "001138",
+        "Elizabeth Bridge, Victoria"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 67238,
+      "id": "158378656",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:05",
+      "end": "2026-05-29 17:12",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001155",
+        "Regency Street, Westminster"
+      ]
+    },
+    {
+      "row": 67260,
+      "id": "158378678",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 17:05",
+      "end": "2026-05-29 17:12",
+      "from": [
+        "002669",
+        "Charlotte Street, Fitzrovia"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 67492,
+      "id": "158378432",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:59",
+      "end": "2026-05-29 17:08",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001108",
+        "North Wharf Road, Paddington"
+      ]
+    },
+    {
+      "row": 67540,
+      "id": "158378392",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:58",
+      "end": "2026-05-29 17:18",
+      "from": [
+        "002678",
+        "Farm Street, Mayfair"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 67693,
+      "id": "158378205",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:53",
+      "end": "2026-05-29 17:12",
+      "from": [
+        "200128",
+        "Queen Street 2, Bank"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 67745,
+      "id": "158378167",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:52",
+      "end": "2026-05-29 17:14",
+      "from": [
+        "000997",
+        "Worship Street, Shoreditch"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 67849,
+      "id": "158378068",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:50",
+      "end": "2026-05-29 17:07",
+      "from": [
+        "003484",
+        "Houghton Street, Strand"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 67855,
+      "id": "158378074",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:50",
+      "end": "2026-05-29 16:57",
+      "from": [
+        "001090",
+        "Warren Street Station, Euston"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 68181,
+      "id": "158377739",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:42",
+      "end": "2026-05-29 16:48",
+      "from": [
+        "001155",
+        "Regency Street, Westminster"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 68664,
+      "id": "158377225",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:28",
+      "end": "2026-05-29 17:01",
+      "from": [
+        "200032",
+        "Kennington Oval, Oval"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 68733,
+      "id": "158377147",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 16:26",
+      "end": "2026-05-31 01:05",
+      "from": [
+        "000960",
+        "Hop Exchange, The Borough"
+      ],
+      "to": [
+        "001186",
+        "Belvedere Road 1, South Bank"
+      ]
+    },
+    {
+      "row": 68907,
+      "id": "158376983",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:21",
+      "end": "2026-05-29 16:39",
+      "from": [
+        "001050",
+        "Park Road (Baker Street), The Regent's Park"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 68911,
+      "id": "158376987",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:21",
+      "end": "2026-05-29 16:57",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "200016",
+        "Castlehaven Road, Camden Town"
+      ]
+    },
+    {
+      "row": 68975,
+      "id": "158376921",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:20",
+      "end": "2026-05-29 16:40",
+      "from": [
+        "000972",
+        "Hampstead Road, Euston"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 69163,
+      "id": "158376716",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:14",
+      "end": "2026-05-29 16:24",
+      "from": [
+        "001100",
+        "Strand, Strand"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 69199,
+      "id": "158376686",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:13",
+      "end": "2026-05-29 16:57",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "200016",
+        "Castlehaven Road, Camden Town"
+      ]
+    },
+    {
+      "row": 69220,
+      "id": "158376626",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 16:12",
+      "end": "2026-05-29 16:21",
+      "from": [
+        "001150",
+        "Queensway, Kensington Gardens"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 69632,
+      "id": "158376228",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 15:59",
+      "end": "2026-05-29 16:06",
+      "from": [
+        "022161",
+        "Vincent Street, Pimlico"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 69697,
+      "id": "158376143",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 15:56",
+      "end": "2026-05-29 16:10",
+      "from": [
+        "022179",
+        "Exhibition Road, Knightsbridge"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 69825,
+      "id": "158376036",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 15:51",
+      "end": "2026-05-29 16:06",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "000995",
+        "Little Argyll Street, West End"
+      ]
+    },
+    {
+      "row": 69826,
+      "id": "158376037",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 15:51",
+      "end": "2026-05-29 16:06",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "003476",
+        "Hinde Street, Marylebone"
+      ]
+    },
+    {
+      "row": 69846,
+      "id": "158376005",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 15:50",
+      "end": "2026-05-29 16:06",
+      "from": [
+        "003499",
+        "Prince Consort Road, Knightsbridge"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 70006,
+      "id": "158375816",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 15:45",
+      "end": "2026-05-29 15:52",
+      "from": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ],
+      "to": [
+        "000966",
+        "New Kent Road, The Borough"
+      ]
+    },
+    {
+      "row": 70051,
+      "id": "158375796",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 15:44",
+      "end": "2026-05-29 15:58",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001192",
+        "Embankment (Savoy), Strand"
+      ]
+    },
+    {
+      "row": 70094,
+      "id": "158375775",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 15:43",
+      "end": "2026-05-29 15:58",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001192",
+        "Embankment (Savoy), Strand"
+      ]
+    },
+    {
+      "row": 70294,
+      "id": "158375524",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 15:36",
+      "end": "2026-05-31 13:43",
+      "from": [
+        "300005",
+        "Ethelburga Estate, Battersea Park"
+      ],
+      "to": [
+        "300245",
+        "Clapham Road, Lingham Street, Stockwell"
+      ]
+    },
+    {
+      "row": 70398,
+      "id": "158375440",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 15:33",
+      "end": "2026-05-29 16:14",
+      "from": [
+        "001062",
+        "Braham Street, Aldgate"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 70438,
+      "id": "158375375",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 15:31",
+      "end": "2026-05-29 15:47",
+      "from": [
+        "003420",
+        "Sedding Street, Sloane Square"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 70844,
+      "id": "158374953",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 15:17",
+      "end": "2026-05-29 15:27",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "003489",
+        "Broadwick Street, Soho"
+      ]
+    },
+    {
+      "row": 70979,
+      "id": "158374864",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 15:14",
+      "end": "2026-05-29 15:24",
+      "from": [
+        "000969",
+        "Gower Place , Euston"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 71442,
+      "id": "158374358",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 14:54",
+      "end": "2026-05-29 14:58",
+      "from": [
+        "003429",
+        "Abbey Orchard Street, Westminster"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 71763,
+      "id": "158374032",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 14:42",
+      "end": "2026-05-29 15:13",
+      "from": [
+        "200213",
+        "Durant Street, Bethnal Green"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 71832,
+      "id": "158373976",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 14:40",
+      "end": "2026-05-29 14:49",
+      "from": [
+        "003481",
+        "Rodney Road , Walworth"
+      ],
+      "to": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ]
+    },
+    {
+      "row": 72178,
+      "id": "158373587",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 14:25",
+      "end": "2026-05-29 14:38",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001097",
+        "Northumberland Avenue, Strand"
+      ]
+    },
+    {
+      "row": 72188,
+      "id": "158373598",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 14:25",
+      "end": "2026-05-29 14:53",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "000973",
+        "Bethnal Green Road, Shoreditch"
+      ]
+    },
+    {
+      "row": 72275,
+      "id": "158373482",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 14:21",
+      "end": "2026-05-29 14:35",
+      "from": [
+        "001100",
+        "Strand, Strand"
+      ],
+      "to": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ]
+    },
+    {
+      "row": 72318,
+      "id": "158373461",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 14:20",
+      "end": "2026-05-29 14:35",
+      "from": [
+        "001100",
+        "Strand, Strand"
+      ],
+      "to": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ]
+    },
+    {
+      "row": 72467,
+      "id": "158373308",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 14:14",
+      "end": "2026-05-29 14:32",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001121",
+        "Lexham Gardens, Kensington"
+      ]
+    },
+    {
+      "row": 72491,
+      "id": "158373259",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 14:12",
+      "end": "2026-05-29 14:17",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001164",
+        "Portland Place, Marylebone"
+      ]
+    },
+    {
+      "row": 72564,
+      "id": "158373194",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 14:09",
+      "end": "2026-06-03 17:28",
+      "from": [
+        "200124",
+        "Clarendon Road, Avondale"
+      ],
+      "to": [
+        "001066",
+        "Calshot Street , King's Cross"
+      ]
+    },
+    {
+      "row": 72728,
+      "id": "158372995",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 14:02",
+      "end": "2026-06-01 21:56",
+      "from": [
+        "001132",
+        "Albert Gate, Hyde Park"
+      ],
+      "to": [
+        "002686",
+        "Royal College Street, Camden Town"
+      ]
+    },
+    {
+      "row": 72732,
+      "id": "158372999",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 14:02",
+      "end": "2026-05-29 14:32",
+      "from": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ],
+      "to": [
+        "001157",
+        "Black Lion Gate, Kensington Gardens"
+      ]
+    },
+    {
+      "row": 73126,
+      "id": "158372630",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 13:48",
+      "end": "2026-05-29 13:57",
+      "from": [
+        "001009",
+        "Taviton Street, Bloomsbury"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 73451,
+      "id": "158372289",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 13:37",
+      "end": "2026-05-29 13:43",
+      "from": [
+        "200105",
+        "Bonny Street, Camden Town"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 73522,
+      "id": "158372215",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 13:33",
+      "end": "2026-05-29 13:49",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "000961",
+        "Union Street, The Borough"
+      ]
+    },
+    {
+      "row": 74321,
+      "id": "158371386",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 13:02",
+      "end": "2026-05-29 13:07",
+      "from": [
+        "022161",
+        "Vincent Street, Pimlico"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 74549,
+      "id": "158371116",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:52",
+      "end": "2026-05-29 13:00",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "003477",
+        "Porchester Place, Paddington"
+      ]
+    },
+    {
+      "row": 74725,
+      "id": "158370955",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:45",
+      "end": "2026-05-29 12:50",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001170",
+        "Horseferry Road, Westminster"
+      ]
+    },
+    {
+      "row": 74727,
+      "id": "158370957",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 12:45",
+      "end": "2026-06-09 11:02",
+      "from": [
+        "003495",
+        "Wells Street, Fitzrovia"
+      ],
+      "to": [
+        "300230",
+        "Wynne Road, Stockwell"
+      ]
+    },
+    {
+      "row": 74894,
+      "id": "158370753",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:38",
+      "end": "2026-05-29 12:59",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001056",
+        "Finsbury Square , Moorgate"
+      ]
+    },
+    {
+      "row": 74915,
+      "id": "158370774",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:38",
+      "end": "2026-05-29 12:57",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001129",
+        "Sun Street, Liverpool Street"
+      ]
+    },
+    {
+      "row": 74917,
+      "id": "158370776",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:38",
+      "end": "2026-05-29 12:52",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "003495",
+        "Wells Street, Fitzrovia"
+      ]
+    },
+    {
+      "row": 74940,
+      "id": "158370741",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:37",
+      "end": "2026-05-29 12:51",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "200226",
+        "Kingsway Southbound, Strand"
+      ]
+    },
+    {
+      "row": 75084,
+      "id": "158370579",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:32",
+      "end": "2026-05-29 12:38",
+      "from": [
+        "001170",
+        "Horseferry Road, Westminster"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 75166,
+      "id": "158370501",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 12:28",
+      "end": "2026-05-29 12:42",
+      "from": [
+        "300083",
+        "Duke Street Hill, London Bridge"
+      ],
+      "to": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ]
+    },
+    {
+      "row": 75312,
+      "id": "158370358",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:22",
+      "end": "2026-05-29 12:30",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001052",
+        "Soho Square , Soho"
+      ]
+    },
+    {
+      "row": 75406,
+      "id": "158370259",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 12:19",
+      "end": "2026-05-30 15:57",
+      "from": [
+        "002687",
+        "Brick Lane Market, Shoreditch"
+      ],
+      "to": [
+        "300065",
+        "Clapham Common North Side, Clapham Common"
+      ]
+    },
+    {
+      "row": 75530,
+      "id": "158370111",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 12:14",
+      "end": "2026-05-30 15:32",
+      "from": [
+        "300221",
+        "Battersea Power Station, Battersea Park"
+      ],
+      "to": [
+        "300051",
+        "Hibbert Street, Battersea"
+      ]
+    },
+    {
+      "row": 75612,
+      "id": "158370039",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:10",
+      "end": "2026-05-29 12:21",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "300211",
+        "Ossulston Street, Somers Town"
+      ]
+    },
+    {
+      "row": 75628,
+      "id": "158370017",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:09",
+      "end": "2026-05-29 12:21",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "200005",
+        "New Cavendish Street, Marylebone"
+      ]
+    },
+    {
+      "row": 75631,
+      "id": "158369975",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:09",
+      "end": "2026-05-29 12:14",
+      "from": [
+        "001164",
+        "Portland Place, Marylebone"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 75652,
+      "id": "158369997",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:09",
+      "end": "2026-05-29 12:15",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001037",
+        "Park Lane , Hyde Park"
+      ]
+    },
+    {
+      "row": 75761,
+      "id": "158369874",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:05",
+      "end": "2026-05-29 12:09",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001037",
+        "Park Lane , Hyde Park"
+      ]
+    },
+    {
+      "row": 75841,
+      "id": "158369794",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 12:02",
+      "end": "2026-05-29 12:30",
+      "from": [
+        "002587",
+        "Wormwood Street, Liverpool Street"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 76048,
+      "id": "158369606",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 11:54",
+      "end": "2026-05-30 15:32",
+      "from": [
+        "300221",
+        "Battersea Power Station, Battersea Park"
+      ],
+      "to": [
+        "300051",
+        "Hibbert Street, Battersea"
+      ]
+    },
+    {
+      "row": 76105,
+      "id": "158369536",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 11:51",
+      "end": "2026-05-29 12:19",
+      "from": [
+        "003462",
+        "Royal Avenue 2, Chelsea"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 76505,
+      "id": "158369127",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 11:35",
+      "end": "2026-05-29 11:40",
+      "from": [
+        "000995",
+        "Little Argyll Street, West End"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 76816,
+      "id": "158368790",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 11:22",
+      "end": "2026-05-29 11:30",
+      "from": [
+        "001114",
+        "Pont Street, Knightsbridge"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 76856,
+      "id": "158368786",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 11:22",
+      "end": "2026-05-29 11:25",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001174",
+        "Alderney Street, Pimlico"
+      ]
+    },
+    {
+      "row": 77142,
+      "id": "158368471",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 11:06",
+      "end": "2026-05-29 11:26",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "300089",
+        "Ormonde Gate, Chelsea"
+      ]
+    },
+    {
+      "row": 77165,
+      "id": "158368456",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 11:05",
+      "end": "2026-05-29 11:08",
+      "from": [
+        "001174",
+        "Alderney Street, Pimlico"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 77419,
+      "id": "158368188",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 10:51",
+      "end": "2026-05-29 11:10",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "003451",
+        "Golden Square, Soho"
+      ]
+    },
+    {
+      "row": 77480,
+      "id": "158368139",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 10:48",
+      "end": "2026-05-29 10:53",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "003489",
+        "Broadwick Street, Soho"
+      ]
+    },
+    {
+      "row": 77614,
+      "id": "158367980",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 10:42",
+      "end": "2026-05-29 11:32",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "003495",
+        "Wells Street, Fitzrovia"
+      ]
+    },
+    {
+      "row": 77680,
+      "id": "158367932",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 10:39",
+      "end": "2026-05-29 10:41",
+      "from": [
+        "003460",
+        "Warwick Square, Pimlico"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 77752,
+      "id": "158367849",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 10:35",
+      "end": "2026-05-29 10:50",
+      "from": [
+        "001089",
+        "Queen's Gate (Central), South Kensington"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 77764,
+      "id": "158367829",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 10:34",
+      "end": "2026-05-29 11:00",
+      "from": [
+        "001137",
+        "Harper Road, The Borough"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 77780,
+      "id": "158367807",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 10:33",
+      "end": "2026-05-29 10:44",
+      "from": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ],
+      "to": [
+        "001189",
+        "Long Lane , Bermondsey"
+      ]
+    },
+    {
+      "row": 77936,
+      "id": "158367670",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 10:26",
+      "end": "2026-05-29 10:46",
+      "from": [
+        "001116",
+        "Emperor's Gate, South Kensington"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 78007,
+      "id": "158367567",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 10:22",
+      "end": "2026-05-29 10:30",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "200202",
+        "Storey's Gate, Westminster"
+      ]
+    },
+    {
+      "row": 78034,
+      "id": "158367548",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 10:21",
+      "end": "2026-05-29 10:25",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001174",
+        "Alderney Street, Pimlico"
+      ]
+    },
+    {
+      "row": 78040,
+      "id": "158367554",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 10:21",
+      "end": "2026-05-29 10:29",
+      "from": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ],
+      "to": [
+        "000960",
+        "Hop Exchange, The Borough"
+      ]
+    },
+    {
+      "row": 78296,
+      "id": "158367288",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 10:08",
+      "end": "2026-05-29 10:18",
+      "from": [
+        "001167",
+        "South Wharf Road, Paddington"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 78315,
+      "id": "158367270",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 10:07",
+      "end": "2026-05-29 10:12",
+      "from": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ],
+      "to": [
+        "001093",
+        "Kennington Cross, Kennington"
+      ]
+    },
+    {
+      "row": 78348,
+      "id": "158367217",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 10:05",
+      "end": "2026-05-29 10:09",
+      "from": [
+        "003489",
+        "Broadwick Street, Soho"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 78648,
+      "id": "158366923",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 09:52",
+      "end": "2026-05-29 10:05",
+      "from": [
+        "022182",
+        "South Parade, Chelsea"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 78891,
+      "id": "158366669",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 09:43",
+      "end": "2026-05-29 09:53",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "200178",
+        "Buckingham Gate, Westminster"
+      ]
+    },
+    {
+      "row": 78900,
+      "id": "158366678",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 09:43",
+      "end": "2026-05-29 09:53",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "200178",
+        "Buckingham Gate, Westminster"
+      ]
+    },
+    {
+      "row": 79239,
+      "id": "158366335",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 09:31",
+      "end": "2026-05-29 09:36",
+      "from": [
+        "010624",
+        "Strata, Elephant & Castle"
+      ],
+      "to": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ]
+    },
+    {
+      "row": 79267,
+      "id": "158366317",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 09:30",
+      "end": "2026-05-29 09:41",
+      "from": [
+        "200015",
+        "Ladbroke Grove Central, Ladbroke Grove"
+      ],
+      "to": [
+        "001002",
+        "Holy Trinity Brompton, Knightsbridge"
+      ]
+    },
+    {
+      "row": 79419,
+      "id": "158366124",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 09:24",
+      "end": "2026-05-29 09:30",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "000980",
+        "Malet Street, Bloomsbury"
+      ]
+    },
+    {
+      "row": 79500,
+      "id": "158366082",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 09:22",
+      "end": "2026-05-29 09:27",
+      "from": [
+        "001093",
+        "Kennington Cross, Kennington"
+      ],
+      "to": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ]
+    },
+    {
+      "row": 79632,
+      "id": "158365959",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 09:19",
+      "end": "2026-05-29 09:45",
+      "from": [
+        "200108",
+        "Bishop's Bridge Road East, Bayswater"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 79662,
+      "id": "158365920",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 09:17",
+      "end": "2026-05-29 09:22",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001174",
+        "Alderney Street, Pimlico"
+      ]
+    },
+    {
+      "row": 80003,
+      "id": "158365579",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 09:09",
+      "end": "2026-05-29 09:19",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001160",
+        "Craven Street, Strand"
+      ]
+    },
+    {
+      "row": 80076,
+      "id": "158365438",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 09:05",
+      "end": "2026-05-29 09:07",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001196",
+        "Vincent Square, Westminster"
+      ]
+    },
+    {
+      "row": 80202,
+      "id": "158365323",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 09:02",
+      "end": "2026-05-29 09:19",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001192",
+        "Embankment (Savoy), Strand"
+      ]
+    },
+    {
+      "row": 80243,
+      "id": "158365276",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 09:01",
+      "end": "2026-05-29 09:22",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "300237",
+        "Tate Modern, Bankside"
+      ]
+    },
+    {
+      "row": 80668,
+      "id": "158364832",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:51",
+      "end": "2026-05-29 09:03",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "001225",
+        "George Street, Marylebone"
+      ]
+    },
+    {
+      "row": 80850,
+      "id": "158364728",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:48",
+      "end": "2026-05-29 08:52",
+      "from": [
+        "001174",
+        "Alderney Street, Pimlico"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 80977,
+      "id": "158364566",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:45",
+      "end": "2026-05-29 08:57",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "022179",
+        "Exhibition Road, Knightsbridge"
+      ]
+    },
+    {
+      "row": 81025,
+      "id": "158364501",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:44",
+      "end": "2026-05-29 08:57",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001100",
+        "Strand, Strand"
+      ]
+    },
+    {
+      "row": 81124,
+      "id": "158364371",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:42",
+      "end": "2026-05-29 08:52",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "000982",
+        "Holborn Circus, Holborn"
+      ]
+    },
+    {
+      "row": 81628,
+      "id": "158363905",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:32",
+      "end": "2026-05-29 08:36",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "002678",
+        "Farm Street, Mayfair"
+      ]
+    },
+    {
+      "row": 81997,
+      "id": "158363485",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:23",
+      "end": "2026-05-29 08:39",
+      "from": [
+        "300052",
+        "Parsons Green Station, Parsons Green"
+      ],
+      "to": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ]
+    },
+    {
+      "row": 82116,
+      "id": "158363359",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:20",
+      "end": "2026-05-29 08:40",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "000999",
+        "Queen Street 1, Bank"
+      ]
+    },
+    {
+      "row": 82271,
+      "id": "158363199",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:16",
+      "end": "2026-05-29 08:34",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "002691",
+        "Howland Street, Fitzrovia"
+      ]
+    },
+    {
+      "row": 82362,
+      "id": "158363118",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:14",
+      "end": "2026-05-29 08:38",
+      "from": [
+        "001000",
+        "Vauxhall Cross, Vauxhall"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 82656,
+      "id": "158362822",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:07",
+      "end": "2026-05-29 08:30",
+      "from": [
+        "300081",
+        "Haggerston Road, Haggerston"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 82688,
+      "id": "158362818",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:06",
+      "end": "2026-05-29 08:42",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "200110",
+        "Bishop's Bridge Road West, Bayswater"
+      ]
+    },
+    {
+      "row": 82703,
+      "id": "158362755",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:05",
+      "end": "2026-05-29 08:29",
+      "from": [
+        "200250",
+        "Cleveland Way, Stepney"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 82710,
+      "id": "158362762",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 08:05",
+      "end": "2026-05-29 08:20",
+      "from": [
+        "001075",
+        "Hyde Park Corner, Hyde Park"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 83029,
+      "id": "158362470",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 07:57",
+      "end": "2026-05-29 08:22",
+      "from": [
+        "200169",
+        "Ashley Crescent, Battersea"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 83137,
+      "id": "158362313",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 07:52",
+      "end": "2026-05-29 08:10",
+      "from": [
+        "001210",
+        "Nevern Place, Earl's Court"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 83217,
+      "id": "158362268",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 07:50",
+      "end": "2026-05-29 08:09",
+      "from": [
+        "001106",
+        "Rampayne Street, Pimlico"
+      ],
+      "to": [
+        "200015",
+        "Ladbroke Grove Central, Ladbroke Grove"
+      ]
+    },
+    {
+      "row": 83363,
+      "id": "158362097",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 07:45",
+      "end": "2026-05-29 07:57",
+      "from": [
+        "200110",
+        "Bishop's Bridge Road West, Bayswater"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 83403,
+      "id": "158362071",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 07:45",
+      "end": "2026-05-29 08:02",
+      "from": [
+        "003478",
+        "Guildhouse Street, Victoria"
+      ],
+      "to": [
+        "001048",
+        "Queen Victoria Street, St. Paul's"
+      ]
+    },
+    {
+      "row": 83487,
+      "id": "158361948",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 07:41",
+      "end": "2026-05-29 07:53",
+      "from": [
+        "022169",
+        "Wren Street, Holborn"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 83519,
+      "id": "158361906",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 07:40",
+      "end": "2026-05-29 08:08",
+      "from": [
+        "200038",
+        "Ackroyd Drive, Bow"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 83938,
+      "id": "158361512",
+      "reason": "terminal name mismatch (possible reused identity)",
+      "start": "2026-05-29 07:24",
+      "end": "2026-05-29 07:36",
+      "from": [
+        "300036",
+        "Teversham Lane, Stockwell"
+      ],
+      "to": [
+        "002639",
+        "King Edward Walk, Waterloo"
+      ]
+    },
+    {
+      "row": 83991,
+      "id": "158361466",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 07:21",
+      "end": "2026-05-29 07:46",
+      "from": [
+        "200015",
+        "Ladbroke Grove Central, Ladbroke Grove"
+      ],
+      "to": [
+        "001067",
+        "St. James's Square, St. James's"
+      ]
+    },
+    {
+      "row": 84088,
+      "id": "158361346",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 07:15",
+      "end": "2026-05-29 07:24",
+      "from": [
+        "022181",
+        "Camley Street, Camden Town"
+      ],
+      "to": [
+        "000981",
+        "British Museum, Bloomsbury"
+      ]
+    },
+    {
+      "row": 84092,
+      "id": "158361350",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 07:15",
+      "end": "2026-05-29 07:23",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "000968",
+        "Warwick Row, Westminster"
+      ]
+    },
+    {
+      "row": 84102,
+      "id": "158361360",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 07:16",
+      "end": "2026-05-29 07:25",
+      "from": [
+        "001147",
+        "Clifton Road, Maida Vale"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 84964,
+      "id": "158360462",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 06:04",
+      "end": "2026-05-29 06:18",
+      "from": [
+        "001183",
+        "Bramham Gardens, Earl's Court"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 85237,
+      "id": "158360185",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-29 04:02",
+      "end": "2026-05-30 10:59",
+      "from": [
+        "200238",
+        "Westferry DLR, Limehouse"
+      ],
+      "to": [
+        "200238",
+        "Westferry DLR, Limehouse"
+      ]
+    },
+    {
+      "row": 85417,
+      "id": "158359986",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 01:51",
+      "end": "2026-05-29 01:56",
+      "from": [
+        "200058",
+        "Northdown Street, King's Cross"
+      ],
+      "to": [
+        "022181",
+        "Camley Street, Camden Town"
+      ]
+    },
+    {
+      "row": 85789,
+      "id": "158359593",
+      "reason": "unmapped terminal",
+      "start": "2026-05-29 00:16",
+      "end": "2026-05-29 00:30",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "001187",
+        "St. John's Wood Road, St. John's Wood"
+      ]
+    },
+    {
+      "row": 85914,
+      "id": "158359466",
+      "reason": "unmapped terminal",
+      "start": "2026-05-28 23:54",
+      "end": "2026-05-29 00:03",
+      "from": [
+        "001162",
+        "Dorset Square, Marylebone"
+      ],
+      "to": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ]
+    },
+    {
+      "row": 86078,
+      "id": "158359279",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 23:35",
+      "end": "2026-05-30 09:37",
+      "from": [
+        "300014",
+        "Falcon Road, Clapham Junction"
+      ],
+      "to": [
+        "200114",
+        "Orbel Street, Battersea"
+      ]
+    },
+    {
+      "row": 87229,
+      "id": "158358114",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 22:17",
+      "end": "2026-06-01 08:04",
+      "from": [
+        "300228",
+        "Westferry Circus, Canary Wharf"
+      ],
+      "to": [
+        "200029",
+        "Finlay Street, Fulham"
+      ]
+    },
+    {
+      "row": 87233,
+      "id": "158358119",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 22:17",
+      "end": "2026-06-01 12:21",
+      "from": [
+        "300228",
+        "Westferry Circus, Canary Wharf"
+      ],
+      "to": [
+        "300204",
+        "Victoria Rise, Clapham Common"
+      ]
+    },
+    {
+      "row": 88383,
+      "id": "158356907",
+      "reason": "unmapped terminal",
+      "start": "2026-05-28 21:22",
+      "end": "2026-05-29 17:45",
+      "from": [
+        "001029",
+        "Windsor Terrace, Hoxton"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 89253,
+      "id": "158356009",
+      "reason": "unmapped terminal",
+      "start": "2026-05-28 20:48",
+      "end": "2026-05-29 17:42",
+      "from": [
+        "200012",
+        "Stepney Green Station, Stepney"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 89283,
+      "id": "158355984",
+      "reason": "unmapped terminal",
+      "start": "2026-05-28 20:47",
+      "end": "2026-05-29 17:43",
+      "from": [
+        "200012",
+        "Stepney Green Station, Stepney"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 90440,
+      "id": "158354816",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 20:08",
+      "end": "2026-06-05 14:36",
+      "from": [
+        "002696",
+        "Waterloo Station 1, Waterloo"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 90489,
+      "id": "158354754",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 20:06",
+      "end": "2026-06-08 17:30",
+      "from": [
+        "002696",
+        "Waterloo Station 1, Waterloo"
+      ],
+      "to": [
+        "200129",
+        "Charlotte Terrace, Angel"
+      ]
+    },
+    {
+      "row": 90995,
+      "id": "158354225",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 19:51",
+      "end": "2026-06-02 12:35",
+      "from": [
+        "300200",
+        "East Village, Queen Elizabeth Olympic Park"
+      ],
+      "to": [
+        "300205",
+        "Cromer Street, Bloomsbury"
+      ]
+    },
+    {
+      "row": 94215,
+      "id": "158350786",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 18:44",
+      "end": "2026-06-01 08:32",
+      "from": [
+        "300059",
+        "The Blue, Bermondsey"
+      ],
+      "to": [
+        "001076",
+        "Walnut Tree Walk, Vauxhall"
+      ]
+    },
+    {
+      "row": 94946,
+      "id": "158350071",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 18:33",
+      "end": "2026-05-31 13:36",
+      "from": [
+        "000999",
+        "Queen Street 1, Bank"
+      ],
+      "to": [
+        "300245",
+        "Clapham Road, Lingham Street, Stockwell"
+      ]
+    },
+    {
+      "row": 95606,
+      "id": "158349338",
+      "reason": "unmapped terminal",
+      "start": "2026-05-28 18:22",
+      "end": "2026-05-29 17:43",
+      "from": [
+        "200109",
+        "Alpha Grove, Millwall"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 97579,
+      "id": "158347369",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 17:52",
+      "end": "2026-05-30 14:13",
+      "from": [
+        "200253",
+        "Fore Street Avenue, Guildhall"
+      ],
+      "to": [
+        "001131",
+        "Graham Street, Angel"
+      ]
+    },
+    {
+      "row": 98650,
+      "id": "158346313",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 17:37",
+      "end": "2026-05-29 22:20",
+      "from": [
+        "200074",
+        "Bury Place, Holborn"
+      ],
+      "to": [
+        "200108",
+        "Bishop's Bridge Road East, Bayswater"
+      ]
+    },
+    {
+      "row": 100078,
+      "id": "158344811",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 17:12",
+      "end": "2026-05-29 17:45",
+      "from": [
+        "200099",
+        "Upper Bank Street, Canary Wharf"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 100863,
+      "id": "158343957",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 16:55",
+      "end": "2026-06-07 14:42",
+      "from": [
+        "001132",
+        "Albert Gate, Hyde Park"
+      ],
+      "to": [
+        "001096",
+        "Bayswater Road, Hyde Park"
+      ]
+    },
+    {
+      "row": 100877,
+      "id": "158343971",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 16:55",
+      "end": "2026-06-03 08:17",
+      "from": [
+        "001132",
+        "Albert Gate, Hyde Park"
+      ],
+      "to": [
+        "200001",
+        "Limerston Street, West Chelsea"
+      ]
+    },
+    {
+      "row": 106034,
+      "id": "158338582",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 13:38",
+      "end": "2026-06-04 10:36",
+      "from": [
+        "200165",
+        "Wellington Row, Bethnal Green"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 106654,
+      "id": "158337931",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 13:11",
+      "end": "2026-06-03 20:06",
+      "from": [
+        "001018",
+        "Phillimore Gardens, Kensington"
+      ],
+      "to": [
+        "001214",
+        "Kensington Olympia Station, Olympia"
+      ]
+    },
+    {
+      "row": 106955,
+      "id": "158337606",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-28 12:58",
+      "end": "2026-05-29 15:41",
+      "from": [
+        "003494",
+        "Foley Street, Fitzrovia"
+      ],
+      "to": [
+        "200134",
+        "Albany Street, The Regent's Park"
+      ]
+    },
+    {
+      "row": 121858,
+      "id": "158322240",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 21:32",
+      "end": "2026-05-29 11:17",
+      "from": [
+        "200032",
+        "Kennington Oval, Oval"
+      ],
+      "to": [
+        "300225",
+        "Normandy Road, Stockwell"
+      ]
+    },
+    {
+      "row": 121905,
+      "id": "158322202",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 21:30",
+      "end": "2026-06-03 03:45",
+      "from": [
+        "300029",
+        "Lee Valley VeloPark, Queen Elizabeth Olympic Park"
+      ],
+      "to": [
+        "300234",
+        "Stratford Station, Stratford"
+      ]
+    },
+    {
+      "row": 122202,
+      "id": "158321854",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 21:16",
+      "end": "2026-06-06 17:36",
+      "from": [
+        "001152",
+        "Marylebone Lane, Marylebone"
+      ],
+      "to": [
+        "200039",
+        "Sail Street, Vauxhall"
+      ]
+    },
+    {
+      "row": 126886,
+      "id": "158316969",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 18:55",
+      "end": "2026-05-29 11:14",
+      "from": [
+        "200240",
+        "Ferndale Road, Brixton"
+      ],
+      "to": [
+        "300225",
+        "Normandy Road, Stockwell"
+      ]
+    },
+    {
+      "row": 128315,
+      "id": "158315567",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 18:30",
+      "end": "2026-05-30 13:54",
+      "from": [
+        "300203",
+        "Euston Square Gardens, Euston"
+      ],
+      "to": [
+        "001155",
+        "Regency Street, Westminster"
+      ]
+    },
+    {
+      "row": 132565,
+      "id": "158311143",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 17:25",
+      "end": "2026-05-29 08:20",
+      "from": [
+        "200238",
+        "Westferry DLR, Limehouse"
+      ],
+      "to": [
+        "022161",
+        "Vincent Street, Pimlico"
+      ]
+    },
+    {
+      "row": 133248,
+      "id": "158310439",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 17:14",
+      "end": "2026-05-29 13:09",
+      "from": [
+        "300013",
+        "Austin Road, Battersea Park"
+      ],
+      "to": [
+        "200186",
+        "Nantes Close, Wandsworth"
+      ]
+    },
+    {
+      "row": 135105,
+      "id": "158308509",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 16:31",
+      "end": "2026-06-08 17:24",
+      "from": [
+        "022174",
+        "Granby Street, Shoreditch"
+      ],
+      "to": [
+        "200129",
+        "Charlotte Terrace, Angel"
+      ]
+    },
+    {
+      "row": 137407,
+      "id": "158306162",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 15:04",
+      "end": "2026-06-02 08:26",
+      "from": [
+        "001231",
+        "Queen's Gate, Kensington Gardens"
+      ],
+      "to": [
+        "001108",
+        "North Wharf Road, Paddington"
+      ]
+    },
+    {
+      "row": 138123,
+      "id": "158305414",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 14:31",
+      "end": "2026-05-31 22:17",
+      "from": [
+        "001165",
+        "Riverlight North, Nine Elms"
+      ],
+      "to": [
+        "200186",
+        "Nantes Close, Wandsworth"
+      ]
+    },
+    {
+      "row": 138508,
+      "id": "158304991",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 14:12",
+      "end": "2026-06-03 17:29",
+      "from": [
+        "001132",
+        "Albert Gate, Hyde Park"
+      ],
+      "to": [
+        "001066",
+        "Calshot Street , King's Cross"
+      ]
+    },
+    {
+      "row": 138528,
+      "id": "158304970",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 14:11",
+      "end": "2026-05-31 07:22",
+      "from": [
+        "001132",
+        "Albert Gate, Hyde Park"
+      ],
+      "to": [
+        "200223",
+        "Ashmole Estate, Oval"
+      ]
+    },
+    {
+      "row": 138538,
+      "id": "158304980",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 14:11",
+      "end": "2026-05-29 11:13",
+      "from": [
+        "001132",
+        "Albert Gate, Hyde Park"
+      ],
+      "to": [
+        "300225",
+        "Normandy Road, Stockwell"
+      ]
+    },
+    {
+      "row": 141870,
+      "id": "158301534",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 11:44",
+      "end": "2026-06-04 19:27",
+      "from": [
+        "001011",
+        "Argyle Street, Kings Cross"
+      ],
+      "to": [
+        "200202",
+        "Storey's Gate, Westminster"
+      ]
+    },
+    {
+      "row": 146570,
+      "id": "158296733",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 08:51",
+      "end": "2026-05-31 10:00",
+      "from": [
+        "000995",
+        "Little Argyll Street, West End"
+      ],
+      "to": [
+        "010625",
+        "Penfold Street, Marylebone"
+      ]
+    },
+    {
+      "row": 153051,
+      "id": "158290067",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-27 02:59",
+      "end": "2026-06-01 15:32",
+      "from": [
+        "300234",
+        "Stratford Station, Stratford"
+      ],
+      "to": [
+        "300233",
+        "Aquatic Centre, Queen Elizabeth Olympic Park"
+      ]
+    },
+    {
+      "row": 154988,
+      "id": "158288076",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-26 21:44",
+      "end": "2026-05-29 17:10",
+      "from": [
+        "200239",
+        "Old Montague Street, Whitechapel"
+      ],
+      "to": [
+        "200173",
+        "Courland Grove, Wandsworth Road"
+      ]
+    },
+    {
+      "row": 166456,
+      "id": "158276304",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-26 17:18",
+      "end": "2026-06-01 12:24",
+      "from": [
+        "300094",
+        "Plough Terrace, Clapham Junction"
+      ],
+      "to": [
+        "300204",
+        "Victoria Rise, Clapham Common"
+      ]
+    },
+    {
+      "row": 167572,
+      "id": "158275105",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-26 16:56",
+      "end": "2026-06-02 10:59",
+      "from": [
+        "200148",
+        "Ansell House, Stepney"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 170352,
+      "id": "158272264",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-26 15:17",
+      "end": "2026-05-29 13:39",
+      "from": [
+        "003507",
+        "Store Street, Bloomsbury"
+      ],
+      "to": [
+        "001058",
+        "Orchard Place, Blackwall Tunnel"
+      ]
+    },
+    {
+      "row": 174912,
+      "id": "158267486",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-26 11:37",
+      "end": "2026-05-29 09:02",
+      "from": [
+        "001096",
+        "Bayswater Road, Hyde Park"
+      ],
+      "to": [
+        "003439",
+        "Tavistock Place, Bloomsbury"
+      ]
+    },
+    {
+      "row": 188861,
+      "id": "158253048",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-25 20:30",
+      "end": "2026-05-29 11:16",
+      "from": [
+        "001132",
+        "Albert Gate, Hyde Park"
+      ],
+      "to": [
+        "300225",
+        "Normandy Road, Stockwell"
+      ]
+    },
+    {
+      "row": 189488,
+      "id": "158252436",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-25 20:08",
+      "end": "2026-06-08 17:25",
+      "from": [
+        "300250",
+        "Temple Gardens, Temple"
+      ],
+      "to": [
+        "200129",
+        "Charlotte Terrace, Angel"
+      ]
+    },
+    {
+      "row": 191059,
+      "id": "158250766",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-25 19:15",
+      "end": "2026-05-30 17:21",
+      "from": [
+        "002693",
+        "Shouldham Street, Marylebone"
+      ],
+      "to": [
+        "300055",
+        "Stewart's Road, Wandsworth Road"
+      ]
+    },
+    {
+      "row": 196775,
+      "id": "158244801",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-25 16:29",
+      "end": "2026-05-29 17:10",
+      "from": [
+        "300004",
+        "Harris Academy, Bermondsey"
+      ],
+      "to": [
+        "200173",
+        "Courland Grove, Wandsworth Road"
+      ]
+    },
+    {
+      "row": 202060,
+      "id": "158239258",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-25 13:40",
+      "end": "2026-05-29 14:48",
+      "from": [
+        "200255",
+        "Devons Road, Bow"
+      ],
+      "to": [
+        "300015",
+        "Binfield Road, Stockwell"
+      ]
+    },
+    {
+      "row": 206725,
+      "id": "158234487",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-25 11:04",
+      "end": "2026-06-06 16:49",
+      "from": [
+        "001120",
+        "Chepstow Villas, Notting Hill"
+      ],
+      "to": [
+        "002635",
+        "Agar Grove, Camden Town"
+      ]
+    },
+    {
+      "row": 206755,
+      "id": "158234464",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-25 11:04",
+      "end": "2026-06-04 18:11",
+      "from": [
+        "001120",
+        "Chepstow Villas, Notting Hill"
+      ],
+      "to": [
+        "300086",
+        "Fulham Broadway, Walham Green"
+      ]
+    },
+    {
+      "row": 211720,
+      "id": "158229327",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-25 00:43",
+      "end": "2026-06-09 11:58",
+      "from": [
+        "001097",
+        "Northumberland Avenue, Strand"
+      ],
+      "to": [
+        "000989",
+        "Murray Grove , Hoxton"
+      ]
+    },
+    {
+      "row": 214247,
+      "id": "158226741",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-24 21:28",
+      "end": "2026-05-30 17:38",
+      "from": [
+        "300201",
+        "Coram Street, Bloomsbury"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 214697,
+      "id": "158226284",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-24 21:08",
+      "end": "2026-05-30 17:08",
+      "from": [
+        "001075",
+        "Hyde Park Corner, Hyde Park"
+      ],
+      "to": [
+        "003481",
+        "Rodney Road , Walworth"
+      ]
+    },
+    {
+      "row": 219360,
+      "id": "158221330",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-24 18:22",
+      "end": "2026-06-03 16:11",
+      "from": [
+        "300235",
+        "York Way, Kings Cross"
+      ],
+      "to": [
+        "022172",
+        "Bromley High Street, Bow"
+      ]
+    },
+    {
+      "row": 220470,
+      "id": "158220184",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-24 17:50",
+      "end": "2026-06-03 08:47",
+      "from": [
+        "000967",
+        "Golden Lane, Barbican"
+      ],
+      "to": [
+        "200108",
+        "Bishop's Bridge Road East, Bayswater"
+      ]
+    },
+    {
+      "row": 226076,
+      "id": "158214371",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-24 15:07",
+      "end": "2026-06-06 17:41",
+      "from": [
+        "200008",
+        "Portman Square, Marylebone"
+      ],
+      "to": [
+        "001127",
+        "Risinghill Street, Angel"
+      ]
+    },
+    {
+      "row": 234686,
+      "id": "158205496",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-24 10:49",
+      "end": "2026-05-29 17:11",
+      "from": [
+        "001068",
+        "Norton Folgate, Liverpool Street"
+      ],
+      "to": [
+        "200173",
+        "Courland Grove, Wandsworth Road"
+      ]
+    },
+    {
+      "row": 238881,
+      "id": "158201180",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-24 02:06",
+      "end": "2026-05-29 11:14",
+      "from": [
+        "002679",
+        "George Row, Bermondsey"
+      ],
+      "to": [
+        "300225",
+        "Normandy Road, Stockwell"
+      ]
+    },
+    {
+      "row": 243442,
+      "id": "158196417",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-23 20:19",
+      "end": "2026-06-04 10:40",
+      "from": [
+        "300233",
+        "Aquatic Centre, Queen Elizabeth Olympic Park"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 254397,
+      "id": "158184970",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-23 14:48",
+      "end": "2026-06-02 14:49",
+      "from": [
+        "022183",
+        "Crinan Street, King's Cross"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 263061,
+      "id": "158176068",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-23 10:26",
+      "end": "2026-06-02 10:45",
+      "from": [
+        "001132",
+        "Albert Gate, Hyde Park"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 267018,
+      "id": "158171979",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-23 02:47",
+      "end": "2026-06-02 17:48",
+      "from": [
+        "200026",
+        "Greenland Road, Camden Town"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 269267,
+      "id": "158169647",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-22 22:29",
+      "end": "2026-06-04 19:31",
+      "from": [
+        "300229",
+        "Sidney Road, Stockwell"
+      ],
+      "to": [
+        "200202",
+        "Storey's Gate, Westminster"
+      ]
+    },
+    {
+      "row": 270741,
+      "id": "158168132",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-22 21:10",
+      "end": "2026-06-05 15:57",
+      "from": [
+        "000966",
+        "New Kent Road, The Borough"
+      ],
+      "to": [
+        "001101",
+        "Knightsbridge, Hyde Park"
+      ]
+    },
+    {
+      "row": 270864,
+      "id": "158168007",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-22 21:04",
+      "end": "2026-05-31 19:34",
+      "from": [
+        "200163",
+        "Jubilee Plaza, Canary Wharf"
+      ],
+      "to": [
+        "200238",
+        "Westferry DLR, Limehouse"
+      ]
+    },
+    {
+      "row": 271361,
+      "id": "158167484",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-22 20:40",
+      "end": "2026-05-31 15:15",
+      "from": [
+        "200163",
+        "Jubilee Plaza, Canary Wharf"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 272960,
+      "id": "158165828",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-22 19:42",
+      "end": "2026-05-29 13:35",
+      "from": [
+        "300099",
+        "Adeline Place, Bloomsbury"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 276232,
+      "id": "158162485",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-22 18:22",
+      "end": "2026-06-01 18:52",
+      "from": [
+        "001132",
+        "Albert Gate, Hyde Park"
+      ],
+      "to": [
+        "200252",
+        "Bow Church Station, Bow"
+      ]
+    },
+    {
+      "row": 286710,
+      "id": "158151573",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-22 13:26",
+      "end": "2026-06-03 12:52",
+      "from": [
+        "200223",
+        "Ashmole Estate, Oval"
+      ],
+      "to": [
+        "001073",
+        "Kennington Road Post Office, Oval"
+      ]
+    },
+    {
+      "row": 299399,
+      "id": "158138550",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-21 22:47",
+      "end": "2026-06-01 17:33",
+      "from": [
+        "001212",
+        "Concert Hall Approach, South Bank"
+      ],
+      "to": [
+        "300247",
+        "Cranmer Road, Stockwell"
+      ]
+    },
+    {
+      "row": 303586,
+      "id": "158134230",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-21 19:36",
+      "end": "2026-05-29 09:26",
+      "from": [
+        "000991",
+        "Crosswall, Tower"
+      ],
+      "to": [
+        "300222",
+        "Fore Street, Guildhall"
+      ]
+    },
+    {
+      "row": 324603,
+      "id": "158112762",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-21 08:44",
+      "end": "2026-06-01 15:26",
+      "from": [
+        "200032",
+        "Kennington Oval, Oval"
+      ],
+      "to": [
+        "200048",
+        "Page Street, Westminster"
+      ]
+    },
+    {
+      "row": 335693,
+      "id": "158101337",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-20 19:14",
+      "end": "2026-05-31 12:34",
+      "from": [
+        "300250",
+        "Temple Gardens, Temple"
+      ],
+      "to": [
+        "200116",
+        "Vereker Road, West Kensington"
+      ]
+    },
+    {
+      "row": 336924,
+      "id": "158100064",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-20 18:45",
+      "end": "2026-06-03 08:56",
+      "from": [
+        "200037",
+        "Rectory Square, Stepney"
+      ],
+      "to": [
+        "010626",
+        "Mechanical Workshop Penton"
+      ]
+    },
+    {
+      "row": 422091,
+      "id": "158012134",
+      "reason": "duration exceeds bounded 24-hour replay",
+      "start": "2026-05-17 16:22",
+      "end": "2026-05-29 10:41",
+      "from": [
+        "001175",
+        "Mallory Street, Marylebone"
+      ],
+      "to": [
+        "300022",
+        "Evesham Street, Avondale"
+      ]
+    }
+  ],
+  "semantics": [
+    "Minute-resolution local timestamps; no inferred seconds.",
+    "Same-minute hires count as events but have no animated duration.",
+    "Same-dock hires count at the dock; no invented route.",
+    "Net returns minus departures excludes fleet rebalancing and is not dock availability.",
+    "Current coordinates require matching terminal ID and normalized station name.",
+    "No Bike number or customer identity is retained."
+  ]
+}

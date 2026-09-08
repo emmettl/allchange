@@ -94,6 +94,12 @@ The boards show published times, with source date and available window. They ret
 
 The board and its styles load on selection, with a separate dependency-inclusive transfer budget. Flap motion is suppressed during faster playback and respects reduced-motion preferences. Unit checks cover call semantics and bounded time filtering; browser checks cover station selection, filtering, movement, retry and phone layouts.
 
+### Cycle-hire day
+
+Choose **Cycles** to replay Friday 29 May 2026 across 792 matched Santander docking stations. Search or select a dock for departures, returns, net balance and a daily profile; compare 08:30 with 17:30 using the shared clock. Dismissible cards, reduced motion and zoom support the phone view. Rail-interchange markers provide geographic context.
+
+The separately dated study contains 31,247 included journey records and loads only when opened. Connections are schematic dock-to-dock lines, not recorded street routes; net returns do not imply bike availability. The source audit records unmapped/reused station identities, long-hire exclusions and midnight treatment. See [Cycle-hire source and validation](docs/CYCLE-HIRE.md).
+
 ### Passenger rhythm
 
 Bank/Monument and Stratford have a passenger-flow pulse with separate entering, leaving and changing streams. Choose **Explore passenger flow** from their cards or **People** in the pulse, compare 08:30 with 17:30, and switch stations without losing the clock. Dots encode typical 15-minute movements; they are schematic, not tracked paths or train occupancy. **Trains** returns to the scheduled-service pulse. Pause, scrubbing and reduced motion are supported.

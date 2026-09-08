@@ -25,3 +25,4 @@ await rm('public/data/all-change-passenger-demand', { recursive: true, force: tr
 await mkdir('public/data/all-change-passenger-demand', { recursive: true })
 await copyFile('fixtures/passenger-demand/catalogue.json', 'public/data/all-change-passenger-demand/catalogue.json')
 await cp('fixtures/passenger-demand/stations', 'public/data/all-change-passenger-demand/stations', { recursive: true })
+await copyFile('fixtures/cycle-hire/day.json', 'public/data/all-change-cycle-day.json')

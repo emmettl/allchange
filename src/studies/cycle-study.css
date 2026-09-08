@@ -1,0 +1,61 @@
+.cycle-study { position: fixed; inset: 0; display: flex; flex-direction: column; gap: 16px; padding: 24px 32px 12px; box-sizing: border-box; background: #070714; color: #eee9d7; font: 400 11px/1.5 'DM Mono', monospace; }
+.cycle-study button, .cycle-study select, .cycle-study input[type='search'] { min-height: 44px; padding: 8px 12px; border: 1px solid #b9afd455; background: #111122; color: #eee9d7; font: inherit; border-radius: 0; }
+.cycle-study button { cursor: pointer; }
+.cycle-study button:disabled { opacity: .4; cursor: default; }
+.cycle-study :focus-visible { outline: 2px solid #ffe3b8; outline-offset: 2px; }
+.cycle-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.cycle-header p { margin: 0; color: #7ce8ee; letter-spacing: .12em; font-size: 10px; }
+.cycle-header h1 { font: 500 34px/1.2 'DM Mono', monospace; letter-spacing: -.06em; margin: 5px 0; }
+.cycle-header span { color: #b9b3c7; }
+.cycle-toolbar { display: flex; gap: 12px; }
+.cycle-search { position: relative; flex: 1; max-width: 600px; }
+.cycle-search input { width: 100%; box-sizing: border-box; }
+.cycle-search [role='listbox'] { position: absolute; z-index: 10; width: 100%; max-height: 320px; overflow: auto; background: #101020; box-shadow: 0 8px 24px #000a; }
+.cycle-search [role='option'] { display: block; width: 100%; text-align: left; }
+.cycle-search [aria-selected='true'] { border-color: #a2d5c2; }
+.cycle-toolbar nav { display: flex; gap: 8px; }
+.cycle-content { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 24px; min-height: 0; }
+.cycle-map { position: relative; min-height: 0; border: 1px solid #b9afd422; overflow: hidden; }
+.cycle-map canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+.cycle-map-tools { position: absolute; top: 8px; left: 8px; display: flex; gap: 4px; }
+.cycle-map-tools button { min-width: 44px; }
+.cycle-map-count { position: absolute; top: 18px; right: 10px; font-size: 10px; background: #070714cc; padding: 4px; }
+.cycle-map-key { position: absolute; left: 10px; bottom: 0; pointer-events: none; font-size: 9px; background: #070714da; padding: 4px; }
+.cycle-card { align-self: start; max-height: 100%; box-sizing: border-box; overflow: auto; padding: 12px; border: 1px solid #b9afd444; background: #10101eed; }
+.cycle-card h2 { font: 500 18px/1.4 'DM Mono', monospace; margin: 4px 0 12px; }
+.cycle-card p { color: #c6c0d1; margin: 8px 0; font-size: 10px; }
+.cycle-counts { display: flex; gap: 24px; margin-top: 14px; }
+.cycle-counts strong { display: block; font-size: 28px; font-weight: 400; }
+.cycle-card svg { display: block; width: 100%; margin-top: 16px; }
+.cycle-card svg text { fill: #c6c0d1; font-size: 9px; }
+.cycle-card summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+.cycle-card a { color: #7ce8ee; }
+.cycle-study .cycle-footer { position: static; display: block; flex-shrink: 0; align-self: center; width: min(100%, 780px); padding: 0; font: inherit; letter-spacing: 0; text-transform: none; color: inherit; pointer-events: auto; }
+.cycle-footer > p { color: #c6c0d1; font-size: 10px; margin: 0 0 8px; }
+.cycle-time { display: flex; justify-content: space-between; align-items: baseline; }
+.cycle-time strong { font-size: 16px; color: #7ce8ee; }
+.cycle-footer input[type='range'] { width: 100%; accent-color: #f65dce; min-height: 28px; margin: 0; }
+.cycle-playback { display: flex; justify-content: center; align-items: center; gap: 8px; }
+.cycle-playback button { min-width: 44px; }
+.cycle-playback span, .cycle-footer small { font-size: 9px; color: #aaa2b8; }
+.cycle-footer small { display: block; text-align: center; margin-top: 6px; }
+.cycle-loading { flex: 1; display: grid; place-content: center; }
+@media (max-width: 760px) {
+  .cycle-study { padding: calc(12px + env(safe-area-inset-top)) 12px calc(8px + env(safe-area-inset-bottom)); gap: 10px; }
+  .cycle-header h1 { font-size: 23px; }
+  .cycle-header span { font-size: 9px; }
+  .cycle-header p { font-size: 8px; }
+  .cycle-header button { padding: 6px; flex-shrink: 0; }
+  .cycle-toolbar { flex-wrap: wrap; gap: 6px; }
+  .cycle-search { flex-basis: 100%; }
+  .cycle-toolbar nav { width: 100%; }
+  .cycle-toolbar nav button { flex: 1; }
+  .cycle-content { display: block; position: relative; }
+  .cycle-map { height: 100%; box-sizing: border-box; }
+  .cycle-map-key { font-size: 8px; }
+  .cycle-card { position: absolute; top: 62px; right: 8px; width: min(290px, calc(100% - 16px)); max-height: calc(100% - 100px); }
+  .cycle-map-count { top: auto; bottom: 48px; font-size: 9px; }
+  .cycle-footer > p { font-size: 9px; }
+  .cycle-playback span { font-size: 8px; }
+  .cycle-footer small { font-size: 7px; }
+}

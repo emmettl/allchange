@@ -528,6 +528,7 @@ const visited = new Set()
 const roadDetailKey = 'src/studies/LondonRoadObservations.tsx'
 const railBoardKey = 'src/studies/LondonNationalRailBoard.tsx'
 const passengerPulseKey = 'src/studies/LondonPassengerPulse.tsx'
+const cycleStudyKey = 'src/studies/LondonCycleStudy.tsx'
 const passengerCardKey = 'src/studies/LondonPassengerDemand.tsx'
 const stationBoardKey = 'src/studies/LondonStationDepartures.tsx'
 const airportCardKey = 'src/studies/AirportCard.tsx'
@@ -542,7 +543,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // This panel is requested only after road selection. Budget its own payload
   // separately; it is not part of the opening network scene's transfer.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, railLayerKey, passengerCardKey, passengerPulseKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -591,6 +592,10 @@ const railLayerSize = await totalGzipSize([railLayer.file])
 console.log(`All Change optional rail renderer: ${kibibytes(railLayerSize)} / 6.0 KiB`)
 if (railLayerSize > 6 * 1024) throw new Error('Rail renderer transfer budget exceeded')
 const passengerCard = await optionalCardSize(passengerCardKey)
+const cycleStudy = await optionalCardSize(cycleStudyKey)
+const cycleData = gzipSync(await readFile('fixtures/cycle-hire/day.json'), { level: 9 }).byteLength
+console.log(`All Change optional cycle study: ${kibibytes(cycleStudy.javaScript)} JS / 9 KiB; ${kibibytes(cycleStudy.css)} CSS / 3 KiB; ${kibibytes(cycleData)} data / 300 KiB`)
+if (cycleStudy.javaScript > 9 * 1024 || cycleStudy.css > 3 * 1024 || cycleData > 300 * 1024) throw new Error('Cycle study transfer budget exceeded')
 const passengerPulse = await optionalCardSize(passengerPulseKey)
 const passengerCatalogue = JSON.parse(await readFile('fixtures/passenger-demand/catalogue.json', 'utf8'))
 const passengerIndexBytes = gzipSync(await readFile('fixtures/passenger-demand/catalogue.json'), { level: 9 }).byteLength

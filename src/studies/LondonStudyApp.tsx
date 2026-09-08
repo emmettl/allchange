@@ -117,6 +117,7 @@ import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
 const LondonNationalRailBoard = lazy(() => import('./LondonNationalRailBoard.tsx').then(module => ({ default: module.LondonNationalRailBoard })))
 import { HeroCardDismiss } from './HeroCardDismiss.tsx'
 const LondonPassengerPulse = lazy(() => import('./LondonPassengerPulse.tsx'))
+const LondonCycleStudy = lazy(() => import('./LondonCycleStudy.tsx'))
 const LondonPassengerDemand = lazy(() => import('./LondonPassengerDemand.tsx'))
 const LondonStationDepartures = lazy(() => import('./LondonStationDepartures.tsx').then(module => ({ default: module.LondonStationDepartures })))
 import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
@@ -331,6 +332,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [pulseView, setPulseView] = useState<'services' | 'passengers'>('services')
+  const [cycleEnabled, setCycleEnabled] = useState(false)
   const [pulseHubId, setPulseHubId] = useState<LondonHubId>()
   const railCatalogue = useRailCatalogue(nationalRailEnabled || Boolean(pulseHubId) || searchOpen, morningNetwork?.metadata.serviceDate)
   const railStations = railCatalogue.stations
@@ -1394,6 +1396,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   useEffect(() => {
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (cycleEnabled) return
       const target = event.target as HTMLElement | null
       if (target?.closest('input, textarea, select, [contenteditable="true"]')) return
       if (event.key === ' ') {
@@ -1436,6 +1439,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     nationalRailEnabled,
     busEnabled,
     surfaceEnabled,
+    cycleEnabled,
   ])
 
   const selectedDescription = selectedStation
@@ -1481,6 +1485,11 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     ...(!networkSelection && airEnabled ? [`${activeAircraftCount.toLocaleString('en-GB')} aircraft observed`] : []),
     ...(!networkSelection && roadEnabled ? [`${reconstructedRoadVehicleCount.toLocaleString('en-GB')} vehicles reconstructed`] : []),
   ].join(' · ')
+
+  if (cycleEnabled) return <Suspense fallback={<main className="cycle-opening" role="status">Loading cycle study… <button onClick={() => setCycleEnabled(false)}>Back to rail</button></main>}>
+    <LondonCycleStudy time={time} onTime={setTime} isPlaying={isPlaying} onPlaying={setIsPlaying} rate={playbackRate} onRate={setPlaybackRate} geography={geography} railStops={morningNetwork?.stops}
+      onClose={() => { setCycleEnabled(false); if (network && (time < network.metadata.windowStart || time > network.metadata.windowEnd)) setStudyWindow('day') }} />
+  </Suspense>
 
   return (
     <main
@@ -1790,6 +1799,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           <span className="london-wide-label">National Rail</span>
           <span className="london-mobile-label">NR</span>
         </button>
+        <button type="button" aria-label="Explore cycle-hire day" data-tooltip="Santander cycle hires · Friday 29 May 2026 · separately dated study"
+          onClick={() => { clearSelection(); setOperationsRequested(false); setOperationsMode('plan'); setCycleEnabled(true); setMobileControlsOpen(false) }}>Cycles</button>
         {nationalRailEnabled && nationalRailError && <span className="london-layout-status" role="status">National Rail unavailable · toggle to retry</span>}
         {nationalRailEnabled && railFeed.loading && <span className="london-layout-status" role="status">Loading National Rail…</span>}
         {layoutError && (
