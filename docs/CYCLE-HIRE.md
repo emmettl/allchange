@@ -57,6 +57,22 @@ The compiler validates dock identities across dates and writes shared comparison
 
 **Pindar Street, Liverpool Street** has included records on Thursday, Friday and Sunday, but none on Saturday. It remains searchable from the shared catalogue and explicitly unavailable on Saturday. A supported dock’s recorded zero intervals remain zero. Loading or failed date requests clear the previous day’s visible counts; late responses cannot replace the current selection. The manifest and successful day downloads are cached, and retries request only the failed resource.
 
+### Guided dock comparisons
+
+**Explore a pattern…** offers three starting points. Each selects a validated dock, sets its observed date and time, pauses playback, zooms to the dock and opens its four-day comparison. These are individual docking-station examples, not estimates of whole-neighbourhood movement.
+
+| Example | Starting point | Evidence from included endpoint events |
+| --- | --- | --- |
+| Waterloo Station 3 | Thursday 28 May, 08:30 | 07:00–10:00: 205 departures / 2 returns. 16:00–19:00: 10 departures / 164 returns. |
+| Queen Street 1, Bank | Thursday 28 May, 08:30 | 07:00–10:00: 12 departures / 137 returns. 16:00–19:00: 85 departures / 23 returns. |
+| Hyde Park Corner | Sunday 31 May, 14:00 | Departures plus returns from 12:00–17:00: 110 Thursday, 193 Friday, 214 Saturday, 272 Sunday. |
+
+The first two examples were selected for contrasting morning/evening balances across the included weekday data; Hyde Park Corner shows a larger midday event total on each weekend date than on either weekday. Windows are half-open, with their ending time excluded. Counts do not identify journey purpose, establish connections to trains, or prove travel between the Waterloo and Bank examples. A same-dock hire can contribute both a departure and a return, so combined endpoint counts are not unique hires or riders. **Why this example?** gives the dated evidence in the card.
+
+Any selected dock offers **Compare four days**. Four compact profiles share that dock’s existing fixed maximum and the study clock; selecting a row changes the replay date and pauses, preserving time and zoom. The current date is marked, daily departure/return totals remain separate, and missing coverage remains unavailable. **Back to selected day** restores interval counts and the detailed day profile. Comparison mode gives the charts more space by compacting the header and, on mobile, hiding the search and peak shortcuts until the comparison closes. The hero close button retains the dock and comparison state while restoring the map controls.
+
+The comparison component and `profiles/{terminalId}.json` load only when needed. Each profile contains four days of 96 departure and return bins, with `null` for an absent date. No other journey day is fetched merely to draw the comparison. Successful profiles are cached; failed requests retry independently, and late responses cannot replace the currently selected dock. All 792 generated profiles reconcile interval by interval with the audited journeys, and tests verify each authored count.
+
 ### Station identities and coverage
 
 The CSV's station numbers match BikePoint **TerminalName**, not the suffix of the BikePoint ID. Leading zeros are normalized numerically. Both terminal identity and station name, normalized for punctuation/case, must agree. There is no proximity or fuzzy fallback.
@@ -85,9 +101,11 @@ npm run check:boundary
 npm exec playwright test e2e/cycle-hire.spec.ts -- --workers=1
 ```
 
-The standard-library compiler works offline against pinned hashes. Updating either source requires a new audit. `days/YYYY-MM-DD.json` contains station metadata and compact `[start, end, fromIndex, toIndex]` tuples; `audits/YYYY-MM-DD.json` retains provenance and exclusions. `manifest.json` supplies dates, validated dock identities and shared comparison scales. Only the manifest and day files are staged for the browser; selecting a date loads its day file rather than the whole collection. Station profiles and interval indexes are calculated once after download. The optional view and data are cached, failed downloads retry, and the opening rail view fetches no cycle data.
+The standard-library compiler works offline against pinned hashes. Updating either source requires a new audit. `days/YYYY-MM-DD.json` contains station metadata and compact `[start, end, fromIndex, toIndex]` tuples; `audits/YYYY-MM-DD.json` retains provenance and exclusions. `manifest.json` supplies dates, validated dock identities and shared comparison scales. The manifest, day files and per-dock comparison profiles are staged for the browser. Selecting a date loads its day file rather than the whole collection. Replay profiles and interval indexes are calculated once after download; comparison profiles are compiled offline. The optional view and data are cached, failed downloads retry, and the opening rail view fetches no cycle data.
 
-Transfer budgets are 9 KiB compressed JavaScript, 3 KiB CSS, a 24 KiB comparison manifest and 300 KiB for the manifest plus the largest day. The manifest is approximately 21.4 KiB compressed; the largest day is 213.1 KiB, totalling approximately 234.4 KiB before rounding for a first selection. The existing opening JavaScript limit remains 344 KiB. Runtime checks validate identities, finite coordinates, sorted timestamps, endpoint indexes and duration bounds before rendering.
+Transfer budgets are 9 KiB compressed JavaScript, 3 KiB CSS, a 24 KiB comparison manifest and 300 KiB for the manifest plus the largest day. On Node 24, the manifest is approximately 21.2 KiB compressed and the largest day is 212.2 KiB, totalling approximately 233.4 KiB for a first selection. The existing opening JavaScript limit remains 344 KiB. Runtime checks validate identities, finite coordinates, sorted timestamps, endpoint indexes and duration bounds before rendering.
+
+The nested dock comparison has a separate limit of 5 KiB JavaScript / 2 KiB CSS beyond its already loaded parent. Profile limits are 1 KiB per dock and 400 KiB for the complete collection, which is never fetched as a whole. Node 24 measurements are approximately 1.7 KiB additional JavaScript, 0.6 KiB for the largest profile and 316.7 KiB across all profiles. Run budget checks with Node 24 as CI does; gzip measurements can vary by Node release. Existing replay and opening limits are unchanged.
 
 Validation covers source reconciliation, station identity reuse, carry-in/out, same-minute events, selected-dock filtering, interpolation bounds, missing downloads/retry, keyboard selection, reduced motion, hero dismissal and restoration, clock continuity, date-switch races, shared scale reconciliation, missing-dock selection and desktop Chromium/iPhone WebKit interaction. Physical-phone review remains outstanding. Automatic publication/hosted CI results are separate from local validation.
 
@@ -95,4 +113,4 @@ Validation covers source reconciliation, station identity reuse, carry-in/out, s
 
 Powered by TfL Open Data. [TfL transport-data terms](https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service) apply. Thames geometry uses the existing GLA/OGL study artifact. No TfL endorsement is implied.
 
-Future work: recover historical coordinates for excluded public docks; audit a matching September date when published; add authored neighbourhood comparisons and historical availability or rebalancing only if a suitable source becomes available. Street-route reconstruction would require its own source and clear labelling.
+Future work: recover historical coordinates for excluded public docks; audit a matching September date when published; extend dock examples to neighbourhood aggregates only after defining and auditing their coverage; add historical availability or rebalancing only if a suitable source becomes available. Street-route reconstruction would require its own source and clear labelling.

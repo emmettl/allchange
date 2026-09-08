@@ -17,6 +17,22 @@
 .cycle-search [role='option'] { display: block; width: 100%; text-align: left; }
 .cycle-search [aria-selected='true'] { border-color: #a2d5c2; }
 .cycle-toolbar nav { display: flex; gap: 8px; }
+.cycle-examples { max-width: 260px; min-width: 0; }
+.cycle-comparison-toggle { width: 100%; }
+.cycle-comparison .cycle-comparison-row { display: block; width: 100%; padding: 5px 8px; text-align: left; margin-top: 6px; }
+.cycle-comparison-row[aria-pressed='true'] { border-color: #7ce8ee; background: #13212d; }
+.cycle-comparison-row small { display: block; color: #c6c0d1; font-size: 9px; }
+.cycle-comparison-row svg { margin-top: 3px; }
+.cycle-comparison .cycle-comparison-row { display: grid; grid-template-columns: 112px minmax(0, 1fr); column-gap: 8px; align-items: center; min-height: 52px; }
+.cycle-comparison-row > span { font-size: 9px; }
+.cycle-comparison-row > small { grid-column: 1; font-size: 8px; }
+.cycle-comparison-row > svg { grid-column: 2; grid-row: 1 / 3; }
+.cycle-comparison-axis { display: flex; justify-content: space-between; font-size: 9px; color: #c6c0d1; margin: 4px 8px 4px 128px; }
+.cycle-guide-copy { border-left: 2px solid #7ce8ee; padding-left: 8px; }
+.is-comparing .cycle-header p, .is-comparing .cycle-header span, .is-comparing .cycle-date { display: none; }
+.is-comparing .cycle-header h1 { font-size: 23px; }
+.is-comparing .cycle-content { grid-template-columns: minmax(0, 1fr) 340px; }
+.is-comparing .cycle-card { background: #10101e; }
 .cycle-content { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 24px; min-height: 0; }
 .cycle-map { position: relative; min-height: 0; border: 1px solid #b9afd422; overflow: hidden; }
 .cycle-map canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
@@ -55,6 +71,9 @@
   .cycle-search { flex-basis: 100%; }
   .cycle-toolbar nav { width: 100%; }
   .cycle-toolbar nav button { flex: 1; }
+  .cycle-examples { width: 100%; max-width: none; }
+  .is-comparing .cycle-toolbar .cycle-search, .is-comparing .cycle-toolbar nav { display: none; }
+  .is-comparing .cycle-card { top: 8px; width: calc(100% - 16px); max-height: calc(100% - 16px); }
   .cycle-content { display: block; position: relative; }
   .cycle-map { height: 100%; box-sizing: border-box; }
   .cycle-map-key { font-size: 8px; }

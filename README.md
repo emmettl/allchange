@@ -102,6 +102,8 @@ Choose **Cycles** to compare Thursday 28 May through Sunday 31 May 2026 across 7
 
 The four day artifacts load independently, starting with Friday’s 31,247 included records. Connections are schematic dock-to-dock lines, not recorded street routes; net returns do not imply bike availability. The source audits record unmapped/reused station identities, long-hire exclusions and midnight treatment for every date. See [Cycle-hire source and validation](docs/CYCLE-HIRE.md).
 
+**Explore a pattern…** starts with contrasting dock activity at Waterloo, Bank or Hyde Park Corner. Each example sets the dock, observed date and time, then opens four profiles on a fixed scale. Every selected dock offers **Compare four days**; selecting a row changes the replay date while preserving the clock. Dated counts appear under **Why this example?**. Comparisons load only the selected dock’s small profile, and missing days remain unavailable.
+
 ### Passenger rhythm
 
 Bank/Monument and Stratford have a passenger-flow pulse with separate entering, leaving and changing streams. Choose **Explore passenger flow** from their cards or **People** in the pulse, compare 08:30 with 17:30, and switch stations without losing the clock. Dots encode typical 15-minute movements; they are schematic, not tracked paths or train occupancy. **Trains** returns to the scheduled-service pulse. Pause, scrubbing and reduced motion are supported.

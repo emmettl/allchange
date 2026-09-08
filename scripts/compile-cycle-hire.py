@@ -141,6 +141,24 @@ def comparison_manifest(days):
                        min(d['lat'] for d in docks), max(d['lat'] for d in docks)]}
 
 
+def dock_comparisons(days, manifest):
+    """Small per-dock profiles; absent coverage stays null, never zero-filled."""
+    comparisons = {dock['id']: {'version': 1, 'dockId': dock['id'],
+                    'sourceSha256': CSV_HASH, 'dates': manifest['dates'],
+                    'maximum': manifest['profileMax'][dock['id']], 'profiles': []}
+                   for dock in manifest['stations']}
+    for day in days:
+        profiles = {dock['id']: {'departures': [0] * 96, 'returns': [0] * 96}
+                    for dock in day['stations']}
+        for start, end, origin, destination in day['trips']:
+            for metric, time, index in [('departures', start, origin), ('returns', end, destination)]:
+                if 0 <= time < 86400:
+                    profiles[day['stations'][index]['id']][metric][time // 900] += 1
+        for identity, comparison in comparisons.items():
+            comparison['profiles'].append(profiles.get(identity))
+    return comparisons
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('journeys', type=Path)
@@ -159,13 +177,15 @@ def main():
             raise ValueError(f'{date}: source does not establish all 24 departure hours')
         compiled.append((data, audit))
     manifest = comparison_manifest([data for data, _ in compiled])
-    for folder in ['days', 'audits']:
+    for folder in ['days', 'audits', 'profiles']:
         (args.output / folder).mkdir(parents=True, exist_ok=True)
     for data, audit in compiled:
         (args.output / 'days' / f"{data['date']}.json").write_text(json.dumps(data, separators=(',', ':')) + '\n')
         (args.output / 'audits' / f"{data['date']}.json").write_text(json.dumps(audit, indent=2) + '\n')
         print(json.dumps({'date': data['date'], **audit['counts'], 'stations': audit['mappedStations'], 'excluded': audit['exclusionsByReason']}))
     (args.output / 'manifest.json').write_text(json.dumps(manifest, separators=(',', ':')) + '\n')
+    for identity, profile in dock_comparisons([data for data, _ in compiled], manifest).items():
+        (args.output / 'profiles' / f'{identity}.json').write_text(json.dumps(profile, separators=(',', ':')) + '\n')
 
 
 if __name__ == '__main__':

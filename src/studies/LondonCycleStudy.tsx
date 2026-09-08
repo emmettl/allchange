@@ -1,11 +1,13 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import type { LondonGeographySnapshot } from '../editions/london-geography.ts'
 import type { NetworkSnapshot } from '@motionstudies/core/domain/network'
 import { activeCycleTrips, cycleInterval, cycleProfiles, cycleProgress, loadCycleDay, CYCLE_DATES, type CycleDate, type CycleDock } from '../data/cycle-hire.ts'
 import { advancePassengerClock } from './passenger-pulse.ts'
 import { HeroCardDismiss } from './HeroCardDismiss.tsx'
+import { CYCLE_GUIDES } from './cycle-guides.ts'
 import './cycle-study.css'
 
+const LondonCycleComparison = lazy(() => import('./LondonCycleComparison.tsx'))
 const DEPART = '#edb779', RETURN = '#a2d5c2'
 const number = (value: number) => value.toLocaleString('en-GB')
 const clock = (time: number) => `${String(Math.floor(time / 3600)).padStart(2, '0')}:${String(Math.floor(time % 3600 / 60)).padStart(2, '0')}`
@@ -25,6 +27,7 @@ export default function LondonCycleStudy({ time, onTime, isPlaying, onPlaying, r
   const selected = selectedDock ? day?.stations.findIndex(dock => dock.id === selectedDock.id) : undefined
   const missingDock = selected === -1
   const [dismissed, setDismissed] = useState(() => window.matchMedia('(max-width: 760px)').matches)
+  const [comparisonOpen, setComparisonOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [choice, setChoice] = useState(0)
   const [zoom, setZoom] = useState(1)
@@ -84,6 +87,13 @@ export default function LondonCycleStudy({ time, onTime, isPlaying, onPlaying, r
   const choices = useMemo(() => query.trim() ? manifest?.stations.filter(station => station.name.toLowerCase().includes(query.trim().toLowerCase())).slice(0, 8) ?? [] : [], [query, manifest])
   const selectDock = (station: CycleDock) => { setSelectedDock(station); setDismissed(false); setQuery(''); setChoice(0) }
   const seek = (next: number) => { onTime(next); onPlaying(false) }
+  const changeDate = (next: CycleDate) => { setDate(next); onPlaying(false) }
+  const explore = (id: string) => {
+    const guide = CYCLE_GUIDES.find(guide => guide.dockId === id)
+    const station = manifest?.stations.find(station => station.id === id)
+    if (!guide || !station) return
+    selectDock(station); changeDate(guide.date); seek(guide.time); setZoom(2); setComparisonOpen(true)
+  }
 
   useEffect(() => {
     const element = canvas.current
@@ -159,8 +169,8 @@ export default function LondonCycleStudy({ time, onTime, isPlaying, onPlaying, r
 
   const maximum = (dock ? manifest?.profileMax[dock.id] : manifest?.totalProfileMax) ?? 1
   const line = (values: number[]) => values.map((v, i) => `${i * 3},${62 - v / maximum * 56}`).join(' ')
-  return <main className="cycle-study london-experience" data-reduced-motion={reduced}>
-    <header className="cycle-header"><div><p>ALL CHANGE · SURFACE MOVEMENT</p><h1>London by cycle</h1><label className="cycle-date">Day <select aria-label="Cycle study day" value={date} onChange={event => { setDate(event.target.value as CycleDate); onPlaying(false) }}>{CYCLE_DATES.map(value => <option key={value} value={value}>{dateLabel(value)}</option>)}</select></label><span>Santander Cycles · {date.startsWith('2026-05-3') ? 'weekend' : 'weekday'}</span></div><button onClick={onClose}>Back to rail</button></header>
+  return <main className={`cycle-study london-experience${day && dock && comparisonOpen && !dismissed ? ' is-comparing' : ''}`} data-reduced-motion={reduced}>
+    <header className="cycle-header"><div><p>ALL CHANGE · SURFACE MOVEMENT</p><h1>London by cycle</h1><label className="cycle-date">Day <select aria-label="Cycle study day" value={date} onChange={event => changeDate(event.target.value as CycleDate)}>{CYCLE_DATES.map(value => <option key={value} value={value}>{dateLabel(value)}</option>)}</select></label><span>Santander Cycles · {date.startsWith('2026-05-3') ? 'weekend' : 'weekday'}</span></div><button onClick={onClose}>Back to rail</button></header>
     <div className="cycle-toolbar">
       <div className="cycle-search"><input ref={search} disabled={!day} type="search" role="combobox" aria-label="Find a docking station" aria-expanded={choices.length > 0} aria-controls="cycle-results" aria-activedescendant={choices[choice] ? `cycle-choice-${choice}` : undefined} placeholder="Find a docking station…" value={query} onChange={event => { setQuery(event.target.value); setChoice(0) }} onKeyDown={event => {
         if (event.key === 'ArrowDown') { event.preventDefault(); setChoice(i => Math.min(choices.length - 1, i + 1)) }
@@ -170,6 +180,7 @@ export default function LondonCycleStudy({ time, onTime, isPlaying, onPlaying, r
       }} />
       {query && day && <div id="cycle-results" role="listbox" aria-label="Docking stations">{choices.map((station, position) => <button id={`cycle-choice-${position}`} key={station.id} role="option" aria-selected={position === choice} onClick={() => selectDock(station)}>{station.name}</button>)}{!choices.length && <p>No matching dock in this study.</p>}</div>}</div>
       <nav aria-label="Compare cycle peaks"><button onClick={() => seek(8.5 * 3600)}>08:30 morning</button><button onClick={() => seek(17.5 * 3600)}>17:30 evening</button></nav>
+      <select className="cycle-examples" aria-label="Explore a cycle pattern" value="" disabled={!day} onChange={event => explore(event.target.value)}><option value="" disabled>Explore a pattern…</option>{CYCLE_GUIDES.map(guide => <option key={guide.dockId} value={guide.dockId}>{guide.label}</option>)}</select>
     </div>
     {!day ? <section className="cycle-loading" role="status">{dateLabel(date)}: {failed ? <>Cycle study unavailable. <button onClick={() => setAttempt(n => n + 1)}>Retry cycle study</button></> : 'Loading the cycle-hire day…'}</section> : <div className="cycle-content">
       <section className="cycle-map" aria-label="Cycle-hire geography">
@@ -185,7 +196,10 @@ export default function LondonCycleStudy({ time, onTime, isPlaying, onPlaying, r
       </section>
       <aside className="cycle-card" data-hero-dismissed={dismissed} aria-label={dock ? `Cycle hire at ${dock.name}` : 'Cycle-hire day summary'}>
         <HeroCardDismiss name={dock?.name.split(',')[0] ?? 'Cycle'} dismissed={dismissed} onToggle={() => setDismissed(v => !v)} />
-        <h2>{dock?.name ?? 'Across the docks'}</h2><p>{interval === undefined ? 'End of day · no interval' : `${clock(interval * 900)}–${clock((interval + 1) * 900)} · recorded hires`}</p>
+        <h2>{dock && comparisonOpen ? dock.name.split(',')[0] : dock?.name ?? 'Across the docks'}</h2>
+        {dock && !comparisonOpen && <button className="cycle-comparison-toggle" aria-expanded={false} onClick={() => setComparisonOpen(true)}>Compare four days</button>}
+        {dock && comparisonOpen ? !dismissed && manifest && <Suspense fallback={<p role="status">Loading comparison…</p>}><LondonCycleComparison dockId={dock.id} manifest={manifest} date={date} time={time} onDate={changeDate} /></Suspense> : <>
+        <p>{interval === undefined ? 'End of day · no interval' : `${clock(interval * 900)}–${clock((interval + 1) * 900)} · recorded hires`}</p>
         {nearby && <p>Near {nearby.name} · ≈{Math.round(nearby.metres / 25) * 25} m straight-line distance</p>}
         <div className="cycle-counts"><span>Departures<strong style={{ color: DEPART }}>{departures === undefined ? '—' : number(departures)}</strong></span><span>Returns<strong style={{ color: RETURN }}>{returns === undefined ? '—' : number(returns)}</strong></span></div>
         <p>{missingDock ? 'No included records for this dock on this date. Selection retained; counts unavailable.' : departures === undefined || returns === undefined ? 'No interval at 24:00.' : `${returns - departures > 0 ? '+' : ''}${number(returns - departures)} net returns this interval`}</p>
@@ -193,6 +207,8 @@ export default function LondonCycleStudy({ time, onTime, isPlaying, onPlaying, r
         {profile && <><svg viewBox="0 0 285 80" role="img" aria-label="Daily departures and returns profile"><polyline points={line(profile.departures)} fill="none" stroke={DEPART} strokeWidth="1.7" /><polyline points={line(profile.returns)} fill="none" stroke={RETURN} strokeWidth="1.7" /><line x1={time / 86400 * 285} x2={time / 86400 * 285} y1="0" y2="65" stroke="#fff" strokeDasharray="2 3" /><text x="0" y="78">00:00</text><text x="285" y="78" textAnchor="end">24:00</text></svg><p>Day total: {number(profile.departures.reduce((a, b) => a + b, 0))} departures · {number(profile.returns.reduce((a, b) => a + b, 0))} returns</p></>}
         {profile && <p className="cycle-profile-scale">Scale: 0–{number(maximum)} hires / 15 min · fixed across all four days</p>}
         <details><summary>About this day</summary><p>{dateLabel(day.date)}: {number(day.stations.length)} matched docks. {number(day.excludedJourneys)} records excluded for unmatched or reused station identities, or hires over 24 hours. Counts cover included records.</p><p>Station coordinates: {day.source.stationsRetrieved}. Minute-resolution times. Same-dock hires stay at the dock; same-minute hires count without animation.</p><p>Map extent, dot sizes and profile scales stay consistent across these four observed days. These are not estimates of a typical weekday or weekend.</p><p>Net returns exclude fleet rebalancing and do not show bikes available. Santander hires represent part of London's cycling.</p><a href={day.source.url} target="_blank" rel="noreferrer">TfL journey source</a></details>
+        </>}
+        {dock && comparisonOpen && <button className="cycle-comparison-toggle" aria-expanded={true} onClick={() => setComparisonOpen(false)}>Back to selected day</button>}
       </aside>
     </div>}
     <footer className="cycle-footer"><p>Recorded endpoints and times · straight connections, not street routes{reduced ? ' · motion reduced' : ''}</p><div className="cycle-time"><span>00:00</span><strong>{clock(time)}</strong><span>24:00</span></div><input type="range" aria-label="Cycle time of day" min="0" max="86400" step="60" value={time} disabled={!day} onChange={event => seek(Number(event.target.value))} /><div className="cycle-playback"><button aria-label={isPlaying ? 'Pause cycle motion' : 'Resume cycle motion'} disabled={!day} onClick={() => onPlaying(!isPlaying)}>{isPlaying ? 'Ⅱ' : '▶'}</button><select aria-label="Cycle playback speed" value={rate} onChange={event => onRate(Number(event.target.value))}>{[30, 120, 480, 1920].map(value => <option key={value} value={value}>{value / 30}×</option>)}</select><span>1× = 30 study seconds / second</span></div><small>Powered by TfL Open Data · Thames © GLA, OGL v3.0 · cycle date differs from rail</small></footer>

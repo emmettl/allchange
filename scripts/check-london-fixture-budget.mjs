@@ -529,6 +529,7 @@ const roadDetailKey = 'src/studies/LondonRoadObservations.tsx'
 const railBoardKey = 'src/studies/LondonNationalRailBoard.tsx'
 const passengerPulseKey = 'src/studies/LondonPassengerPulse.tsx'
 const cycleStudyKey = 'src/studies/LondonCycleStudy.tsx'
+const cycleComparisonKey = 'src/studies/LondonCycleComparison.tsx'
 const hubPulseKey = 'node_modules/@motionstudies/three/HubPulseScene.js'
 const passengerCardKey = 'src/studies/LondonPassengerDemand.tsx'
 const stationBoardKey = 'src/studies/LondonStationDepartures.tsx'
@@ -560,18 +561,29 @@ const javaScript = await totalGzipSize(scripts)
 
 // Optional cards can share the split-flap widget. Include their full static
 // dependency closure, excluding only assets already counted in the opening.
-async function optionalCardSize(key) {
+async function optionalCardSize(key, parentKey) {
   if (!manifest[key]?.isDynamicEntry || visited.has(key)) throw new Error(`${key} must remain lazy`)
+  // A nested panel opens from an already loaded parent. Exclude that parent's
+  // static closure, whose complete payload still has its own enforced budget.
+  const loaded = new Set(visited), loadedStyles = new Set(styles)
+  function preload(id) {
+    if (loaded.has(id)) return
+    loaded.add(id)
+    for (const css of manifest[id].css ?? []) loadedStyles.add(css)
+    for (const dependency of manifest[id].imports ?? []) preload(dependency)
+  }
+  if (parentKey) preload(parentKey)
+  if (loaded.has(key)) throw new Error(`${key} must load separately from its parent`)
   const keys = new Set(), files = new Set(), css = new Set()
   function collect(id) {
-    if (visited.has(id) || keys.has(id)) return
+    if (loaded.has(id) || keys.has(id)) return
     keys.add(id)
     const chunk = manifest[id]
     if (!chunk) throw new Error(`Missing optional dependency ${id}`)
     files.add(chunk.file)
-    for (const file of chunk.css ?? []) if (!styles.has(file)) css.add(file)
+    for (const file of chunk.css ?? []) if (!loadedStyles.has(file)) css.add(file)
     for (const dependency of chunk.imports ?? []) collect(dependency)
-    if (chunk.dynamicImports?.length) throw new Error(`Unbudgeted optional dynamic dependencies in ${id}`)
+    if (chunk.dynamicImports?.some(dependency => id !== cycleStudyKey || dependency !== cycleComparisonKey)) throw new Error(`Unbudgeted optional dynamic dependencies in ${id}`)
   }
   collect(key)
   return { javaScript: await totalGzipSize(files), css: await totalGzipSize(css) }
@@ -597,6 +609,15 @@ const hubPulse = await optionalCardSize(hubPulseKey)
 console.log(`All Change optional interchange pulse: ${kibibytes(hubPulse.javaScript)} JavaScript / 5 KiB; ${kibibytes(hubPulse.css)} CSS / 2 KiB`)
 if (hubPulse.javaScript > 5 * 1024 || hubPulse.css > 2 * 1024) throw new Error('Interchange pulse transfer budget exceeded')
 const cycleStudy = await optionalCardSize(cycleStudyKey)
+const cycleComparison = await optionalCardSize(cycleComparisonKey, cycleStudyKey)
+let cycleProfileLargest = 0, cycleProfileTotal = 0
+const cycleManifestData = JSON.parse(await readFile('fixtures/cycle-hire/manifest.json', 'utf8'))
+for (const dock of cycleManifestData.stations) {
+  const size = gzipSync(await readFile(`fixtures/cycle-hire/profiles/${dock.id}.json`), { level: 9 }).byteLength
+  cycleProfileLargest = Math.max(cycleProfileLargest, size); cycleProfileTotal += size
+}
+console.log(`All Change optional dock comparison: ${kibibytes(cycleComparison.javaScript)} JS / 5 KiB; ${kibibytes(cycleProfileLargest)} largest profile / 1 KiB; ${kibibytes(cycleProfileTotal)} all profiles / 400 KiB`)
+if (cycleComparison.javaScript > 5 * 1024 || cycleComparison.css > 2 * 1024 || cycleProfileLargest > 1024 || cycleProfileTotal > 400 * 1024) throw new Error('Dock comparison transfer budget exceeded')
 const cycleManifestBytes = await readFile('fixtures/cycle-hire/manifest.json')
 const cycleManifestSize = gzipSync(cycleManifestBytes, { level: 9 }).byteLength
 let cycleLargestDay = 0

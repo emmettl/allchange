@@ -20,6 +20,18 @@ def trip(identity='1', start='2026-05-29 08:00', end='2026-05-29 08:10', origin=
 
 
 class CompileCycleTests(unittest.TestCase):
+    def test_comparison_profiles_count_midnight_events_and_preserve_missing_days(self):
+        points = [point('1', 'Alpha'), point('2', 'Beta')]
+        friday, _ = cycle.compile_day([trip(start='2026-05-28 23:59', end='2026-05-29 00:01'),
+                                      trip('2', start='2026-05-29 23:59', end='2026-05-30 00:01')], points)
+        saturday, _ = cycle.compile_day([], points, '2026-05-30')
+        manifest = cycle.comparison_manifest([friday, saturday])
+        profiles = cycle.dock_comparisons([friday, saturday], manifest)
+        self.assertEqual(sum(profiles['1']['profiles'][0]['departures']), 1)
+        self.assertEqual(profiles['1']['profiles'][0]['departures'][95], 1)
+        self.assertEqual(profiles['2']['profiles'][0]['returns'][0], 1)
+        self.assertIsNone(profiles['1']['profiles'][1])
+
     def test_date_origin_and_comparison_scale_are_shared_without_reindexing_identity(self):
         points = [point('1', 'Alpha'), point('2', 'Beta')]
         friday, _ = cycle.compile_day([trip()], points)
