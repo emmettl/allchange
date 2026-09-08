@@ -35,6 +35,15 @@ export function londonPerformanceRenderer(): Plugin {
           '        return batchHubLines(lines.map(entry => entry.line)).map((line, index) => ({ key: `batch:${index}`, line }));\n    }, [calls, selectedCategory]);')
         code = 'import { batchHubLines } from "/src/studies/batch-hub-lines.ts";\n' + code
       } else if (moduleId.endsWith('/NationalNetworkScene.js')) {
+        // Markers keep their per-frame clock. Overview React updates and
+        // decorative trails yield time when frame intervals stay high.
+        replace('const lastReport = useRef(0);', 'const lastReport = useRef(0);\n    const uiFrameBudget = useMemo(() => new TrailFrameBudget(), []);')
+        replace('state.clock.elapsedTime - lastReport.current > 0.1',
+          'state.clock.elapsedTime - lastReport.current > (selectedTrain || comparisonTrains?.length ? 0.1 : uiFrameBudget.interval(delta) * 3)')
+        replace('const lastUpdate = useRef(-1);', 'const lastUpdate = useRef(-1);\n    const trailFrameBudget = useMemo(() => new TrailFrameBudget(), []);')
+        replace('if (clock.elapsedTime - lastUpdate.current < 1 / 30)',
+          'if (!trailFrameBudget.shouldUpdateTrail(delta, clock.elapsedTime - lastUpdate.current))')
+        code = 'import { TrailFrameBudget } from "/src/studies/trail-frame-budget.ts";\n' + code
         replace(`realtimeGeometry.getAttribute('position').needsUpdate = true;
         realtimeGeometry.setDrawRange(0, activeRealtimeCount);`,
         'updateActiveGeometry(realtimeGeometry, activeRealtimeCount);')

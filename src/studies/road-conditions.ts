@@ -20,6 +20,9 @@ function createSampler(snapshot: NationalRoadStudySnapshot) {
   return (site: number, time: number): RoadTrafficConditions => {
     const minutes = snapshot.minutes
     if (!minutes.length) return EMPTY
+    // London passes a single measured interval: its conditions do not change
+    // with the animation clock. Reuse them until the snapshot is replaced.
+    if (minutes.length === 1) time = minutes[0][0]
     if (time !== previousTime) {
       previousTime = time
       conditions.clear()

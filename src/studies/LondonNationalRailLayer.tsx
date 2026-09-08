@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { MapBoundary } from '@motionstudies/core/domain/boundary'
 import type { NetworkProjection } from '@motionstudies/three/NationalNetworkScene'
+import { TrailFrameBudget } from './trail-frame-budget.ts'
 import { updateActiveGeometry } from './active-geometry.ts'
 import { cachedRailPath, railPosition } from '../data/national-rail-geometry.ts'
 import type { NationalRailSnapshot } from '../data/national-rail.ts'
@@ -58,15 +59,29 @@ export function LondonNationalRailLayer({ snapshot, boundary, projection, time, 
     const glow = new THREE.CanvasTexture(canvas)
     return { paths, tracks, vehicles, trails, project, color, glow }
   }, [snapshot, boundary, projection])
+  const trailBudget = useMemo(() => new TrailFrameBudget(0), [])
+  const frameState = useRef({ time: NaN, lastTrail: -Infinity, resources: undefined as object | undefined,
+    selectedId: undefined as string | undefined, subdued: false })
   useEffect(() => { localTime.current = time }, [time])
   useEffect(() => () => {
     resources.tracks.dispose(); resources.vehicles.dispose(); resources.trails.dispose(); resources.glow.dispose()
   }, [resources])
-  useFrame((_, delta) => {
+  useFrame(({ clock }, delta) => {
     if (isPlaying) {
       localTime.current += delta * playbackRate
       if (localTime.current > windowEnd) localTime.current = windowStart
     }
+    // Pausing keeps the buffers; seeking or changing emphasis invalidates them.
+    const frame = frameState.current
+    const changed = frame.resources !== resources || frame.selectedId !== selectedId || frame.subdued !== subdued
+    if (!isPlaying && !changed && localTime.current === frame.time) return
+    const refreshTrails = trailBudget.shouldUpdateTrail(delta, clock.elapsedTime - frame.lastTrail,
+      changed || !isPlaying || localTime.current < frame.time)
+    frame.time = localTime.current
+    frame.resources = resources
+    frame.selectedId = selectedId
+    frame.subdued = subdued
+    if (refreshTrails) frame.lastTrail = clock.elapsedTime
     const { vehicles, trails, paths, project, color } = resources
     const positions = vehicles.getAttribute('position'), colors = vehicles.getAttribute('color')
     const trailPositions = trails.getAttribute('position'), trailColors = trails.getAttribute('color')
@@ -79,6 +94,7 @@ export function LondonNationalRailLayer({ snapshot, boundary, projection, time, 
       setRailPickId(vehicles, active, point[2] * intensity >= 0.1 ? train.id : undefined)
       colors.setXYZ(active, color.r * point[2] * intensity, color.g * point[2] * intensity, color.b * point[2] * intensity)
       active++
+      if (!refreshTrails) continue
       let previous = point
       for (let step = 1; step <= 3; step++) {
         const next = railPosition(train, localTime.current - step * 8, snapshot, paths)
@@ -92,7 +108,7 @@ export function LondonNationalRailLayer({ snapshot, boundary, projection, time, 
       }
     }
     updateActiveGeometry(vehicles, active)
-    updateActiveGeometry(trails, segments)
+    if (refreshTrails) updateActiveGeometry(trails, segments)
   })
   return <group>
     <lineSegments geometry={resources.tracks} renderOrder={5}>

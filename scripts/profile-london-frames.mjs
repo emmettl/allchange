@@ -10,6 +10,10 @@ const { values } = parseArgs({ options: {
   height: { type: 'string', default: '1080' },
   dpr: { type: 'string', default: '1.5' },
   duration: { type: 'string', default: '5000' },
+  'study-time': { type: 'string' },
+  'playback-rate': { type: 'string' },
+  settle: { type: 'string', default: '2500' },
+  scenarios: { type: 'string' },
   fps: { type: 'string', default: '60' },
   output: { type: 'string' },
   'profile-dir': { type: 'string' },
@@ -20,7 +24,7 @@ const { values } = parseArgs({ options: {
   'cpu-throttle': { type: 'string', default: '1' },
 } })
 const numeric = Object.fromEntries(
-  ['width', 'height', 'dpr', 'duration', 'fps', 'cpu-throttle'].map((key) => [key, Number(values[key])]),
+  ['width', 'height', 'dpr', 'duration', 'fps', 'cpu-throttle', 'settle'].map((key) => [key, Number(values[key])]),
 )
 for (const [key, value] of Object.entries(numeric)) {
   if (!Number.isFinite(value) || value <= 0) throw new Error(`--${key} must be positive`)
@@ -30,6 +34,12 @@ if (!Number.isInteger(numeric.width) || !Number.isInteger(numeric.height)) {
 }
 
 if (numeric['cpu-throttle'] < 1) throw new Error('--cpu-throttle must be at least 1')
+if (values['study-time'] !== undefined && (!Number.isInteger(Number(values['study-time'])) || Number(values['study-time']) < 0 || Number(values['study-time']) > 86400)) {
+  throw new Error('--study-time must be service seconds between 0 and 86400')
+}
+if (values['playback-rate'] !== undefined && !['30', '120', '480', '1920'].includes(values['playback-rate'])) {
+  throw new Error('--playback-rate must be 30, 120, 480 or 1920')
+}
 const browser = await chromium.launch({ channel: values.channel, headless: values.headless,
   args: values.angle ? [`--use-angle=${values.angle}`] : [],
 })
@@ -38,7 +48,9 @@ try {
     viewport: { width: numeric.width, height: numeric.height },
     deviceScaleFactor: numeric.dpr,
   })
-  page.setDefaultTimeout(30_000)
+  page.setDefaultTimeout(90_000)
+  const errors = []
+  page.on('pageerror', error => errors.push(error.message))
   await page.goto(values.url)
   await page.locator('.london-status-card').filter({ hasText: 'trains in motion' }).waitFor()
   await page.locator('.scene canvas').waitFor()
@@ -47,8 +59,20 @@ try {
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: numeric['cpu-throttle'] })
   const scenarios = []
   async function sample(name) {
+    if (values.scenarios && !values.scenarios.split(',').includes(name)) return
+    // Reset the same study time so throttled loading cannot move the
+    // comparison into another traffic window. Record the actual start too.
+    if (values['playback-rate']) await page.getByRole('combobox', { name: 'Playback speed' }).selectOption(values['playback-rate'])
+    if (values['study-time']) {
+      const pause = page.getByRole('button', { name: 'Pause motion', exact: true })
+      if (await pause.count()) await pause.click()
+      await page.locator('.london-transport input[type="range"]').fill(values['study-time'])
+      await page.waitForTimeout(numeric.settle)
+      await page.getByRole('button', { name: 'Resume motion', exact: true }).click()
+    }
     // Exclude lazy loading, camera settling, and initial shader compilation.
-    await page.waitForTimeout(2500)
+    await page.waitForTimeout(numeric.settle)
+    const studyTime = await page.locator('.london-transport input[type="range"]').inputValue()
     if (values['profile-dir']) {
       await cdp.send('Profiler.enable')
       await cdp.send('Profiler.start')
@@ -86,6 +110,7 @@ try {
     )
     scenarios.push({
       name,
+      studyTime: Number(studyTime),
       frames: intervals.length,
       meanFps: round(1000 * intervals.length / intervals.reduce((sum, ms) => sum + ms, 0)),
       p50Ms: percentile(0.5),
@@ -149,8 +174,10 @@ try {
     platform: process.platform,
     browserVersion: browser.version(),
     settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless,
+      scenarioFilter: values.scenarios, studyTime: values['study-time'], playbackRate: values['playback-rate'], profiling: Boolean(values['profile-dir']),
       angle: values.angle ?? 'default', buses: values.buses, rail: values.rail, airRoads: values['air-roads'] },
     environment,
+    errors,
     scenarios,
   }, null, 2)
   if (values.output) await writeFile(values.output, `${report}\n`)

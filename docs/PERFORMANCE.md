@@ -1,5 +1,8 @@
 # September 2026 renderer performance
 
+For the subsequent adaptive-rendering changes, CPU stress tests and next priorities,
+see [the weak-hardware follow-up](WEAK-HARDWARE-PERFORMANCE.md).
+
 This pass ports the applicable optimizations from Gleislicht commit `e9fc934`
 and its local Edge follow-up to All Change's pinned `@motionstudies/three`
 `0.1.0-alpha.5` adapters. All Change already used indexed timetable lookup,

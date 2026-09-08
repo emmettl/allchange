@@ -36,3 +36,13 @@ describe('indexed road conditions', () => {
     }
   })
 })
+
+
+it('reuses a measured interval across animation frames and invalidates on replacement', () => {
+  const snapshot = { ...recorded, minutes: [recorded.minutes[0]] }
+  const first = nationalRoadConditionsAtTime(snapshot, 0, 0)
+  expect(nationalRoadConditionsAtTime(snapshot, 0, 20)).toBe(first)
+  const replacement = { ...recorded, minutes: [[900, [[0, 123, 45, 6, 30]]]] } as NationalRoadStudySnapshot
+  expect(nationalRoadConditionsAtTime(replacement, 0, 20)).toEqual(referenceConditions(replacement, 0, 20))
+  expect(nationalRoadConditionsAtTime(replacement, 0, 20)).not.toBe(first)
+})

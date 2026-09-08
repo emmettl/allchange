@@ -46,3 +46,38 @@ test('playback keeps map pointer listeners attached across clock updates', async
   expect(result.advanced).toBe(true)
   expect(result.removed).toBe(0)
 })
+
+test('paused National Rail stops buffer uploads and redraws after seeking and resuming', async ({ page }) => {
+  await page.goto('/')
+  await expect(page.locator('.scene canvas')).toBeVisible()
+  await setMobileControls(page, true)
+  await page.getByRole('button', { name: 'Hide TfL rail', exact: true }).click()
+  await page.getByRole('button', { name: 'Show National Rail', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Hide National Rail', exact: true })).toHaveAttribute('aria-busy', 'false')
+  await page.evaluate(() => {
+    const probe = window as typeof window & { railUploads: number }
+    probe.railUploads = 0
+    const original = WebGL2RenderingContext.prototype.bufferSubData
+    WebGL2RenderingContext.prototype.bufferSubData = function (this: WebGL2RenderingContext, ...args: Parameters<typeof original>) {
+      probe.railUploads++
+      original.apply(this, args)
+    } as typeof original
+  })
+  const uploads = () => page.evaluate(async () => {
+    const probe = window as typeof window & { railUploads: number }
+    // Let effects and the first changed frame finish before observing idle work.
+    for (let i = 0; i < 3; i++) await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+    const before = probe.railUploads
+    for (let i = 0; i < 4; i++) await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+    return probe.railUploads - before
+  })
+  expect(await uploads()).toBeGreaterThan(0)
+  await page.getByRole('button', { name: 'Pause motion', exact: true }).click()
+  expect(await uploads()).toBe(0)
+  await page.evaluate(() => { (window as typeof window & { railUploads: number }).railUploads = 0 })
+  await page.locator('.london-transport input[type="range"]').fill('27900')
+  await expect.poll(() => page.evaluate(() => (window as typeof window & { railUploads: number }).railUploads)).toBeGreaterThan(0)
+  expect(await uploads()).toBe(0)
+  await page.getByRole('button', { name: 'Resume motion', exact: true }).click()
+  expect(await uploads()).toBeGreaterThan(0)
+})

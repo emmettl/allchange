@@ -1,4 +1,5 @@
-import { positionForTrain, type NetworkPath } from '@motionstudies/core/domain/network'
+import type { NetworkPath } from '@motionstudies/core/domain/network'
+import { indexedPositionForTrain as positionForTrain } from './network-motion.ts'
 import type { MapBoundary } from '@motionstudies/core/domain/boundary'
 import type { NationalRailSnapshot, NationalRailTrain } from './national-rail.ts'
 
