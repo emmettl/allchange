@@ -17,7 +17,7 @@ export function trainStopsAreOrdered(stops: NetworkTrain['stops']): boolean {
 export function indexedPositionForTrain(train: NetworkTrain, time: number): ReturnType<typeof positionForTrain> {
   if (train.realtime?.status === 'cancelled' || time < train.start || time > train.end || train.stops.length < 2) return undefined
   const stops = train.stops
-  if (!trainStopsAreOrdered(stops)) return positionForTrain(train, time)
+  if (!Number.isFinite(time) || !trainStopsAreOrdered(stops)) return positionForTrain(train, time)
   if (time <= stops[0][2]) return { fromStop: stops[0][0], toStop: stops[0][0], progress: 0 }
   let low = 1
   let high = stops.length - 1

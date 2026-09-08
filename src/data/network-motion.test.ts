@@ -9,7 +9,7 @@ const train: NetworkTrain = {
 
 describe('indexed vehicle motion', () => {
   it('matches the published interpolation at every boundary, both scrub directions, and after the final stop', () => {
-    const times = [-1, 0, 1, 5, 5.001, 19.999, 20, 20.001, 25, 25.001, 50, 60, 80, 90, 95, 100, 101]
+    const times = [NaN, Infinity, -Infinity, -1, 0, 1, 5, 5.001, 19.999, 20, 20.001, 25, 25.001, 50, 60, 80, 90, 95, 100, 101]
     for (const time of [...times, ...[...times].reverse()]) {
       expect(indexedPositionForTrain(train, time)).toEqual(positionForTrain(train, time))
     }

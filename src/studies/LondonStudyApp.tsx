@@ -56,7 +56,7 @@ import {
   operationsServiceTime,
   projectOperationsOntoNetwork,
 } from '@motionstudies/core/domain/operations'
-import { reconstructedNationalVehicleCount } from '@motionstudies/core/domain/road-day'
+import { reconstructedNationalVehicleCount } from './road-conditions.ts'
 import { observedRoadSnapshot } from '../data/road-observations.ts'
 import { cachedRailPath, railPosition } from '../data/national-rail-geometry.ts'
 import type { RoadTopologySnapshot } from '@motionstudies/core/domain/road'
@@ -898,11 +898,11 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       roadEnabled && activeRoadSnapshot
         ? reconstructedNationalVehicleCount(
             activeRoadSnapshot,
-            time,
+            roadIntervalTime,
             selectedRoad?.id,
           )
         : 0,
-    [activeRoadSnapshot, roadEnabled, selectedRoad?.id, time],
+    [activeRoadSnapshot, roadEnabled, selectedRoad?.id, roadIntervalTime],
   )
   const roadLoading =
     roadEnabled &&
@@ -915,9 +915,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     !surfaceLoadError &&
     (!surfaceNetwork || studyWindow !== 'day' || !dayManifest || !activeDayChunk)
   const busLoading = busEnabled && busDay.loading
-  const roadObservationDate = formatStudyDate(
-    roadDay.manifest?.metadata.serviceDate,
-  )
+  const roadServiceDate = roadDay.manifest?.metadata.serviceDate
+  const roadObservationDate = useMemo(() => formatStudyDate(roadServiceDate), [roadServiceDate])
 
   const moveCamera = useCallback(
     (

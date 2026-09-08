@@ -12,8 +12,10 @@ const { values } = parseArgs({ options: {
   duration: { type: 'string', default: '5000' },
   fps: { type: 'string', default: '60' },
   output: { type: 'string' },
+  'profile-dir': { type: 'string' },
   buses: { type: 'boolean', default: false },
   rail: { type: 'boolean', default: false },
+  'air-roads': { type: 'boolean', default: false },
   angle: { type: 'string' },
   'cpu-throttle': { type: 'string', default: '1' },
 } })
@@ -47,6 +49,10 @@ try {
   async function sample(name) {
     // Exclude lazy loading, camera settling, and initial shader compilation.
     await page.waitForTimeout(2500)
+    if (values['profile-dir']) {
+      await cdp.send('Profiler.enable')
+      await cdp.send('Profiler.start')
+    }
     const before = await cdp.send('Performance.getMetrics')
     const intervals = await page.evaluate((duration) => new Promise((resolve) => {
       const samples = []
@@ -62,6 +68,10 @@ try {
       requestAnimationFrame(frame)
     }), numeric.duration)
     const after = await cdp.send('Performance.getMetrics')
+    if (values['profile-dir']) {
+      const { profile } = await cdp.send('Profiler.stop')
+      await writeFile(`${values['profile-dir']}/${name}.cpuprofile`, JSON.stringify(profile))
+    }
     const round = (number) => Math.round(number * 100) / 100
     const sorted = [...intervals].sort((a, b) => a - b)
     const percentile = (fraction) => round(sorted[Math.min(sorted.length - 1, Math.floor(sorted.length * fraction))])
@@ -90,7 +100,16 @@ try {
     })
   }
   await sample('opening')
-  if (values.rail) {
+  if (values['air-roads']) {
+    await page.getByRole('button', { name: 'Show observed aircraft', exact: true }).click()
+    await page.getByRole('button', { name: 'Show reconstructed motorway traffic', exact: true }).click()
+    for (const name of ['Hide observed aircraft', 'Hide reconstructed motorway traffic']) {
+      await page.getByRole('button', { name, exact: true }).and(page.locator('[aria-busy="false"]')).waitFor()
+    }
+    await sample('rail-air-roads')
+    await page.getByRole('button', { name: 'Hide TfL rail', exact: true }).click()
+    await sample('air-roads')
+  } else if (values.rail) {
     await page.getByRole('button', { name: 'Show National Rail', exact: true }).click()
     await page.getByRole('button', { name: 'Hide National Rail', exact: true }).and(page.locator('[aria-busy="false"]')).waitFor()
     await sample('all-national-rail')
@@ -130,7 +149,7 @@ try {
     platform: process.platform,
     browserVersion: browser.version(),
     settings: { ...numeric, channel: values.channel ?? 'chromium', headless: values.headless,
-      angle: values.angle ?? 'default', buses: values.buses, rail: values.rail },
+      angle: values.angle ?? 'default', buses: values.buses, rail: values.rail, airRoads: values['air-roads'] },
     environment,
     scenarios,
   }, null, 2)

@@ -46,6 +46,16 @@ export function installWebGLDrawCounters() {
     count(this, vertices)
     arrays.call(this, mode, first, vertices)
   }
+  const arraysInstanced = prototype.drawArraysInstanced
+  prototype.drawArraysInstanced = function (mode, first, vertices, instances) {
+    count(this, vertices * instances)
+    arraysInstanced.call(this, mode, first, vertices, instances)
+  }
+  const elementsInstanced = prototype.drawElementsInstanced
+  prototype.drawElementsInstanced = function (mode, vertices, type, offset, instances) {
+    count(this, vertices * instances)
+    elementsInstanced.call(this, mode, vertices, type, offset, instances)
+  }
   const elements = prototype.drawElements
   prototype.drawElements = function (mode, vertices, type, offset) {
     count(this, vertices)

@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { MapBoundary } from '@motionstudies/core/domain/boundary'
 import type { NetworkProjection } from '@motionstudies/three/NationalNetworkScene'
+import { updateActiveGeometry } from './active-geometry.ts'
 import { cachedRailPath, railPosition } from '../data/national-rail-geometry.ts'
 import type { NationalRailSnapshot } from '../data/national-rail.ts'
 
@@ -90,8 +91,8 @@ export function LondonNationalRailLayer({ snapshot, boundary, projection, time, 
         previous = next
       }
     }
-    for (const attribute of [positions, colors, trailPositions, trailColors]) attribute.needsUpdate = true
-    vehicles.setDrawRange(0, active); trails.setDrawRange(0, segments)
+    updateActiveGeometry(vehicles, active)
+    updateActiveGeometry(trails, segments)
   })
   return <group>
     <lineSegments geometry={resources.tracks} renderOrder={5}>

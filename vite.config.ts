@@ -4,8 +4,9 @@ import { londonDiagramRenderer } from './scripts/london-diagram-renderer.ts'
 import { londonNationalRailRenderer } from './scripts/london-national-rail-renderer.ts'
 import { londonMotionRenderer } from './scripts/london-motion-renderer.ts'
 import { londonSelectionRenderer } from './scripts/london-selection-renderer.ts'
+import { londonPerformanceRenderer } from './scripts/london-performance-renderer.ts'
 export default defineConfig({
-  plugins: [londonDiagramRenderer(), londonNationalRailRenderer(), londonMotionRenderer(), londonSelectionRenderer(), react()],
+  plugins: [londonDiagramRenderer(), londonNationalRailRenderer(), londonMotionRenderer(), londonSelectionRenderer(), londonPerformanceRenderer(), react()],
   optimizeDeps: {
     exclude: ['@motionstudies/three'],
     include: ['@react-three/fiber', 'three'],

@@ -38,7 +38,7 @@ export function LondonRoadLabels({ topology, projection, selectedRoadId, subdued
   selectedRoadId?: string
   subdued?: boolean
 }) {
-  const lastView = useRef({ matrix: new THREE.Matrix4(), width: 0, height: 0, resources: undefined as object | undefined })
+  const lastView = useRef({ matrix: new THREE.Matrix4(), nextMatrix: new THREE.Matrix4(), width: 0, height: 0, resources: undefined as object | undefined })
   const resources = useMemo(() => {
     const group = new THREE.Group()
     const roads = [...new Set(topology.paths.filter(path => path.mainline).map(path => path.road))]
@@ -67,7 +67,6 @@ export function LondonRoadLabels({ topology, projection, selectedRoadId, subdued
         sprite.position.copy(anchor.position)
         sprite.visible = false
         sprite.renderOrder = 19
-        group.add(sprite)
         return { anchor, sprite }
       })
       return { texture, material, sprites, anchors }
@@ -83,8 +82,8 @@ export function LondonRoadLabels({ topology, projection, selectedRoadId, subdued
   }, [resources])
 
   useFrame(({ camera, size }) => {
-    const matrix = new THREE.Matrix4().multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse)
     const view = lastView.current
+    const matrix = view.nextMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse)
     if (view.resources === resources && matrix.equals(view.matrix) && size.width === view.width && size.height === view.height) return
     view.matrix.copy(matrix)
     view.width = size.width
@@ -99,6 +98,9 @@ export function LondonRoadLabels({ topology, projection, selectedRoadId, subdued
         sprite.scale.set(LABEL_WIDTH * pixelScale, LABEL_HEIGHT * pixelScale, 1)
         // oxlint-disable-next-line react/immutability -- Three.js scene objects are updated imperatively in useFrame.
         sprite.visible = resources.visible.has(anchor.id)
+        // Detached badges keep their anchor and resources without scene updates.
+        if (sprite.visible && sprite.parent !== resources.group) resources.group.add(sprite)
+        else if (!sprite.visible && sprite.parent === resources.group) resources.group.remove(sprite)
       }
     }
   })

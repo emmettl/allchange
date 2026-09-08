@@ -1,7 +1,7 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useEffectEvent, useMemo } from 'react'
 import { useThree } from '@react-three/fiber'
 import type { NetworkTrain, StationIndexEntry } from '@motionstudies/core/domain/network'
-import { MapTapGesture, pickMapTarget } from './map-selection.ts'
+import { MapTapGesture, pickMapTarget, type MapSelection } from './map-selection.ts'
 
 export interface MapSelectionSceneExtension {
   onSelectTrain?: (train: NetworkTrain) => void
@@ -15,6 +15,12 @@ export function LondonMapSelection({ stations, onSelectStation, onSelectTrain, o
 }) {
   const { scene, camera, gl } = useThree()
   const byStop = useMemo(() => new Map(stations.flatMap(station => station.stopIndexes.map(index => [index, station] as const))), [stations])
+  // Playback callbacks change with the clock; keep the gesture/listeners intact.
+  const select = useEffectEvent((target: MapSelection | undefined) => {
+    if (target?.kind === 'station') onSelectStation?.(target.value)
+    else if (target?.kind === 'train') onSelectTrain?.(target.value)
+    else if (target?.kind === 'national-rail') onSelectNationalRail?.(target.value)
+  })
   useEffect(() => {
     if (disabled) return
     const canvas = gl.domElement
@@ -28,9 +34,7 @@ export function LondonMapSelection({ stations, onSelectStation, onSelectTrain, o
     const up = (event: PointerEvent) => {
       if (!gesture.up(event.pointerId, event.clientX, event.clientY)) return
       const target = pickMapTarget(scene, camera, canvas.getBoundingClientRect(), event.clientX, event.clientY, event.pointerType === 'touch', byStop)
-      if (target?.kind === 'station') onSelectStation?.(target.value)
-      else if (target?.kind === 'train') onSelectTrain?.(target.value)
-      else if (target?.kind === 'national-rail') onSelectNationalRail?.(target.value)
+      select(target)
     }
     const cancel = (event: PointerEvent) => { gesture.up(event.pointerId, event.clientX, event.clientY, true) }
     canvas.addEventListener('pointerdown', down)
@@ -45,6 +49,6 @@ export function LondonMapSelection({ stations, onSelectStation, onSelectTrain, o
       canvas.removeEventListener('pointercancel', cancel)
       canvas.removeEventListener('lostpointercapture', cancel)
     }
-  }, [byStop, camera, disabled, gl, onSelectNationalRail, onSelectStation, onSelectTrain, scene])
+  }, [byStop, camera, disabled, gl, scene])
   return null
 }
