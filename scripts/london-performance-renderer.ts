@@ -35,6 +35,15 @@ export function londonPerformanceRenderer(): Plugin {
           '        return batchHubLines(lines.map(entry => entry.line)).map((line, index) => ({ key: `batch:${index}`, line }));\n    }, [calls, selectedCategory]);')
         code = 'import { batchHubLines } from "/src/studies/batch-hub-lines.ts";\n' + code
       } else if (moduleId.endsWith('/NationalNetworkScene.js')) {
+        // Clock reports rerender this component without changing fixed station
+        // anchors. Retention and repopulation still get their settling passes.
+        replace('const budget = stableStationLabelBudget(stationLabelBudget(semanticHeight), retainedStationNames.current.size, canRepopulate);',
+          `if (!stationLabelFrame.shouldUpdate(camera, size, canRepopulate, retainedStationNames.current)) return;
+        const budget = stableStationLabelBudget(stationLabelBudget(semanticHeight), retainedStationNames.current.size, canRepopulate);`)
+        replace('}, [cameraFraming, projectedStops, routeStationNames, selectedStation, stations]);',
+          `}, [cameraFraming, projectedStops, routeStationNames, selectedStation, stations]);
+    const stationLabelFrame = useMemo(() => new StationLabelFrame(), [labels, selectedTrain, selectedRoute, selectedStation, terminalNames, cameraFraming, tierLimit, settleSeconds, hidden, lineMapLabels, layoutTransitioning]);`)
+        code = 'import { StationLabelFrame } from "/src/studies/station-label-frame.ts";\n' + code
         // Markers keep their per-frame clock. Overview React updates and
         // decorative trails yield time when frame intervals stay high.
         replace('const lastReport = useRef(0);', 'const lastReport = useRef(0);\n    const uiFrameBudget = useMemo(() => new TrailFrameBudget(), []);')
@@ -42,8 +51,42 @@ export function londonPerformanceRenderer(): Plugin {
           'state.clock.elapsedTime - lastReport.current > (selectedTrain || comparisonTrains?.length ? 0.1 : uiFrameBudget.interval(delta) * 3)')
         replace('const lastUpdate = useRef(-1);', 'const lastUpdate = useRef(-1);\n    const trailFrameBudget = useMemo(() => new TrailFrameBudget(), []);')
         replace('if (clock.elapsedTime - lastUpdate.current < 1 / 30)',
-          'if (!trailFrameBudget.shouldUpdateTrail(delta, clock.elapsedTime - lastUpdate.current))')
+          'if (!trailFrameBudget.shouldUpdateTrail(delta, clock.elapsedTime - lastUpdate.current, !isPlaying))')
         code = 'import { TrailFrameBudget } from "/src/studies/trail-frame-budget.ts";\n' + code
+        for (const [start, end, camera] of [
+          ['function TrainSwarm(', 'function VehicleTrails(', 'state.camera'],
+          ['function VehicleTrails(', 'function SelectedTrainMarker(', 'camera'],
+        ]) {
+          const from = code.indexOf(start), to = code.indexOf(end, from)
+          if (from < 0 || to < 0) throw new Error('London paused vehicle hook needs review')
+          let section = code.slice(from, to)
+          const patch = (before: string, after: string) => {
+            if (section.split(before).length !== 2) throw new Error(`London paused vehicle hook needs review: ${before}`)
+            section = section.replace(before, after)
+          }
+          patch('    useFrame(', `    const pausedFrame = useMemo(() => new PausedVehicleFrame(), [snapshot, projectedStops, projectedPaths, lakeAvoidingPaths, selectedTrain, comparisonTrains, selectedRoute, selectedCategory, airCategorySelected, selectedStation, cameraFraming, trainPalette, geometries]);
+    useFrame(`)
+          const zoom = `const visibleBus = vehicleIsVisibleAtZoom('bus', ${camera}.position.y, cameraFraming);
+        const visibleTram = vehicleIsVisibleAtZoom('tram', ${camera}.position.y, cameraFraming);
+        `
+          patch(zoom, '')
+          // Camera movement is handled by GPU transforms; these two zoom
+          // thresholds are the only camera inputs to vehicle buffer contents.
+          const gate = zoom + `const pausedVisibility = Number(visibleBus) + 2 * Number(visibleTram);
+        if (!pausedFrame.needsUpdate(isPlaying, localTime.current, pausedVisibility)) return;
+        `
+          const record = 'pausedFrame.record(localTime.current, pausedVisibility);\n        '
+          if (start.includes('TrainSwarm')) {
+            patch('const activeCounts = {', gate + record + 'const activeCounts = {')
+          } else {
+            // A paused seek must bypass the trail cadence, then record the
+            // submitted time. A skipped playing frame must not consume it.
+            patch('if (!trailFrameBudget.shouldUpdateTrail(', gate + 'if (!trailFrameBudget.shouldUpdateTrail(')
+            patch('lastUpdate.current = clock.elapsedTime;', record + 'lastUpdate.current = clock.elapsedTime;')
+          }
+          code = code.slice(0, from) + section + code.slice(to)
+        }
+        code = 'import { PausedVehicleFrame } from "/src/studies/paused-vehicle-frame.ts";\n' + code
         replace(`realtimeGeometry.getAttribute('position').needsUpdate = true;
         realtimeGeometry.setDrawRange(0, activeRealtimeCount);`,
         'updateActiveGeometry(realtimeGeometry, activeRealtimeCount);')

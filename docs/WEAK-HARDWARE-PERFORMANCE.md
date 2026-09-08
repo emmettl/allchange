@@ -1,5 +1,8 @@
 # Weak-hardware performance follow-up
 
+The subsequent [stationary and paused rendering pass](IDLE-RENDERING-PERFORMANCE.md)
+avoids unchanged station layout and paused TfL/bus buffer work.
+
 The laptop photograph shows an Intel i7-1185G7, 73% total CPU utilization,
 1.58 GHz reported speed, Intel Iris Xe at 53%, and 41% memory utilization. This
 is a system snapshot, not an Edge CPU profile or a measurement of one core.

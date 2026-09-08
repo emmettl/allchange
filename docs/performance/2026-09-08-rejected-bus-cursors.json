@@ -1,0 +1,271 @@
+{
+  "experiment": "Bus leg cursors with stationary station-label caching",
+  "outcome": "Bus cursor redesign rejected; the shipped change retains the original bus sampler.",
+  "baselineCommit": "17197e0",
+  "candidate": "Isolated 17197e0 plus an uncommitted four-cursor experiment; no Eurostar changes and no paused-vehicle guard.",
+  "notes": [
+    "Both sides of each pair ran after the host reboot.",
+    "CPU throttling is a stress test, not a calibration of the Windows laptop.",
+    "No CPU profiler or concurrent test suite during these final comparisons."
+  ],
+  "comparisons": {
+    "8": {
+      "before": {
+        "capturedAt": "2026-09-08T16:47:09.560Z",
+        "platform": "darwin",
+        "browserVersion": "151.0.7922.34",
+        "settings": {
+          "width": 1280,
+          "height": 720,
+          "dpr": 1,
+          "duration": 15000,
+          "fps": 60,
+          "cpu-throttle": 8,
+          "settle": 4000,
+          "channel": "chromium",
+          "headless": true,
+          "scenarioFilter": "all-buses,selected-bus-route",
+          "studyTime": "27900",
+          "playbackRate": "30",
+          "profiling": false,
+          "angle": "metal",
+          "buses": true,
+          "rail": false,
+          "airRoads": false
+        },
+        "environment": {
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Max, Unspecified Version)",
+          "canvas": {
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "errors": [],
+        "scenarios": [
+          {
+            "name": "all-buses",
+            "studyTime": 27980,
+            "frames": 394,
+            "meanFps": 26.2,
+            "p50Ms": 35,
+            "p95Ms": 68.7,
+            "p99Ms": 79.7,
+            "maxMs": 94.8,
+            "overBudgetPercent": 85.53,
+            "overOneAndHalfBudgetsPercent": 72.34,
+            "mainThreadMilliseconds": {
+              "TaskDuration": 14982.33,
+              "ScriptDuration": 14421.17,
+              "LayoutDuration": 41.15,
+              "RecalcStyleDuration": 0
+            },
+            "scriptMsPerFrame": 36.6
+          },
+          {
+            "name": "selected-bus-route",
+            "studyTime": 27980,
+            "frames": 533,
+            "meanFps": 35.5,
+            "p50Ms": 27,
+            "p95Ms": 46.4,
+            "p99Ms": 48.4,
+            "maxMs": 57.4,
+            "overBudgetPercent": 88.74,
+            "overOneAndHalfBudgetsPercent": 62.29,
+            "mainThreadMilliseconds": {
+              "TaskDuration": 14769.4,
+              "ScriptDuration": 13970.25,
+              "LayoutDuration": 43.25,
+              "RecalcStyleDuration": 0
+            },
+            "scriptMsPerFrame": 26.21
+          }
+        ]
+      },
+      "candidate": {
+        "capturedAt": "2026-09-08T16:49:07.895Z",
+        "platform": "darwin",
+        "browserVersion": "151.0.7922.34",
+        "settings": {
+          "width": 1280,
+          "height": 720,
+          "dpr": 1,
+          "duration": 15000,
+          "fps": 60,
+          "cpu-throttle": 8,
+          "settle": 4000,
+          "channel": "chromium",
+          "headless": true,
+          "scenarioFilter": "all-buses,selected-bus-route",
+          "studyTime": "27900",
+          "playbackRate": "30",
+          "profiling": false,
+          "angle": "metal",
+          "buses": true,
+          "rail": false,
+          "airRoads": false
+        },
+        "environment": {
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Max, Unspecified Version)",
+          "canvas": {
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "errors": [],
+        "scenarios": [
+          {
+            "name": "all-buses",
+            "studyTime": 27970,
+            "frames": 279,
+            "meanFps": 18.55,
+            "p50Ms": 52.1,
+            "p95Ms": 91.4,
+            "p99Ms": 111.5,
+            "maxMs": 112.6,
+            "overBudgetPercent": 98.92,
+            "overOneAndHalfBudgetsPercent": 94.27,
+            "mainThreadMilliseconds": {
+              "TaskDuration": 15134.99,
+              "ScriptDuration": 14644.75,
+              "LayoutDuration": 49.69,
+              "RecalcStyleDuration": 0
+            },
+            "scriptMsPerFrame": 52.49
+          },
+          {
+            "name": "selected-bus-route",
+            "studyTime": 27980,
+            "frames": 473,
+            "meanFps": 31.5,
+            "p50Ms": 30,
+            "p95Ms": 50.5,
+            "p99Ms": 56.7,
+            "maxMs": 57.7,
+            "overBudgetPercent": 94.5,
+            "overOneAndHalfBudgetsPercent": 77.59,
+            "mainThreadMilliseconds": {
+              "TaskDuration": 14918.87,
+              "ScriptDuration": 14168.8,
+              "LayoutDuration": 41.69,
+              "RecalcStyleDuration": 0
+            },
+            "scriptMsPerFrame": 29.96
+          }
+        ]
+      }
+    },
+    "24": {
+      "before": {
+        "capturedAt": "2026-09-08T16:42:34.059Z",
+        "platform": "darwin",
+        "browserVersion": "151.0.7922.34",
+        "settings": {
+          "width": 1280,
+          "height": 720,
+          "dpr": 1,
+          "duration": 15000,
+          "fps": 60,
+          "cpu-throttle": 24,
+          "settle": 10000,
+          "channel": "chromium",
+          "headless": true,
+          "scenarioFilter": "all-buses",
+          "studyTime": "27900",
+          "playbackRate": "30",
+          "profiling": false,
+          "angle": "metal",
+          "buses": true,
+          "rail": false,
+          "airRoads": false
+        },
+        "environment": {
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Max, Unspecified Version)",
+          "canvas": {
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "errors": [],
+        "scenarios": [
+          {
+            "name": "all-buses",
+            "studyTime": 28050,
+            "frames": 76,
+            "meanFps": 5.05,
+            "p50Ms": 239.9,
+            "p95Ms": 300.1,
+            "p99Ms": 318.2,
+            "maxMs": 318.2,
+            "overBudgetPercent": 100,
+            "overOneAndHalfBudgetsPercent": 100,
+            "mainThreadMilliseconds": {
+              "TaskDuration": 15512.19,
+              "ScriptDuration": 14817.44,
+              "LayoutDuration": 113.55,
+              "RecalcStyleDuration": 0
+            },
+            "scriptMsPerFrame": 194.97
+          }
+        ]
+      },
+      "candidate": {
+        "capturedAt": "2026-09-08T16:45:03.677Z",
+        "platform": "darwin",
+        "browserVersion": "151.0.7922.34",
+        "settings": {
+          "width": 1280,
+          "height": 720,
+          "dpr": 1,
+          "duration": 15000,
+          "fps": 60,
+          "cpu-throttle": 24,
+          "settle": 10000,
+          "channel": "chromium",
+          "headless": true,
+          "scenarioFilter": "all-buses",
+          "studyTime": "27900",
+          "playbackRate": "30",
+          "profiling": false,
+          "angle": "metal",
+          "buses": true,
+          "rail": false,
+          "airRoads": false
+        },
+        "environment": {
+          "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36",
+          "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Max, Unspecified Version)",
+          "canvas": {
+            "width": 1280,
+            "height": 720
+          }
+        },
+        "errors": [],
+        "scenarios": [
+          {
+            "name": "all-buses",
+            "studyTime": 28050,
+            "frames": 77,
+            "meanFps": 5.12,
+            "p50Ms": 169.2,
+            "p95Ms": 312.1,
+            "p99Ms": 370.2,
+            "maxMs": 370.2,
+            "overBudgetPercent": 100,
+            "overOneAndHalfBudgetsPercent": 100,
+            "mainThreadMilliseconds": {
+              "TaskDuration": 15607.91,
+              "ScriptDuration": 14866.35,
+              "LayoutDuration": 114.02,
+              "RecalcStyleDuration": 0
+            },
+            "scriptMsPerFrame": 193.07
+          }
+        ]
+      }
+    }
+  }
+}
