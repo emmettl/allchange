@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import type { NetworkSnapshot, NetworkTrain, ServiceCategory } from '@motionstudies/core/domain/network'
-import { activeTimetableVehicleCount, assembleVehicleNetwork, countableVehicleTrains, vehicleCountStatus, type VehicleLayers } from './vehicle-counts.ts'
+import { createActiveTimetableVehicleCounter, assembleVehicleNetwork, countableVehicleTrains, vehicleCountStatus, type VehicleLayers } from './vehicle-counts.ts'
+
+const activeTimetableVehicleCount = (trains: readonly NetworkTrain[], time: number) => createActiveTimetableVehicleCounter(trains)(time)
 
 const times = [27900, 66600] as const
 const categories = [
@@ -127,4 +129,23 @@ describe('vehicle count combinations', () => {
     expect(selected.count).toBe(0) // No fallback to other layers for an empty selection.
     expect(selected.quiet).toBe(false)
   })
+})
+
+it('matches a scan through overlapping intervals, invalid data and arbitrary seeks', () => {
+  const base = tfl.trains[0]
+  const trains = Array.from({ length: 2000 }, (_, i) => ({
+    ...base, id: String(i), start: (i * 137) % 86400, end: (i * 137) % 86400 + i % 700,
+  }))
+  trains.push(...[[20, 10], [NaN, 50], [0, NaN], [-Infinity, Infinity], [Infinity, Infinity], [-Infinity, -Infinity]].map(([start, end]) => ({ ...base, start, end })))
+  const originalOrder = [...trains]
+  const count = createActiveTimetableVehicleCounter(trains)
+  const times = [NaN, Infinity, -Infinity, 0, 1, ...trains.flatMap(train => [train.start, train.end, train.end + 1])]
+  for (const time of times.reverse()) {
+    expect(count(time)).toBe(trains.filter(train => train.realtime?.status !== 'cancelled' && train.stops.length >= 2 && time >= train.start && time <= train.end).length)
+  }
+  expect(trains).toEqual(originalOrder)
+  expect(createActiveTimetableVehicleCounter([])(100)).toBe(0)
+  const cancelled = trains.map(train => ({ ...train, realtime: { status: 'cancelled' as const, delaySeconds: 0, skippedStops: 0, generatedAt: '' } }))
+  expect(createActiveTimetableVehicleCounter(cancelled)(500)).toBe(0)
+  expect(count(500)).toBeGreaterThan(0)
 })

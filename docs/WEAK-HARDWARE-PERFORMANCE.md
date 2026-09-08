@@ -2,6 +2,8 @@
 
 The subsequent [stationary and paused rendering pass](IDLE-RENDERING-PERFORMANCE.md)
 avoids unchanged station layout and paused TfL/bus buffer work.
+The [latest Gleislicht review](GLEISLICHT-PERFORMANCE-REVIEW.md) adds indexed
+vehicle counts and bounded train-label searches, and assesses the trail worker.
 
 The laptop photograph shows an Intel i7-1185G7, 73% total CPU utilization,
 1.58 GHz reported speed, Intel Iris Xe at 53%, and 41% memory utilization. This

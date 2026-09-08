@@ -35,6 +35,32 @@ export function londonPerformanceRenderer(): Plugin {
           '        return batchHubLines(lines.map(entry => entry.line)).map((line, index) => ({ key: `batch:${index}`, line }));\n    }, [calls, selectedCategory]);')
         code = 'import { batchHubLines } from "/src/studies/batch-hub-lines.ts";\n' + code
       } else if (moduleId.endsWith('/NationalNetworkScene.js')) {
+        // Limit full label searches, retaining per-frame movement and overlap
+        // checks for the labels that were actually displayed last frame.
+        const replaceIn = (start: string, end: string, before: string, after: string) => {
+          const first = code.indexOf(start), last = code.indexOf(end, first);
+          if (first < 0 || last < 0) throw new Error('London component hook needs review');
+          const section = code.slice(first, last);
+          if (section.split(before).length !== 2) throw new Error(`London component hook needs review: ${before}`);
+          code = code.slice(0, first) + section.replace(before, after) + code.slice(last);
+        };
+        const labelReplace = (before: string, after: string) => replaceIn('function TrainLabels(', 'function SelectedStationRouteLayer(', before, after);
+        labelReplace('    useFrame((_, delta) => {', `    const labelFrameBudget = useMemo(() => new LabelFrameBudget(), []);
+    const visibleLabelTrains = useRef([]);
+    const labelInputs = useMemo(() => ({}), [snapshot, projectedStops, projectedPaths,
+      selectedTrain, comparisonTrains, selectedRoute, selectedStation, selectedCategory,
+      airCategorySelected, roadCategorySelected, trainLabelMode, isPlaying, playbackRate,
+      trainTimeIndex, cameraFraming, layoutTransitioning, routeColors, routeColorMix, lakeAvoidingPaths]);
+    useFrame((_, delta) => {`);
+        labelReplace('        sprites.current.forEach((sprite) => {', `        const labelWork = labelFrameBudget.update(labelInputs, camera, size.width, size.height,
+          localTime.current, delta, isPlaying, playbackRate);
+        if (labelWork === 'idle') return;
+        const labelTrains = labelWork === 'all' ? trainsNearTime(trainTimeIndex, localTime.current) : visibleLabelTrains.current;
+        visibleLabelTrains.current = [];
+        sprites.current.forEach((sprite) => {`);
+        labelReplace('for (const train of trainsNearTime(trainTimeIndex, localTime.current)) {', 'for (const train of labelTrains) {');
+        labelReplace('            sprite.visible = true;', '            visibleLabelTrains.current.push(candidate.train);\n            sprite.visible = true;');
+        code = 'import { LabelFrameBudget } from "/src/studies/label-frame-budget.ts";\n' + code
         // Clock reports rerender this component without changing fixed station
         // anchors. Retention and repopulation still get their settling passes.
         replace('const budget = stableStationLabelBudget(stationLabelBudget(semanticHeight), retainedStationNames.current.size, canRepopulate);',

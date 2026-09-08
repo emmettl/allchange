@@ -50,7 +50,7 @@ import {
   dayChunkForTime,
   networkSnapshotForDayChunk,
 } from '@motionstudies/core/domain/network-day'
-import { assembleVehicleNetwork, countableVehicleTrains, activeTimetableVehicleCount, vehicleCountStatus } from './vehicle-counts.ts'
+import { assembleVehicleNetwork, countableVehicleTrains, createActiveTimetableVehicleCounter, vehicleCountStatus } from './vehicle-counts.ts'
 import {
   operationsAgeSeconds,
   operationsServiceTime,
@@ -723,10 +723,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const countableTrains = useMemo(() => countableVehicleTrains(sceneNetwork, stations, {
     category: selectedCategory, station: selectedStation, route: selectedRoute,
   }), [sceneNetwork, selectedCategory, selectedRoute, selectedStation, stations])
-  const activeTrainCount = useMemo(
-    () => activeTimetableVehicleCount(countableTrains, sceneTime),
-    [countableTrains, sceneTime],
-  )
+  const countActiveTrains = useMemo(() => createActiveTimetableVehicleCounter(countableTrains), [countableTrains])
+  const activeTrainCount = countActiveTrains(sceneTime)
   const boundary = useMemo(
     () => (geography ? londonBoundary(geography) : undefined),
     [geography],
