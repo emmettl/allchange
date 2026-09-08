@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { expect, it } from 'vitest'
 import { londonMotionRenderer } from './london-motion-renderer.ts'
 import { londonPerformanceRenderer } from './london-performance-renderer.ts'
+import { londonCartographyRenderer } from './london-cartography-renderer.ts'
 
 it('preserves numeric callsign ordering and priority using the installed renderer', () => {
   const id = '/node_modules/@motionstudies/three/air-labels.js'
@@ -47,7 +48,7 @@ it('composes every performance hook with the London adapters and rejects changed
   const { londonDiagramRenderer } = await import('./london-diagram-renderer.ts')
   const { londonNationalRailRenderer } = await import('./london-national-rail-renderer.ts')
   const { londonSelectionRenderer } = await import('./london-selection-renderer.ts')
-  const plugins = [londonDiagramRenderer(), londonNationalRailRenderer(), londonMotionRenderer(), londonSelectionRenderer(), londonPerformanceRenderer()]
+  const plugins = [londonDiagramRenderer(), londonNationalRailRenderer(), londonMotionRenderer(), londonSelectionRenderer(), londonPerformanceRenderer(), londonCartographyRenderer()]
   for (const module of ['NationalNetworkScene', 'HubPulseScene', 'AirTrafficLayer', 'RoadTrafficLayer', 'air-labels', 'train-labels']) {
     const id = `/node_modules/@motionstudies/three/${module}.js`
     let code = readFileSync(`.${id}`, 'utf8')

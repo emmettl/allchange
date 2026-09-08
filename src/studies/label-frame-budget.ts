@@ -9,10 +9,11 @@ export class LabelFrameBudget {
   private height = 0
   private elapsed = 0
   private time = NaN
+  private obstacles?: object
 
   update(key: object, camera: Camera, width: number, height: number, time: number,
-    delta: number, playing: boolean, rate: number): 'all' | 'visible' | 'idle' {
-    const changed = this.key !== key || width !== this.width || height !== this.height ||
+    delta: number, playing: boolean, rate: number, obstacles?: object): 'all' | 'visible' | 'idle' {
+    const changed = this.key !== key || obstacles !== this.obstacles || width !== this.width || height !== this.height ||
       !this.projection.equals(camera.projectionMatrix) || !this.view.equals(camera.matrixWorldInverse)
     const advanced = time - this.time
     const seek = playing
@@ -22,6 +23,7 @@ export class LabelFrameBudget {
     this.elapsed += Math.max(0, delta)
     if (changed || seek || playing && this.elapsed >= 0.1) {
       this.key = key
+      this.obstacles = obstacles
       this.projection.copy(camera.projectionMatrix)
       this.view.copy(camera.matrixWorldInverse)
       this.width = width

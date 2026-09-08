@@ -2,6 +2,16 @@ import { PerspectiveCamera } from 'three'
 import { expect, it } from 'vitest'
 import { LabelFrameBudget } from './label-frame-budget'
 
+it('refreshes paused vehicle labels when the station collision layout changes', () => {
+  const budget = new LabelFrameBudget(), camera = new PerspectiveCamera(), key = {}
+  const stations = {}, changedStations = {}
+  const tick = (obstacles: object) => budget.update(key, camera, 1280, 720, 100, 1 / 60, false, 60, obstacles)
+  expect(tick(stations)).toBe('all')
+  expect(tick(stations)).toBe('idle')
+  expect(tick(changedStations)).toBe('all')
+  expect(tick(changedStations)).toBe('idle')
+})
+
 it('refreshes candidates at 10 Hz while moving visible labels every frame', () => {
   const budget = new LabelFrameBudget(), camera = new PerspectiveCamera(), key = {}
   const work = Array.from({ length: 61 }, (_, i) => budget.update(key, camera, 1280, 720, 100 + i, 1 / 60, true, 60))
