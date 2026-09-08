@@ -16,9 +16,13 @@
 .london-passenger-demand summary { cursor: pointer; min-height: 32px; display: list-item; }
 .london-passenger-demand a { color: #bbb7c5; }
 .london-passenger-demand :focus-visible { outline: 2px solid #ffe3b8; outline-offset: 2px; }
-.london-status-card.has-passenger-demand { width: min(420px, calc(100vw - 40px)); max-height: calc(100dvh - clamp(202px, 28vh, 260px) - 163px); overflow-y: auto; }
+.london-status-card:has(.london-passenger-demand) { width: min(420px, calc(100vw - 40px)); max-height: calc(100dvh - clamp(202px, 28vh, 260px) - 163px); overflow-y: auto; }
 @media (max-width: 760px) {
-  .london-status-card.has-passenger-demand { width: calc(100vw - 84px); max-width: 420px; max-height: calc(100dvh - 310px); }
+  .london-status-card:has(.london-passenger-demand) { width: calc(100vw - 84px); max-width: 420px; max-height: calc(100dvh - 310px); }
   .london-status-card .london-passenger-demand p { display: block; font-size: 10px; }
   .london-passenger-demand summary { min-height: 44px; }
 }
+
+.passenger-area { display: flex; gap: 6px; align-items: center; }
+.passenger-area select { min-width: 0; flex: 1; min-height: 44px; background: #101021; color: #eee9d7; border: 1px solid #b9afd444; font: inherit; }
+.london-passenger-demand .passenger-metrics { grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); }

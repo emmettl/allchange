@@ -1,61 +1,92 @@
-# NUMBAT passenger-demand pilot
+# Passenger flow and NUMBAT coverage
 
-Bank/Monument and Stratford now have 15-minute entry, exit and interchange profiles on their station hero cards and in the station pulse. The marker follows the planned study clock. The profiles describe typical passenger demand; the moving vehicles and departure boards continue to represent the September 2026 timetable. No train occupancy, congestion, capacity or unique-visitor count is inferred.
+All Change now has a passenger-flow pulse at Bank/Monument and Stratford, plus demand profiles for 432 validated source areas matched to 440 app station-name variants. The passenger pulse and train-service pulse are separate views with a shared study clock. Entry, exit and interchange counts remain separate measures; neither view infers occupancy or unique visitors.
+
+## Using the study
+
+Select Bank or Stratford and choose **Explore passenger flow**, or use **People** in the interchange pulse. Three labelled streams show entering, leaving and changing movements. A full dot represents approximately 250 movements in the selected 15-minute interval; a fractional dot preserves the remainder. Numeric totals accompany each stream. Paths and travel speed are schematic: they do not depict tracked passengers, internal station geometry or travel times. No flows are drawn for unavailable intervals.
+
+The study clock controls the marker, counts and visual phase. Pause stops positional motion; scrubbing is deterministic. Reduced motion keeps dot positions fixed while the interval counts still update. **08:30 morning** and **17:30 evening** select the full-day study and pause at that time. The station selector compares Bank and Stratford without changing the clock. **Trains** restores the scheduled-service pulse. Passenger mode automatically dismisses the hero card to uncover the scene; its details button restores it.
+
+Other supported station cards show the available metrics, daily profile and current interval. Where a station name corresponds to multiple NUMBAT areas, a **Source area** selector keeps their profiles separate. For example, Canary Wharf has LU, DLR and Elizabeth line areas; Paddington has TfL and NR areas. No totals are combined across these areas. The source name remains visible, including mode qualifiers, so an LU profile in a National Rail hero is not presented as a total for every operator.
 
 ## Source audit — 8 September 2026
 
-The latest folder in the [official TfL demand archive](https://crowding.data.tfl.gov.uk/) is NUMBAT 2025. Its [Friday workbook](https://crowding.data.tfl.gov.uk/NUMBAT/NUMBAT%202025/NBT25FRI_Outputs.xlsx) was published on 10 August 2026 (S3 LastModified), is 12,479,228 bytes, and was retrieved on 8 September 2026. The workbook cover is dated 1 July 2026. Its SHA-256 is `22eeb8fe2fd5ee2c974aaff81c7f3e114c53e39f46cd03c273c072974f5d9b5c`.
+The input is the [official NUMBAT 2025 Friday workbook](https://crowding.data.tfl.gov.uk/NUMBAT/NUMBAT%202025/NBT25FRI_Outputs.xlsx), retrieved from [TfL's demand archive](https://crowding.data.tfl.gov.uk/). S3 records publication on 10 August 2026; the workbook cover is dated 1 July 2026. The 12,479,228-byte source is pinned by SHA-256:
 
-NUMBAT also supplies Monday, Tuesday–Thursday, Saturday and Sunday releases. Friday matches the study's day type, but the years differ: demand is a typical autumn Friday in 2025, while the timetable is Friday 4 September 2026. These are comparative layers, not measurements of one actual day. TfL describes the source and its coverage on the [open-data page](https://tfl.gov.uk/info-for/open-data-users/our-open-data); the workbook cover supplies the current methodology and confidence notes.
+`22eeb8fe2fd5ee2c974aaff81c7f3e114c53e39f46cd03c273c072974f5d9b5c`
 
-| App selection | NLC / ASC | Source station | Entries row | Exits row | Internal interchange links |
-| --- | --- | --- | --- | --- | --- |
-| Bank, Monument | 513 / BNKu | Bank and Monument | 25 | 25 | 49 |
-| Stratford, Stratford (London) | 719 / SFDu | Stratford | 386 | 386 | 126 |
+Demand describes a typical autumn Friday in 2025, whereas the app's timetable is Friday 4 September 2026. These layers are comparative, not observations of the same actual day. The [TfL open-data catalogue](https://tfl.gov.uk/info-for/open-data-users/our-open-data) and workbook cover describe the source methodology and confidence.
 
-The source sheets are `Station_Entries`, `Station_Exits` and `Station_Flows`. Both entry/exit rows are unique by NLC, with ASC and name checked as additional controls. Stratford High Street and Stratford International are separate identities and receive no pilot profile.
+| Audit result | Count |
+| --- | ---: |
+| Entry/exit station rows in the source | 471 |
+| Excluded tram placeholder rows | 39 |
+| Validated, shipped source areas | 432 |
+| Matched app station-name variants | 440 |
+| App names without a validated match | 255 |
+| Areas with supported within-area interchange profiles | 136 |
+| Areas with interchange totals withheld for duplicate links | 2 |
 
-### Aggregation and uncertainty
+The 39 tram rows contain zero-filled profiles, but trams are outside the coverage stated by this workbook. They are excluded rather than displayed as measured zero demand. Published zero intervals within a supported rail profile remain zero. Unmatched names receive no passenger profile. These counts describe source areas and name variants, not 440 distinct physical stations.
 
-Entries and exits use the published station totals directly. Their 96 interval cells begin in column L and reconcile to column E (`Total`). They are based on gateline/ticketing information and TfL assigns them higher confidence than interchange estimates.
+### Identities and source areas
 
-Interchanges sum only rows labelled `Alight-Interchange-Board` whose **from and to NLC/ASC both match the selected station**. The 96 interval cells start in column S and reconcile to column L (`Total`). Each directed link is included once. Repeated link IDs fail compilation. Entry/boarding, alighting/exit and out-of-station interchange rows are excluded from this measure.
+The compiler reads `Station_Entries`, `Station_Exits` and `Station_Flows`. Entry/exit identity is checked using NLC, ASC and the source station name. The app-name universe comes from the opening TfL network and National Rail catalogue; hashes of those inputs and every match/unmatched name are retained in `audit.json`.
 
-Bank's `Complex NLC = 513` also groups Cannon Street LU, Cannon Street NR and Mansion House. Aggregating that field alone would overcount Bank. Restricting both station endpoints avoids this; Bank still includes Monument, as the source explicitly combines them. Stratford's model includes links to National Rail; TfL cautions that flows involving non-TfL services have lower confidence. “Changing” is a count of modelled interchange movements, not distinct people or simultaneous platform occupancy.
+Matching normalizes punctuation, case and `&`/`and`. Explicit aliases cover documented local spellings, branch qualifiers and combined names. Mode suffixes generate candidate *areas*, never combined totals. There is no runtime fuzzy or proximity matching. Branch-specific names such as Edgware Road (Bakerloo) and Edgware Road (Circle Line) retain different source identities. King's Cross mainline aliases expose the explicitly labelled King's Cross St. Pancras source area rather than imply a mainline total.
+
+| Pulse | NLC / ASC | Source name | Entry and exit sheet row | Included interchange links |
+| --- | --- | --- | ---: | ---: |
+| Bank | 513 / BNKu | Bank and Monument | 25 | 49 |
+| Stratford | 719 / SFDu | Stratford | 386 | 126 |
+
+Bank's `Complex NLC = 513` also groups Cannon Street and Mansion House. The compiler restricts both endpoints to the selected station's NLC/ASC, avoiding that wider aggregation. Monument remains included because the source explicitly combines it with Bank. Stratford High Street and Stratford International DLR now have their own separate profiles, not aliases to Stratford's counts.
+
+### Aggregation, missing metrics and confidence
+
+Entries and exits use the published station rows directly. Their 96 interval cells start in column L and reconcile to column E (`Total`). These measures are based on gateline/ticketing information and have higher source confidence than estimated transfers.
+
+Changing sums only `Alight-Interchange-Board` rows with both endpoint NLC/ASC identities equal to the selected area. Their 96 interval cells start in column S and reconcile to column L (`Total`). Entry/boarding, alighting/exit and out-of-station interchange rows are excluded. Cross-area internal links are also excluded and flagged in the card's notes; the result is explicitly an *area* profile.
+
+Duplicate interchange IDs make the changing total ambiguous at **Clapham Junction** and **Norwood Junction**. Those complete interchange metrics are withheld; their entry and exit profiles remain available. The audit retains the excluded rows and reasons. An area without within-area interchange rows also omits Changing rather than displaying zero. Links involving non-TfL services have lower source confidence.
+
+Every included row's interval sum is reconciled to its published total before rounding. Missing, erroneous, non-finite and negative cells fail compilation. The browser artifact preserves three decimal places; the interface shows approximate whole counts. The audit retains original totals and source rows/links. Entering, leaving and changing must not be summed to claim unique passengers.
 
 | Typical traffic-day movements | Bank and Monument | Stratford |
 | --- | ---: | ---: |
 | Entries | 49,893.338 | 84,316.663 |
 | Exits | 51,329.585 | 86,358.112 |
-| Internal interchanges | 101,135.801 | 154,881.998 |
+| Within-area interchanges | 101,135.801 | 154,881.998 |
 
-These columns must not be added to claim unique passengers. The compiler preserves three decimal places in the compact artifact; the interface shows approximate whole people and labels the measure. The audit artifact retains the original totals and every selected interchange link, including worksheet row and endpoint descriptions.
+### Time alignment
 
-### Traffic-day alignment
+The source traffic day runs from Friday 05:00 to Saturday 05:00 in 96 intervals. Every time header is checked in sequence. The daily chart retains and shades the Saturday tail, but the app only matches Friday study times from 05:00 inclusive to 24:00 exclusive. Friday before 05:00 needs the preceding Thursday traffic-day tail and remains unavailable. The end-of-study 24:00 sentinel also has no interval. Neither case wraps onto another day.
 
-The workbook has 96 intervals, Friday 05:00 through Saturday 05:00, not midnight through midnight. The compiler checks every header in sequence and reconciles every selected row's interval sum to its published total before rounding. Blank, erroneous, non-finite and negative cells fail; a published zero remains zero.
-
-The chart retains the full traffic day and shades its Saturday tail. Its current marker is only defined for study times from 05:00 inclusive to 24:00 exclusive. Friday 00:00–05:00 has no matching profile in this pilot; it would need the preceding Thursday traffic-day tail. The end-of-study 24:00 sentinel also has no marker. Neither case wraps onto another day. Selecting Entering, Leaving or Changing switches the chart; each has its own vertical scale and a numeric peak. Scrubbing the existing clock moves the marker without altering the demand data or weighting the train animation.
-
-## Reproduction and checks
+## Reproduction and validation
 
 Download the linked workbook outside the repository, then run from the project root:
 
 ```sh
 python3 -B scripts/compile-numbat.py /path/to/NBT25FRI_Outputs.xlsx
 python3 -B scripts/test_compile_numbat.py
-npm test -- src/data/passenger-demand.test.ts
+npm test
 npm run build
+npm run check:boundary
 npm run check:bundle
-npm exec playwright test e2e/passenger-demand.spec.ts -- --workers=1
+npm exec playwright test e2e/passenger-pulse.spec.ts e2e/passenger-demand.spec.ts e2e/hero-dismiss.spec.ts -- --workers=1
 ```
 
-Compilation uses Python's standard library and performs no network requests or spreadsheet recalculation. It pins the audited source hash; a changed workbook requires a fresh source/identity audit before changing that pin or metadata. Outputs are `fixtures/passenger-demand/numbat-2025-friday.json` and `audit.json`. Build staging copies only the small profile artifact into public data. The source workbook and audit link ledger are not shipped to browsers.
+Compilation uses Python's standard library without network requests or workbook recalculation. A changed source hash requires a fresh audit. Outputs are `fixtures/passenger-demand/catalogue.json`, one JSON file per source area under `stations/`, and `audit.json`. Only the catalogue and individual profiles are staged for browsers. The raw workbook and audit ledger are not shipped.
 
-The component, CSS and data load on supported selection, with independent gzip limits of 4 KiB JavaScript, 2 KiB CSS and 4 KiB data. A failed download offers retry; valid data is reused across hero cards and pulses. Unsupported stations trigger no passenger request. Tests cover identities, source reconciliation, invalid/missing values, midnight boundaries, lazy loading, retry, clock changes and desktop/mobile hero-to-pulse navigation.
+The opening scene requests no passenger data. Station selection loads the small catalogue and the selected area only; later selections reuse valid downloads. Failed downloads retry, unsupported stations request no area file, and selection changes cannot display the previous station's counts. Both the card and pulse are lazy and share the validated data loader.
 
-## Attribution and next steps
+Gzip limits are 4 KiB each for card and pulse JavaScript (including their optional dependencies), 2 KiB CSS each, 12 KiB catalogue, 2 KiB per source area, and 650 KiB for all profiles plus the catalogue. The full dataset is never requested as one browser payload. The existing 344 KiB opening JavaScript limit is unchanged.
 
-Powered by TfL Open Data. [TfL transport-data terms](https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service) apply. The terms also specify: Contains OS data © Crown copyright and database rights 2016; Geomni UK Map data © and database rights 2019. This pilot extracts passenger counts and uses no source geometry. No TfL endorsement is implied.
+Validation includes all 432 area files, identity and total reconciliation, source-area separation, missing/invalid metrics, zero and midnight semantics, mark proportions, reduced motion, playback/seek, loading races, retry, unsupported coverage, hero dismissal, and desktop Chromium/iPhone WebKit interaction. Physical-phone review remains outstanding; browser emulation is recorded separately.
 
-Before extending station coverage, audit station-versus-complex identities and interchange row types for every additional mapping. The next useful step is to add the preceding day profile for early Friday, then expand to other audited hubs. Link loads, train load visualisation, station capacity, measured crowding and combined-operator departure boards remain separate work.
+## Attribution and remaining work
+
+Powered by TfL Open Data. [TfL transport-data terms](https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service) apply. The terms also specify: Contains OS data © Crown copyright and database rights 2016; Geomni UK Map data © and database rights 2019. This extraction uses counts, not source geometry. No TfL endorsement is implied.
+
+Remaining work includes preceding-day demand for early Friday, directional link loads along tracks, boarders/alighters, an authored city-wide morning/evening sequence, and additional passenger pulse compositions. Measured crowding, capacity, individual-train loads, origin–destination journeys and combined-operator departure boards remain separate work.

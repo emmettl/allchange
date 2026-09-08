@@ -116,7 +116,7 @@ const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx')
 import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
 const LondonNationalRailBoard = lazy(() => import('./LondonNationalRailBoard.tsx').then(module => ({ default: module.LondonNationalRailBoard })))
 import { HeroCardDismiss } from './HeroCardDismiss.tsx'
-import { passengerStationId } from '../editions/london-passenger-stations.ts'
+const LondonPassengerPulse = lazy(() => import('./LondonPassengerPulse.tsx'))
 const LondonPassengerDemand = lazy(() => import('./LondonPassengerDemand.tsx'))
 const LondonStationDepartures = lazy(() => import('./LondonStationDepartures.tsx').then(module => ({ default: module.LondonStationDepartures })))
 import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
@@ -330,12 +330,15 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const [mobileControlsOpen, setMobileControlsOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
+  const [pulseView, setPulseView] = useState<'services' | 'passengers'>('services')
   const [pulseHubId, setPulseHubId] = useState<LondonHubId>()
   const railCatalogue = useRailCatalogue(nationalRailEnabled || Boolean(pulseHubId) || searchOpen, morningNetwork?.metadata.serviceDate)
   const railStations = railCatalogue.stations
   const pulseHubs = useMemo(() => railPulseHubs(railStations), [railStations])
   const pulseHub = pulseHubs.find(hub => hub.id === pulseHubId)
-  const passengerId = operationsMode === 'plan' ? passengerStationId(pulseHub?.name ?? selectedStation?.name) : undefined
+  const passengerName = operationsMode === 'plan' ? pulseHub?.name ?? selectedStation?.name : undefined
+  const hasPassengerPulse = pulseHub?.id === 'bank' || pulseHub?.id === 'stratford'
+  const isPassengerPulse = hasPassengerPulse && pulseView === 'passengers'
   const railFeed = useNationalRail(edition.data.nationalRail,
     nationalRailEnabled || (searchOpen && query.trim().length >= 2) ? LONDON_RAIL_CORRIDORS.map(corridor => corridor.id) : pulseHub?.nationalRail ?? [],
     morningNetwork?.metadata.serviceDate,
@@ -1027,6 +1030,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   ])
 
   const clearSelection = useCallback(() => {
+    setPulseView('services')
     setDismissedHero(false)
     setDismissedRail(false)
     setNationalRailSelectedId(undefined)
@@ -1545,9 +1549,14 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       data-pulse-lens={pulseHub ? pulseLens : undefined}
       data-pulse-night={pulseHub ? pulseNightMix.toFixed(2) : undefined}
     >
-      <div className="scene" aria-hidden={webglAvailable ? true : undefined}>
+      <div className="scene" aria-hidden={webglAvailable && !isPassengerPulse ? true : undefined}>
         <Suspense fallback={null}>
-          {!webglAvailable ? (
+          {network && pulseHub && isPassengerPulse ? (
+            <LondonPassengerPulse stationName={pulseHub.name} hubId={pulseHub.id} time={time} isPlaying={isPlaying} playbackRate={playbackRate}
+              windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd} onTime={setTime}
+              onSeek={nextTime => { setStudyWindow('day'); setTime(nextTime); setIsPlaying(false) }}
+              onStation={id => { setPulseHubId(id); setDismissedHero(true) }} />
+          ) : !webglAvailable ? (
             <section className="no-webgl" role="status">
               <span aria-hidden="true">◎</span>
               <h2>This study needs WebGL</h2>
@@ -2068,6 +2077,10 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         )}
       </section>
 
+      {hasPassengerPulse && <nav className="london-pulse-view" aria-label="Pulse view">
+        <button type="button" aria-label="Train services pulse" aria-pressed={!isPassengerPulse} onClick={() => { setPulseView('services'); setDismissedHero(false) }}>Trains</button>
+        <button type="button" aria-label="Passenger flow pulse" aria-pressed={isPassengerPulse} onClick={() => { setPulseView('passengers'); setDismissedHero(true) }}>People</button>
+      </nav>}
       {selectedAirport ? (
         <Suspense fallback={null}><AirportHeroCard key={selectedAirport.id} className="edition-airport-card"
           dismissControl={<HeroCardDismiss name={selectedAirport.iata} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />} dismissed={dismissedHero}
@@ -2079,9 +2092,9 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         /></Suspense>
       ) : (
       <section
-        className={`london-status-card${passengerId ? ' has-passenger-demand' : ''}${selectedStation && !pulseHub && operationsMode === 'plan' ? ' has-station-board' : ''}${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
+        className={`london-status-card${selectedStation && !pulseHub && operationsMode === 'plan' ? ' has-station-board' : ''}${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
         data-hero-dismissed={dismissedHero}
-        aria-live={dismissedHero || selectedStation || passengerId ? 'off' : 'polite'}
+        aria-live={dismissedHero || selectedStation || passengerName ? 'off' : 'polite'}
       >
         <HeroCardDismiss name={pulseHub?.displayName ?? selectedStation?.name ?? selectedRoad?.label ?? selectedAirIndexEntry?.callsign ?? displayedSelectedRoute?.name ?? (selectedTrain ? `${selectedTrain.route} ${selectedTrain.shortName}` : 'Study')} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />
         {pulseHub && (
@@ -2105,7 +2118,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                 ))}
               </select>
             </label>
-            <div className="london-pulse-lenses" role="group" aria-label="Pulse flow lens">
+            {!isPassengerPulse && <div className="london-pulse-lenses" role="group" aria-label="Pulse flow lens">
               {(['all', 'radial', 'orbital'] as const).map((lens) => (
                 <button
                   key={lens}
@@ -2119,12 +2132,12 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                   <small>{pulseSummary[lens].toLocaleString('en-GB')}</small>
                 </button>
               ))}
-            </div>
+            </div>}
           </>
         )}
         {loadError ? (
           <p>Opening study unavailable.</p>
-        ) : quietMap ? (
+        ) : isPassengerPulse ? (<p>Typical passenger movements · autumn 2025</p>) : quietMap ? (
           <>
             <div><strong>All quiet.</strong></div>
             <p>For once, nothing is running late.</p>
@@ -2197,8 +2210,12 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         ) : (
           <p>Drawing London…</p>
         )}
-        {passengerId && <Suspense fallback={<p>Loading passenger profile…</p>}>
-          <LondonPassengerDemand stationId={passengerId} time={time} />
+        {passengerName && <Suspense fallback={<p>Loading passenger profile…</p>}>
+          <LondonPassengerDemand stationName={passengerName} time={time}
+            onPulse={['Bank', 'Monument', 'Stratford', 'Stratford (London)'].includes(passengerName) ? () => {
+              const id = passengerName.startsWith('Stratford') ? 'stratford' : 'bank'
+              clearSelection(); setPulseHubId(id); setPulseView('passengers'); setDismissedHero(true)
+            } : undefined} />
         </Suspense>}
         {selectedStation && !pulseHub && network && operationsMode === 'plan' && <Suspense fallback={<p role="status">Loading station board…</p>}>
           <LondonStationDepartures key={selectedStation.name} snapshot={network} stationName={selectedStation.name}
@@ -2305,7 +2322,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         <Suspense fallback={<span className="london-layout-status" role="status">Loading rail board…</span>}><LondonNationalRailBoard
           dismissed={dismissedRail} dismissControl={<HeroCardDismiss name={`${railStation.name} National Rail`} dismissed={dismissedRail} onToggle={() => setDismissedRail(value => !value)} />}
           snapshot={railBoardSnapshot} stations={railStations} stationId={nationalRailStationId} time={time} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd}
-          passengerContent={operationsMode === 'plan' && passengerStationId(railStation.stationName) ? <Suspense fallback={<p>Loading passenger profile…</p>}><LondonPassengerDemand key={railStation.id} stationId={passengerStationId(railStation.stationName)!} time={time} /></Suspense> : undefined}
+          passengerContent={operationsMode === 'plan' ? <Suspense fallback={<p>Loading passenger profile…</p>}><LondonPassengerDemand key={railStation.id} stationName={railStation.stationName} onPulse={railStation.id === 'stratford' ? () => { clearSelection(); setPulseHubId('stratford'); setPulseView('passengers'); setDismissedHero(true) } : undefined} time={time} /></Suspense> : undefined}
           partial={railStation.corridors.some(id => !railFeed.snapshots[id])} animate={!isPlaying || playbackRate <= 30}
           onStation={id => {
             clearSelection()

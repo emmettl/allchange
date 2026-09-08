@@ -90,9 +90,11 @@ The board and its styles load on selection, with a separate dependency-inclusive
 
 ### Passenger rhythm
 
-Bank/Monument and Stratford now show typical Friday entry, exit and interchange demand on their station hero cards and pulse views. Select a metric to see its daily profile; the marker and approximate 15-minute counts follow the study clock. Stratford’s National Rail hero uses the same profile. The data is NUMBAT autumn 2025, clearly distinguished from the September 2026 timetable. It describes passenger movements, without inferring train occupancy.
+Bank/Monument and Stratford have a passenger-flow pulse with separate entering, leaving and changing streams. Choose **Explore passenger flow** from their cards or **People** in the pulse, compare 08:30 with 17:30, and switch stations without losing the clock. Dots encode typical 15-minute movements; they are schematic, not tracked paths or train occupancy. **Trains** returns to the scheduled-service pulse. Pause, scrubbing and reduced motion are supported.
 
-The full source traffic day runs from Friday 05:00 to Saturday 05:00. Before 05:00 in the Friday study, counts are unavailable rather than borrowed from Saturday. Source identities, aggregation, confidence, reproduction and tests are documented in [the passenger-demand audit](docs/PASSENGER-DEMAND.md). The profile, styles and small two-station artifact load only on supported selection and have their own transfer budgets.
+Hero cards now expose 432 validated NUMBAT source areas matched to 440 station-name variants. A source-area selector separates places such as Canary Wharf and Paddington; unavailable interchange metrics are omitted. Tram placeholder rows are excluded. The catalogue and selected area's profile load on demand, with independent retry and transfer budgets.
+
+Demand is a typical autumn Friday in 2025, distinct from the September 2026 timetable. The source day runs from Friday 05:00 to Saturday 05:00. Friday before 05:00 stays unavailable rather than borrowing Saturday's counts. See [the passenger-demand audit](docs/PASSENGER-DEMAND.md) for identities, aggregation, confidence, coverage and reproduction.
 
 ### Dismissing hero cards
 

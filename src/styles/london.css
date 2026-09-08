@@ -1046,3 +1046,13 @@
 .london-national-rail-board .london-rail-pulse-link { color: #ffe3b8; border-color: rgba(255, 211, 146, 0.25); min-height: 32px; padding: 4px 8px; margin-top: 6px; }
 
 .london-national-rail-board .london-rail-attribution { display: block; margin-top: 6px; }
+
+.london-pulse-view { position: absolute; top: 202px; right: var(--london-gutter); z-index: 4; display: flex; gap: 4px; }
+.london-pulse-view button { min-height: 44px; min-width: 72px; border: 1px solid #b9afd444; color: #c6c0d1; background: #101021; font: 400 11px/1.4 'DM Mono', monospace; cursor: pointer; }
+.london-pulse-view button[aria-pressed='true'] { color: #eee9d7; border-color: #b8aff1; }
+.london-pulse-view :focus-visible { outline: 2px solid #ffe3b8; outline-offset: 2px; }
+.is-limited-chrome .london-pulse-view { display: none; }
+@media (max-width: 760px) {
+  .london-pulse-view { top: calc(118px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right)); }
+  .london-pulse-view ~ .london-status-card[data-hero-dismissed='false'] { top: calc(174px + env(safe-area-inset-top)); max-height: calc(100dvh - 366px); }
+}

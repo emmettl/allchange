@@ -1,0 +1,25 @@
+.london-passenger-pulse { position: absolute; top: 246px; bottom: 180px; left: max(440px, 36vw); right: 36px; display: flex; flex-direction: column; justify-content: center; color: #eee9d7; font: 400 11px/1.5 'DM Mono', ui-monospace, monospace; }
+.london-passenger-pulse header label { display: flex; align-items: center; gap: 16px; color: #bbb7c5; }
+.london-passenger-pulse select { font: 500 20px/1.5 'DM Mono', ui-monospace, monospace; color: #eee9d7; background: #101021; border: 1px solid #b9afd444; padding: 4px; min-height: 44px; max-width: 100%; }
+.london-passenger-pulse header p { margin: 4px 0; color: #bdb8ca; }
+.london-passenger-pulse svg { display: block; width: 100%; max-height: 340px; flex: 1; min-height: 100px; overflow: visible; }
+.london-passenger-pulse .passenger-pulse-key { color: #bdb8ca; margin: 6px 0; font-size: 10px; }
+.london-passenger-pulse nav { display: flex; gap: 8px; }
+.london-passenger-pulse button { min-height: 44px; padding: 6px 12px; color: #eee9d7; border: 1px solid #b9afd444; background: #101021; cursor: pointer; font: inherit; }
+.london-passenger-pulse :focus-visible { outline: 2px solid #ffe3b8; outline-offset: 2px; }
+@media (max-width: 760px) {
+  .london-passenger-pulse { top: 182px; bottom: 180px; left: 12px; right: 12px; }
+  .london-passenger-pulse header label { gap: 8px; font-size: 10px; }
+  .london-passenger-pulse select { font-size: 15px; min-width: 0; flex: 1; }
+  .london-passenger-pulse svg { flex: 0 1 auto; min-height: 135px; }
+  .london-passenger-pulse .passenger-pulse-key { font-size: 9px; }
+}
+@media (min-width: 761px) {
+  .london-passenger-pulse { top: 270px; left: var(--london-gutter); right: var(--london-gutter); display: grid; grid-template-columns: minmax(260px, 320px) 1fr; grid-template-rows: auto 1fr auto; gap: 12px 36px; }
+  .london-passenger-pulse header { grid-column: 1; grid-row: 1; }
+  .london-passenger-pulse header label { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .london-passenger-pulse header p { margin-top: 8px; }
+  .london-passenger-pulse svg { grid-column: 2; grid-row: 1 / 4; height: 100%; max-height: none; min-height: 0; }
+  .london-passenger-pulse .passenger-pulse-key { grid-column: 1; grid-row: 2; align-self: end; }
+  .london-passenger-pulse nav { grid-column: 1; grid-row: 3; }
+}
