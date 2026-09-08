@@ -811,11 +811,18 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           (value): SearchChoice => ({ kind: 'air', value }),
         )
       : []
+    // An exact route code (for example N26) should precede a partial match
+    // in a National Rail service number (for example GWR 2N26).
+    const serviceQuery = foldSearchText(query.trim()).replace(/^(?:route|line|bus)\s+/, '')
+    const exactRoutes = networkChoices.services.filter(
+      choice => choice.kind === 'route' && foldSearchText(choice.value.name) === serviceQuery,
+    )
     return [
       ...networkChoices.places,
       ...airMatches,
+      ...exactRoutes,
       ...railChoices,
-      ...networkChoices.services,
+      ...networkChoices.services.filter(choice => !exactRoutes.includes(choice)),
     ].slice(0, 9)
   }, [networkChoices, railChoices, searchOpen, airEnabled, query, searchableAircraft, sceneTime])
   const selectedAirTrack = useMemo<AirTrack | undefined>(

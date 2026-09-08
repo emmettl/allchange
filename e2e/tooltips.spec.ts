@@ -1,7 +1,10 @@
 import { expect, test } from '@playwright/test'
+import { setMobileControls } from './mobile-controls.ts'
 
 test('edition controls expose desktop help without touch tooltips', async ({ page, isMobile }) => {
   await page.goto('/')
+  await expect(page.locator('.scene canvas')).toBeVisible()
+  await setMobileControls(page, true)
   const control = page.locator('button.london-air-toggle:visible').first()
   await expect(control).toBeVisible()
   await control.hover()
