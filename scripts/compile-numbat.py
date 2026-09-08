@@ -12,6 +12,7 @@ from zipfile import ZipFile
 NS = {'s': 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'}
 SOURCE_URL = 'https://crowding.data.tfl.gov.uk/NUMBAT/NUMBAT%202025/NBT25FRI_Outputs.xlsx'
 SOURCE_SHA256 = '22eeb8fe2fd5ee2c974aaff81c7f3e114c53e39f46cd03c273c072974f5d9b5c'
+TWT_SHA256 = 'a10e5f767750538ecac99cf0d2131243672574df88b9c933f03b9357c5f67db2'
 
 
 def sheet_rows(archive, path, strings):
@@ -55,8 +56,9 @@ def check_headers(row, start):
             raise ValueError(f'Unexpected traffic-day interval at column {start + i + 1}')
 
 
-def compile_workbook(path):
-    if hashlib.sha256(Path(path).read_bytes()).hexdigest() != SOURCE_SHA256:
+def compile_workbook(path, preceding=False):
+    expected_hash = TWT_SHA256 if preceding else SOURCE_SHA256
+    if hashlib.sha256(Path(path).read_bytes()).hexdigest() != expected_hash:
         raise ValueError('Source differs from the audited 2025 Friday release; re-audit before updating')
     with ZipFile(path) as archive:
         strings = [''.join(s.itertext()) for s in ET.fromstring(archive.read('xl/sharedStrings.xml'))]
@@ -128,7 +130,7 @@ def compile_workbook(path):
             station['totals'] = {metric: round(sum(station[metric]), 3) for metric in metrics}
             for metric in metrics:
                 station[metric] = [round(v, 3) for v in station[metric]]
-    source = {'url': SOURCE_URL, 'sha256': hashlib.sha256(Path(path).read_bytes()).hexdigest(), 'year': 2025, 'dayType': 'Friday', 'season': 'autumn', 'published': '2026-08-10', 'retrieved': '2026-09-08'}
+    source = {'url': SOURCE_URL.replace('FRI', 'TWT') if preceding else SOURCE_URL, 'sha256': expected_hash, 'year': 2025, 'dayType': 'Tuesday–Thursday' if preceding else 'Friday', 'season': 'autumn', 'published': '2026-08-10', 'retrieved': '2026-09-08'}
     return {'version': 2, 'source': source, 'start': 18000, 'step': 900, 'stations': stations}, {'stations': audit, 'excluded': excluded}
 
 
@@ -188,6 +190,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('workbook', type=Path)
     parser.add_argument('--output', type=Path, default=Path('fixtures/passenger-demand'))
+    parser.add_argument('--preceding-workbook', type=Path)
     args = parser.parse_args()
     data, audit = compile_workbook(args.workbook)
     opening_path = Path('fixtures/tfl/all-change-rail-led-morning.json')
@@ -196,6 +199,23 @@ if __name__ == '__main__':
     names.update(station['name'] for station in json.loads(rail_path.read_text())['stations'])
     names.update(ALIASES)
     catalogue, unmatched = build_catalogue(data, names)
+    if args.preceding_workbook:
+        preceding, preceding_audit = compile_workbook(args.preceding_workbook, preceding=True)
+        catalogue['precedingSource'] = preceding['source']
+        tail_dir = args.output / 'preceding'
+        tail_dir.mkdir(parents=True, exist_ok=True)
+        for asc in catalogue['areas']:
+            station = preceding['stations'].get(asc)
+            if not station or any(station[key] != catalogue['areas'][asc][key] for key in ['name', 'nlc', 'asc']):
+                raise ValueError(f'Preceding-day identity mismatch: {asc}')
+            station = dict(station)
+            metrics = [key for key in ['entries', 'exits', 'interchanges'] if key in station]
+            for metric in metrics:
+                station[metric] = station[metric][76:]
+            station['totals'] = {metric: round(sum(station[metric]), 3) for metric in metrics}
+            tail = {'version': 2, 'source': preceding['source'], 'start': 0, 'step': 900, 'station': station}
+            (tail_dir / f'{asc}.json').write_text(json.dumps(tail, separators=(',', ':')) + '\n')
+        audit['preceding'] = {'source': preceding['source'], 'slice': [76, 96], 'meaning': 'Thursday traffic-day 24:00–29:00 mapped to Friday 00:00–05:00; typical Tuesday–Thursday demand', **preceding_audit}
     args.output.mkdir(parents=True, exist_ok=True)
     station_dir = args.output / 'stations'
     station_dir.mkdir(exist_ok=True)

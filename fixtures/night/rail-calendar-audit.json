@@ -1,0 +1,1478 @@
+{
+  "serviceDate": "2026-09-04",
+  "sources": [
+    {
+      "url": "https://api.tfl.gov.uk/Line/bakerloo/Route/Sequence/outbound",
+      "file": "ae968f1cb80bf9cc04f0e0b8449f9de5def303db384007fb5029e9598a5152d1.json",
+      "sha256": "6a60ff8f814600d3ed9fb4c9a218ddf472dd0faa6449a32d26b47d11293f8128"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/bakerloo/Route/Sequence/inbound",
+      "file": "9094884f0cd696a3efa75bd40c89e10ab8edafc2693cb0cfee495c7162499f41.json",
+      "sha256": "81dc7a3039425809241ff7998bef9430ad56893b9093c4849890a1f1fcf7867f"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/central/Route/Sequence/outbound",
+      "file": "95582bdf4ff0f3864a991060e6900249d066d2bf672b370bab3c477f449d9f9d.json",
+      "sha256": "ed6d6bd25a4b19c994749852f6b0d4058962e875064382d161fd63e85c995c3e"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/central/Route/Sequence/inbound",
+      "file": "4c9add3bc87580b7480299965c8fc0b2b37e3f0492937ba1855e65cf9f068c11.json",
+      "sha256": "02c368208866acd8e8d3f97d375f7b4968a8fdc50280aafddeaa115f493eda03"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/circle/Route/Sequence/outbound",
+      "file": "a4690851841cbc569a0edae7a1a3e2ba158e0b90bea24c8c29999616b9ec8fe8.json",
+      "sha256": "ef6bc279099e7c451e1512376321c3c97b2d48009ca6071e9ee73d44174046ed"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/circle/Route/Sequence/inbound",
+      "file": "59b7c8022949c5b8891bf3d2f7de5ea8cd2251d422eeb2eca59cb28c59628493.json",
+      "sha256": "be248fc4eefaa784f1b044c4024b2566379bb9d8226271e822e0ba715184e184"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/district/Route/Sequence/outbound",
+      "file": "81a4c42aa114be07868ab85cec5414b685a9f5ebd66f1e2e61a88bf36cc84e11.json",
+      "sha256": "0758f5d9152f013b65e3ded54ebd2da1977e12b7a20e3ef11207193c636b5148"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/district/Route/Sequence/inbound",
+      "file": "66a7dc7c1a8d6ab2fd8036f38792fc2974bc75f8c9eed1fd6260533c2892a6b4.json",
+      "sha256": "9edc4fcae64dee36a4507e10d3836575071f748d57dbf3f01993e70d043a878d"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/dlr/Route/Sequence/outbound",
+      "file": "8e0861c35c62f8e7e5719f5fd2ee2ccc36e36b4c4b03c626e36a841b5a5bb97d.json",
+      "sha256": "2afcfff17535ea92e02d476053e32f56d4bae2122699d3039141612b6c100bfa"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/dlr/Route/Sequence/inbound",
+      "file": "0072e4b0d8165b811a48c340b7bb4c705cba0b662f715c12deab08f02f7960ea.json",
+      "sha256": "f7ac90ba341c8599166e99ed904b2396aec61c5bb030b775945a2d625e751ebc"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/hammersmith-city/Route/Sequence/outbound",
+      "file": "a0de38264c70b2472fc26f33814c259d57636d4c8f4db80c0b77f818461addef.json",
+      "sha256": "a6efe838a9c3410f2022aed6290d6a66be6157cb4923eb18d38b76bdd651a148"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/hammersmith-city/Route/Sequence/inbound",
+      "file": "73fbb3b99c2a644ed33cb4d9edeffa5a164a107ddd5eba100e1df70911f0c25e.json",
+      "sha256": "fba62926be130869b93aa1a749a1eaa943be3e91be962564362dd58d3b4ab7c8"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/jubilee/Route/Sequence/outbound",
+      "file": "926bd230b484501018b4f5e9d00cbae656f7c15a1faa2b4f2a348e778f5a890f.json",
+      "sha256": "64ad79e3ecb9bb36140809522be0d4f59e5a429d90935e5f2f84c20a9d1a0abb"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/jubilee/Route/Sequence/inbound",
+      "file": "3eadf610939aac6d61c776f1e06d494fb0f978618bfa509c76796b06f4c09bd9.json",
+      "sha256": "c0f39fa5f3970bbc275bf8ce9a00e9812edeb1d7b30732061fd1bcf52d9a05b7"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/metropolitan/Route/Sequence/outbound",
+      "file": "b0cb3a5f93ad2b52e5133bcbea67a8b5e7a1dfad1b6c42d32bb84aa9f5f9922d.json",
+      "sha256": "7aa1279d33b3e2c9911f40d1ef349ec43f526193e5b3a52e345b489218a5f0bc"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/metropolitan/Route/Sequence/inbound",
+      "file": "3f58af200e912901cee78849c8d9329e926502e940854b74fdae5fe5239b35ef.json",
+      "sha256": "825e7a4fea04b648463f6f9cf9732f49e069c908a1c53b917ea0f8bbb4e07e93"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/northern/Route/Sequence/outbound",
+      "file": "d5df3368be97dc6642ca2a5c457494aa2061b124e783b38bc7cfa3b6e2ebfe45.json",
+      "sha256": "87891ca493a6d08c2e44711ec80890c20e204bec6eb2b0ecc769925204ba9bbf"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/northern/Route/Sequence/inbound",
+      "file": "e2a27fcae6d616a141fab978164ea68ff727049039297cf4ac0067fa0f620b65.json",
+      "sha256": "b33cd8a19c88a9c9140356cf5c3c743137e8d285b4f9128a68d817ba0a02f911"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/piccadilly/Route/Sequence/outbound",
+      "file": "a97f0fa4a6a540edd29bf01a546b59639925bce9dbdbe44aa853af2b85324bdd.json",
+      "sha256": "ca03dced761bf458625a78c28521e3afcedbf66ecb0cee57bd9a21346019c324"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/piccadilly/Route/Sequence/inbound",
+      "file": "6ad962be7edcafe756a257293abca77f880c8c1dca146d41892cb2fc82dda9a7.json",
+      "sha256": "df0171c481fccada3d7d8c29e504181012f471e503280629c40750f66e1a987a"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/tram/Route/Sequence/outbound",
+      "file": "ff384864546e7783a14d6f402519c7c697afd47d2b5c4e694e7b461520a11c26.json",
+      "sha256": "03f9880a0c20415b523b6ab3284520544282b4226cf0d378deb54db88a81e9be"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/tram/Route/Sequence/inbound",
+      "file": "a51bf111b00f73d57a1e66f2bfe21d7b2c5b9599d9ad88399fbbc3d0ed6ab0bb.json",
+      "sha256": "106bce105842306bbad47af65929dfe1889396d58c3e0dd71e4c0a628a1fbc3b"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/victoria/Route/Sequence/outbound",
+      "file": "723d8513e0a7e076b500d9ae549b7594b6f316ed5d3b36f147dcfe9cd55df970.json",
+      "sha256": "6ca3dd05e119ceef42ae192025d46823cf5c5e769c3fb6f31fd5a2e2b3b52426"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/victoria/Route/Sequence/inbound",
+      "file": "adc4434ea692ac1df175e8281dd511db5f3463a8136d4eade6f14e63e9d07b5c.json",
+      "sha256": "7865c3d9631aebb4bd05b1ff3c394e594b71b9437c9c0f5b700fcfd9f7580c58"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/waterloo-city/Route/Sequence/outbound",
+      "file": "e2112a06d515868d38eddc88a5f4f58fdeee8df43a1d237d32f296296e53d249.json",
+      "sha256": "350ca9f2cf89e4435bce2f2e815aba050a9fdac65bbf9e16a8d399cc659d3649"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/waterloo-city/Route/Sequence/inbound",
+      "file": "968b3720f73194124fb55420db1278dff2dc8c06dda292a6e4bba92b8abb8417.json",
+      "sha256": "b9287d0b30c72eaf742d625c113fcbb967932d63e45844da66693ddc5cd62918"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/bakerloo/Timetable/940GZZLUEAC?direction=outbound",
+      "file": "7f9b6b4e4b7a047f44d36f841af901ec8427aafbec3989b14f78fc9eb4bdf728.json",
+      "sha256": "a2e3f86d5f0731b41d3523d6e5a065d4f5262cc11be5e3e2d483b35d3501cf77"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/bakerloo/Timetable/940GZZLUHAW?direction=inbound",
+      "file": "2d6ed270026de17ff6ef4fd7623f47ea093458262a975c6170699a6a1f739899.json",
+      "sha256": "7ce7b743073d86cd0847a2853d1f73845f1d2428eac4e79eab4dddc9bc54cdc3"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/central/Timetable/940GZZLUEBY?direction=outbound",
+      "file": "6f02cd1891cf0464edd513f64d32dfe88dd950ce9b8bb698b354b12c22da8555.json",
+      "sha256": "2a13cd3c3bfb5f767ba3d493673e052892e87b7ec70b80cfa9924ba99c7bd3db"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/central/Timetable/940GZZLUWRP?direction=outbound",
+      "file": "44f8b7ec5cdedd9dc59ea1fef886fac5085a2f116b2145be2b91b5f316d3be5e.json",
+      "sha256": "badf8e69261d08f814f1701444df4af9c57d21a757c832de86f8aeede1969f6f"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/central/Timetable/940GZZLUEPG?direction=inbound",
+      "file": "af1491c5824c67bdcdfc36d676abce6f024b35bc26c0a60038b062694c301711.json",
+      "sha256": "26cfe78b477c5c62a629f4a77cfa79075b799d47f50ea77f9cd03d0312a532e7"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/central/Timetable/940GZZLUHLT?direction=inbound",
+      "file": "ee326ff9b735cd2629346819e1391532c506e7c24fb380dd150dfc60061706d5.json",
+      "sha256": "0e4ab70b527c32cd437e4d6d3562510e489270093273895437ad24859b3eaf9e"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/circle/Timetable/940GZZLUHSC?direction=outbound",
+      "file": "9131bac640ae5f9da6df9698996b762e4ae7b17b1dff1e695b682e3d2f282250.json",
+      "sha256": "b23d8a16342ef05f6b5db07ad61f5e70ec1ad5897617acc376d18b344fe9cc5f"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/circle/Timetable/940GZZLUERC?direction=inbound",
+      "file": "e9cacfcbb2275c594a514b0d89912ccaab6bb45942c3a930f9e59f9692808d33.json",
+      "sha256": "f4724f7adcd448281655b9b89af3a5cf58d90ba8296c0a615b739755ea453921"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/district/Timetable/940GZZLUEBY?direction=outbound",
+      "file": "7ea47ddf2ae59c7d9f38a474af5700bd50ceabed620f418fa1debf03dcaf00ec.json",
+      "sha256": "d19d635e84046e912f7dc8f900d253b620c78f50d7220745c095922b11efd86e"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/district/Timetable/940GZZLUKOY?direction=outbound",
+      "file": "02f4b74aaa1f0fe127d289b21c5781452c642f415a7806c5a4cbe4d2b5e1070a.json",
+      "sha256": "fb171394c621c62ea80f0312709e936b50246a17282d007ba2c6d71f0b304c02"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/district/Timetable/940GZZLURMD?direction=outbound",
+      "file": "2fd461660863fe791a7e23ac15a369b86acba3a7d82a96b67a6b46fc19c391b9.json",
+      "sha256": "76f97f403ebe9e5f93a1ab5004ed22b18fbccf49ce3f4b7685c62ba767fbffc6"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/district/Timetable/940GZZLUWIM?direction=outbound",
+      "file": "549f120cdf29a0854dcfea2e078b348fe72a2c730c6cd68306a17dfe2976f0b5.json",
+      "sha256": "1390cdc1b9727a8e20a09f81195e4f8a7a5fffe15beab357b3eb890d85bdc539"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/district/Timetable/940GZZLUERC?direction=inbound",
+      "file": "5972cbd5635b14207e3d534415abff7d5da3f90ead2e66fad4a7116b749a8d64.json",
+      "sha256": "f7baf6fcb5cbb70c91d43403bca40d0b80fcc20a70b3e0aeb2abb6eefaccc89f"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/district/Timetable/940GZZLUUPM?direction=inbound",
+      "file": "5a677238dc280b5715a463ce42119f970df3ffdc8756398e4651ae7abf4a36ac.json",
+      "sha256": "5e7867a103039cdf668ca8d98b51081b4d11b00f82456187d939188729201ca0"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/dlr/Timetable/940GZZDLBNK?direction=outbound",
+      "file": "ea24a11809ee18bed85f2a5f867abd5ff80336e19c6ed00e182cd8b4a4e3a6c6.json",
+      "sha256": "b69e70b0b56e1c10303a758d4a63a0a24b1ec2656b8c25b96975a38bb39d3e43"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/dlr/Timetable/940GZZDLSTD?direction=outbound",
+      "file": "35ca3671847192625b82f82a7d6878654582acd40c720e21e7942741832f45b0.json",
+      "sha256": "0606b63d5576c5165ee2206532d67e49700b6a159fb68cbdaca6b54160771c4d"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/dlr/Timetable/940GZZDLSIT?direction=outbound",
+      "file": "fd7f0472fe58ccd2f6d8a80cac3e162d27ce777bbbe42801c117d24ef53afa92.json",
+      "sha256": "02d8801237e84d41f7438a3c4e195e8400572358c698eaf255d657f53b84418d"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/dlr/Timetable/940GZZDLTWG?direction=outbound",
+      "file": "1508fee58fa42d0883ff3c2b7df87ea8c9dbbc37f971bcb83891bc806be3375e.json",
+      "sha256": "5a183faafc4c761ccbad4604e5cc11bc41b4974ad78808f0e9e0187385e50029"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/dlr/Timetable/940GZZDLBEC?direction=inbound",
+      "file": "e675191afb8492a775e388c783ae98571384c52f4fa98368df73006f678f59b3.json",
+      "sha256": "d93eeedee6588479b034f1708e13d45de92aa925c1497529a9113c45825d3654"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/dlr/Timetable/940GZZDLLEW?direction=inbound",
+      "file": "fb647d40cf53b2a4015b8b9e640e5e174f012751fee9a7998fa61295d5141584.json",
+      "sha256": "c8913f636c6f6d76957e1e804f9fc7fc8c6da53edf5d02887bc884541f474821"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/dlr/Timetable/940GZZDLWLA?direction=inbound",
+      "file": "a8a6b5fa4dde9dc6443ece58a6c4bf3bf7a14f7ce5f5a0a9454ff14fe8a7e4a8.json",
+      "sha256": "3903da0cc900a909d9010f6340211d454370034b8e4939b77df3b13915b035df"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/hammersmith-city/Timetable/940GZZLUHSC?direction=outbound",
+      "file": "1b36865967905a884243692db0b0ba363fc842635b265401296bb96819c65452.json",
+      "sha256": "01f687bd22684c469dd0786611cf8e8e1251e7d0109573cfb04a68d3ba6d37f5"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/hammersmith-city/Timetable/940GZZLUBKG?direction=inbound",
+      "file": "6167e6b0420cb780f0e2b668934b6d541279a48c419e61b74fda6e28c008718a.json",
+      "sha256": "2d9c5ea31a668562fce21bfc0c71a244a2de73053155c42a5da7f2f504f8552a"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/jubilee/Timetable/940GZZLUSTM?direction=outbound",
+      "file": "eceb4745f0f7c655adce1573bc25b48472237576a26a27ae29a2d66b13b51060.json",
+      "sha256": "0e6168d921fe27fa36414ebfde959eef7547b1fe14c3c8739effa7789685fc81"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/jubilee/Timetable/940GZZLUSTD?direction=inbound",
+      "file": "7cd872c0b142fb0ec5fd72c240e4611e6bc39a200ee8fc9e774d343c94676d3b.json",
+      "sha256": "63e96d58981cbb477aa7ea721f2f3cee9c8dc6ab5008c4e05b150c6403f28bb2"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/metropolitan/Timetable/940GZZLUAMS?direction=outbound",
+      "file": "8684d3e679e64f65c73a28993c31be9353c7dbf345b83075dda647344e109d2a.json",
+      "sha256": "31c461f115388eaffd74dfcf1ffa18855a100422caec31bf80fcb25267061a7e"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/metropolitan/Timetable/940GZZLUCSM?direction=outbound",
+      "file": "0710ea510c0f30c8ff9381621a13118827f45b5a2907befbbf98ccf49e4a735f.json",
+      "sha256": "d9c6a98b96262f4aa01bee0a417250e50ddbada60eac0cd83ece7fa057d47462"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/metropolitan/Timetable/940GZZLUUXB?direction=outbound",
+      "file": "0ee43837fb074a6ce9d53ef071c9e21abe3f87468d64a1fed61c28f5c4605949.json",
+      "sha256": "c672477e171aa6f5407f855678b542c86bdee3d97064e15b329ffa3bff9d90b6"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/metropolitan/Timetable/940GZZLUWAF?direction=outbound",
+      "file": "2a0fa819ca5a4ec4aa735aa209573ea88c098b2538bf3108da67803a3ef35403.json",
+      "sha256": "8f56c6f5d929c9f0666aded878c8787c95ad431e73f27ad7c71ee2b1b5e8a25c"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/metropolitan/Timetable/940GZZLUALD?direction=inbound",
+      "file": "7f21229966ed9cf51aaa455efa0c43aedd8eb7dbd6712efb865c9375fe97a367.json",
+      "sha256": "23f8bb4d77e55e4fd88ca377e688dab7bac422031609286197e4df00438a20d0"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/northern/Timetable/940GZZBPSUST?direction=outbound",
+      "file": "f618167948ee7f6a97cec01c16ab02004b015b7e1a9ddeff1a27149dfce265ed.json",
+      "sha256": "8f9eaac465463319e57de339dffcbc3559d07d407164a7b42cffe9f2bea79ccf"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/northern/Timetable/940GZZLUMDN?direction=outbound",
+      "file": "64ae712445f4f825ed3203d50791833a77777e1c55ff9190a1b4b1b204962df2.json",
+      "sha256": "652db6ace119eb36bc2c9b9b89dcba3c510dafea97df450658aa245f3f39f32a"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/northern/Timetable/940GZZLUEGW?direction=inbound",
+      "file": "5d5118723062d8f30faafdd8c440efb33e7a28911d3ad911bf2fda70f5c6285a.json",
+      "sha256": "020df874c13e9c9eecf1b1ce465a1a83b6ff12cfd74268cd17112cceeea12b22"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/northern/Timetable/940GZZLUHBT?direction=inbound",
+      "file": "709696d00a10e8d57b2160610fa0b01abf550dee29a03dac44eb4afa336ab812.json",
+      "sha256": "24b31e825b6e78983b6d04a49f36651978060db4e1759f219a7246d3f0a7927c"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/northern/Timetable/940GZZLUMHL?direction=inbound",
+      "file": "02f15ddc936fdd6e90a7c982479e5f8a7bf911171ce587d509fff0f917dbe516.json",
+      "sha256": "e96d2083080482aeec59a3d4fefab002e14bf17be0c0e9c1f67f851a1ade1f7c"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/piccadilly/Timetable/940GZZLUHR4?direction=outbound",
+      "file": "c11228ea093a06752b84126589c83c3fff7b1c958aeb2bbfa8cb30f3f767f010.json",
+      "sha256": "9bce55837daa3866f4ddd4084984bbc86da4915f80daa044dd1a303817159540"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/piccadilly/Timetable/940GZZLUHR5?direction=outbound",
+      "file": "f985985cf01f17c0d245ef177b4b2043b5a753cc848792f0505ffc7db52a5279.json",
+      "sha256": "37c2861e62951962e5f0129a90063c030c0f23199ba3ac668545a06f7abeccc3"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/piccadilly/Timetable/940GZZLUUXB?direction=outbound",
+      "file": "280a55ed66c4c280ce2d335fd5aab815260cb70ae7708648fb19123ff0f11e94.json",
+      "sha256": "8f39c400b3fb07065c5116026fd63aca80e66070a5f0c2609b182fd1c8b4a81f"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/piccadilly/Timetable/940GZZLUCKS?direction=inbound",
+      "file": "d55bb58f774e21b31c6a1a2482277e999816570d759817200d78164032f0007f.json",
+      "sha256": "ea9487d6ea9f39f7f08678f819c78240152fadf5566e13f8a628005811512bb8"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/tram/Timetable/940GZZCRBEK?direction=outbound",
+      "file": "2f9ba4836edafed71d4bd37405c2572728c0e03f69bc3f2b912d59464bd36773.json",
+      "sha256": "c358dcf3c39acc48ed817f562924ef9aca6c192ed34d8fdacd8f5395fb631081"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/tram/Timetable/940GZZCRELM?direction=outbound",
+      "file": "1bada2c7cc14bc11f1783ef0864fac0a00a59bb6d098c338f97ca92abc999a45.json",
+      "sha256": "8253f387b9bcbd252e03a073576490f66550e287ae32cd4590c16560379099c7"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/tram/Timetable/940GZZCRNWA?direction=outbound",
+      "file": "fe5560092abd677995ab8e08fe2f2242156fdc632d7b1cce13b2e6f2657d3a53.json",
+      "sha256": "b590c5daa0e0f5e2c92fc28d1f8f04927eecea7b859a567dc48158e23154a8f4"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/tram/Timetable/940GZZCRCHR?direction=inbound",
+      "file": "147f7740a43a5065dd74418decc1279d5895d5bce5f21c95c3255452ee078e9c.json",
+      "sha256": "f22c19c06b7eb02a3f01db5320d46f998125c14cb42fc67dde0e89dd64617450"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/tram/Timetable/940GZZCRWMB?direction=inbound",
+      "file": "969446be6c4d250339d46e173b3220720dc578e13e489e9c5899ffe4b02634ab.json",
+      "sha256": "9884a0cfc6786d4fc1378149a844b123a5cde0cdedb731d40eabfbc0823f3acd"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/victoria/Timetable/940GZZLUBXN?direction=outbound",
+      "file": "ad93eb2d8d0a0f73b1dd7172eab5ec6f2070f5d90eaeedd1f419038e13a778da.json",
+      "sha256": "1e51706ef0bae7cfeeae6cd05439d51d6418a8d93d4f404a0da89584262a8e71"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/victoria/Timetable/940GZZLUWWL?direction=inbound",
+      "file": "16e75698b7124b03e3e8c5e9f4c9131b0ffff28420a8a490a6bae57cd6bd920f.json",
+      "sha256": "53591cb4a86ce387d822432a21c63856e7f2ebe1708c0f4822b4a2d9d7829e0c"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/waterloo-city/Timetable/940GZZLUWLO?direction=outbound",
+      "file": "13cbc8bea9d886b4ed751355419524a168708c0bf4ea71b074d6599c3ffb5b3b.json",
+      "sha256": "2bf09ce07abadec88ae2030bab9680495b0a1fe76d73eda3e9a416ab12b3f01b"
+    },
+    {
+      "url": "https://api.tfl.gov.uk/Line/waterloo-city/Timetable/940GZZLUBNK?direction=inbound",
+      "file": "15b937792c5c1cb8f9a2ac9f52c18ba68901ffed9f00d96ea96554f21d07392f.json",
+      "sha256": "ed5e561e0aa494f1539d9f4dc30930ba9f92f65a7cab37e5d85b2efa6e653aa5"
+    }
+  ],
+  "coverage": {
+    "status": "complete-for-unified-api-modes",
+    "modes": [
+      "tube",
+      "dlr",
+      "tram"
+    ],
+    "lineCount": 13,
+    "directionCount": 26,
+    "originCount": 48,
+    "activeOriginCount": 48,
+    "inactiveOrigins": [],
+    "advertisedBranchCount": 82,
+    "compiledSnapshotCount": 48,
+    "calendar": [
+      {
+        "lineId": "bakerloo",
+        "lineName": "Bakerloo",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUEAC",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 11,
+            "schedule": "Monday - Friday departures from Elephant & Castle across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 297,
+            "schedule": "Monday - Friday departures from Elephant & Castle across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "bakerloo",
+        "lineName": "Bakerloo",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUHAW",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 6,
+            "schedule": "Monday - Friday departures from Harrow & Wealdstone across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 80,
+            "schedule": "Monday - Friday departures from Harrow & Wealdstone across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "central",
+        "lineName": "Central",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUEBY",
+        "branchCount": 2,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 16,
+            "schedule": "Monday - Thursday departures from Ealing Broadway across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 112,
+            "schedule": "Friday departures from Ealing Broadway across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "central",
+        "lineName": "Central",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUWRP",
+        "branchCount": 3,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 7,
+            "schedule": "Monday - Thursday departures from West Ruislip across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 141,
+            "schedule": "Friday departures from West Ruislip across 5 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "central",
+        "lineName": "Central",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUEPG",
+        "branchCount": 2,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 16,
+            "schedule": "Monday - Thursday departures from Epping across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 163,
+            "schedule": "Friday departures from Epping across 7 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "central",
+        "lineName": "Central",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUHLT",
+        "branchCount": 3,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 8,
+            "schedule": "Monday - Thursday departures from Hainault across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 235,
+            "schedule": "Friday departures from Hainault across 7 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "circle",
+        "lineName": "Circle",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUHSC",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 7,
+            "schedule": "Monday - Friday departures from Hammersmith (H&C Line) across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 115,
+            "schedule": "Monday - Friday departures from Hammersmith (H&C Line) across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "circle",
+        "lineName": "Circle",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUERC",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 18,
+            "schedule": "Monday - Friday departures from Edgware Road (Circle Line) across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 226,
+            "schedule": "Monday - Friday departures from Edgware Road (Circle Line) across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "district",
+        "lineName": "District",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUEBY",
+        "branchCount": 2,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 7,
+            "schedule": "Monday - Friday departures from Ealing Broadway across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 113,
+            "schedule": "Monday - Friday departures from Ealing Broadway across 5 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "district",
+        "lineName": "District",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUKOY",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 0,
+            "reason": "TfL timetable produced no journeys in the study window"
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 7,
+            "schedule": "Monday - Friday departures from Kensington (Olympia) across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "district",
+        "lineName": "District",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLURMD",
+        "branchCount": 2,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 14,
+            "schedule": "Monday - Friday departures from Richmond across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 112,
+            "schedule": "Monday - Friday departures from Richmond across 6 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "district",
+        "lineName": "District",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUWIM",
+        "branchCount": 2,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 15,
+            "schedule": "Monday - Friday departures from Wimbledon across 5 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 242,
+            "schedule": "Monday - Friday departures from Wimbledon across 7 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "district",
+        "lineName": "District",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUERC",
+        "branchCount": 4,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 6,
+            "schedule": "Monday - Friday departures from Edgware Road (Circle Line) across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 109,
+            "schedule": "Monday - Friday departures from Edgware Road (Circle Line) across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "district",
+        "lineName": "District",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUUPM",
+        "branchCount": 3,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 9,
+            "schedule": "Monday - Friday departures from Upminster across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 235,
+            "schedule": "Monday - Friday departures from Upminster across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "dlr",
+        "lineName": "DLR",
+        "mode": "dlr",
+        "direction": "outbound",
+        "origin": "940GZZDLBNK",
+        "branchCount": 2,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 15,
+            "schedule": "Monday - Friday departures from Bank across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 345,
+            "schedule": "Monday - Friday departures from Bank across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "dlr",
+        "lineName": "DLR",
+        "mode": "dlr",
+        "direction": "outbound",
+        "origin": "940GZZDLSTD",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 14,
+            "schedule": "Monday - Friday departures from Stratford across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 307,
+            "schedule": "Monday - Friday departures from Stratford across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "dlr",
+        "lineName": "DLR",
+        "mode": "dlr",
+        "direction": "outbound",
+        "origin": "940GZZDLSIT",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 7,
+            "schedule": "Monday - Friday departures from Stratford International across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 117,
+            "schedule": "Monday - Friday departures from Stratford International across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "dlr",
+        "lineName": "DLR",
+        "mode": "dlr",
+        "direction": "outbound",
+        "origin": "940GZZDLTWG",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 7,
+            "schedule": "Monday - Friday departures from Tower Gateway across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 118,
+            "schedule": "Monday - Friday departures from Tower Gateway across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "dlr",
+        "lineName": "DLR",
+        "mode": "dlr",
+        "direction": "inbound",
+        "origin": "940GZZDLBEC",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 6,
+            "schedule": "Monday - Friday departures from Beckton across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 117,
+            "schedule": "Monday - Friday departures from Beckton across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "dlr",
+        "lineName": "DLR",
+        "mode": "dlr",
+        "direction": "inbound",
+        "origin": "940GZZDLLEW",
+        "branchCount": 2,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 7,
+            "schedule": "Monday - Friday departures from Lewisham across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 225,
+            "schedule": "Monday - Friday departures from Lewisham across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "dlr",
+        "lineName": "DLR",
+        "mode": "dlr",
+        "direction": "inbound",
+        "origin": "940GZZDLWLA",
+        "branchCount": 2,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 14,
+            "schedule": "Monday - Friday departures from Woolwich Arsenal across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 233,
+            "schedule": "Monday - Friday departures from Woolwich Arsenal across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "hammersmith-city",
+        "lineName": "Hammersmith & City",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUHSC",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 10,
+            "schedule": "Monday - Friday departures from Hammersmith (H&C Line) across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 114,
+            "schedule": "Monday - Friday departures from Hammersmith (H&C Line) across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "hammersmith-city",
+        "lineName": "Hammersmith & City",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUBKG",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 6,
+            "schedule": "Monday - Friday departures from Barking across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 115,
+            "schedule": "Monday - Friday departures from Barking across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "jubilee",
+        "lineName": "Jubilee",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUSTM",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 11,
+            "schedule": "Monday - Thursday departures from Stanmore across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 273,
+            "schedule": "Friday departures from Stanmore across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "jubilee",
+        "lineName": "Jubilee",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUSTD",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 17,
+            "schedule": "Monday - Thursday departures from Stratford across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 392,
+            "schedule": "Friday departures from Stratford across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "metropolitan",
+        "lineName": "Metropolitan",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUAMS",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 4,
+            "schedule": "Monday - Thursday departures from Amersham across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 49,
+            "schedule": "Friday departures from Amersham across 6 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "metropolitan",
+        "lineName": "Metropolitan",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUCSM",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 4,
+            "schedule": "Monday - Thursday departures from Chesham across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 37,
+            "schedule": "Friday departures from Chesham across 5 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "metropolitan",
+        "lineName": "Metropolitan",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUUXB",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 7,
+            "schedule": "Monday - Thursday departures from Uxbridge across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 157,
+            "schedule": "Friday departures from Uxbridge across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "metropolitan",
+        "lineName": "Metropolitan",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUWAF",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 5,
+            "schedule": "Monday - Thursday departures from Watford across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 100,
+            "schedule": "Friday departures from Watford across 5 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "metropolitan",
+        "lineName": "Metropolitan",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUALD",
+        "branchCount": 4,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 10,
+            "schedule": "Monday - Thursday departures from Aldgate across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 233,
+            "schedule": "Friday departures from Aldgate across 12 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "northern",
+        "lineName": "Northern",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZBPSUST",
+        "branchCount": 2,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 11,
+            "schedule": "Monday - Thursday departures from Battersea Power Station across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 170,
+            "schedule": "Friday departures from Battersea Power Station across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "northern",
+        "lineName": "Northern",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUMDN",
+        "branchCount": 6,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 16,
+            "schedule": "Monday - Thursday departures from Morden across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 422,
+            "schedule": "Friday departures from Morden across 9 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "northern",
+        "lineName": "Northern",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUEGW",
+        "branchCount": 3,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 17,
+            "schedule": "Monday - Thursday departures from Edgware across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 353,
+            "schedule": "Friday departures from Edgware across 5 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "northern",
+        "lineName": "Northern",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUHBT",
+        "branchCount": 3,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 21,
+            "schedule": "Monday - Thursday departures from High Barnet across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 296,
+            "schedule": "Friday departures from High Barnet across 5 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "northern",
+        "lineName": "Northern",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUMHL",
+        "branchCount": 2,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 7,
+            "schedule": "Monday - Thursday departures from Mill Hill East across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 49,
+            "schedule": "Friday departures from Mill Hill East across 5 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "piccadilly",
+        "lineName": "Piccadilly",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUHR4",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 10,
+            "schedule": "Thursdays departures from Heathrow Terminal 4 across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 0,
+            "reason": "TfL timetable has no suitable weekday schedule"
+          }
+        ]
+      },
+      {
+        "lineId": "piccadilly",
+        "lineName": "Piccadilly",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUHR5",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 11,
+            "schedule": "Thursdays departures from Heathrow Terminal 5 across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 0,
+            "reason": "TfL timetable has no suitable weekday schedule"
+          }
+        ]
+      },
+      {
+        "lineId": "piccadilly",
+        "lineName": "Piccadilly",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUUXB",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 3,
+            "schedule": "Thursdays departures from Uxbridge across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 0,
+            "reason": "TfL timetable has no suitable weekday schedule"
+          }
+        ]
+      },
+      {
+        "lineId": "piccadilly",
+        "lineName": "Piccadilly",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUCKS",
+        "branchCount": 3,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 13,
+            "schedule": "Thursdays departures from Cockfosters across 4 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 0,
+            "reason": "TfL timetable has no suitable weekday schedule"
+          }
+        ]
+      },
+      {
+        "lineId": "tram",
+        "lineName": "Tram",
+        "mode": "tram",
+        "direction": "outbound",
+        "origin": "940GZZCRBEK",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 9,
+            "schedule": "Monday to Friday departures from Beckenham Junction across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 107,
+            "schedule": "Monday to Friday departures from Beckenham Junction across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "tram",
+        "lineName": "Tram",
+        "mode": "tram",
+        "direction": "outbound",
+        "origin": "940GZZCRELM",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 5,
+            "schedule": "Monday to Friday departures from Elmers End across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 92,
+            "schedule": "Monday to Friday departures from Elmers End across 3 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "tram",
+        "lineName": "Tram",
+        "mode": "tram",
+        "direction": "outbound",
+        "origin": "940GZZCRNWA",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 3,
+            "schedule": "Monday to Friday departures from New Addington across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 131,
+            "schedule": "Monday to Friday departures from New Addington across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "tram",
+        "lineName": "Tram",
+        "mode": "tram",
+        "direction": "inbound",
+        "origin": "940GZZCRCHR",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 5,
+            "schedule": "Monday to Friday departures from Church Street across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 128,
+            "schedule": "Monday to Friday departures from Church Street across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "tram",
+        "lineName": "Tram",
+        "mode": "tram",
+        "direction": "inbound",
+        "origin": "940GZZCRWMB",
+        "branchCount": 2,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 7,
+            "schedule": "Monday to Friday departures from Wimbledon across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 173,
+            "schedule": "Monday to Friday departures from Wimbledon across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "victoria",
+        "lineName": "Victoria",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUBXN",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 13,
+            "schedule": "Monday - Thursday departures from Brixton across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 538,
+            "schedule": "Friday departures from Brixton across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "victoria",
+        "lineName": "Victoria",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUWWL",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 14,
+            "schedule": "Monday - Thursday departures from Walthamstow Central across 2 branch patterns; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 493,
+            "schedule": "Friday departures from Walthamstow Central across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "waterloo-city",
+        "lineName": "Waterloo & City",
+        "mode": "tube",
+        "direction": "outbound",
+        "origin": "940GZZLUWLO",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 3,
+            "schedule": "Monday - Friday departures from Waterloo across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 264,
+            "schedule": "Monday - Friday departures from Waterloo across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      },
+      {
+        "lineId": "waterloo-city",
+        "lineName": "Waterloo & City",
+        "mode": "tube",
+        "direction": "inbound",
+        "origin": "940GZZLUBNK",
+        "branchCount": 1,
+        "days": [
+          {
+            "date": "2026-09-03",
+            "offset": -86400,
+            "journeys": 4,
+            "schedule": "Monday - Friday departures from Bank across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          },
+          {
+            "date": "2026-09-04",
+            "offset": 0,
+            "journeys": 268,
+            "schedule": "Monday - Friday departures from Bank across 1 branch pattern; a bounded adapter proof for Motion Studies 006, not a complete London service-day claim."
+          }
+        ]
+      }
+    ],
+    "includesPreviousDay": true
+  },
+  "checkpoints": [
+    {
+      "time": 0,
+      "journeys": 277
+    },
+    {
+      "time": 1800,
+      "journeys": 195
+    },
+    {
+      "time": 9000,
+      "journeys": 0
+    },
+    {
+      "time": 16200,
+      "journeys": 0
+    }
+  ],
+  "limitation": "Recurring Tube/DLR/tram schedules captured 8 September, not historical operations. Origin/branch exclusions remain explicit. Saturday audit covers these modes only.",
+  "pdf": {
+    "inputSha256": "93417c6e9a63544e4c7afb698bdbeff0c040a20e1dc95461eabe673fc1fb6f92",
+    "calendar": {
+      "previousDate": "2026-09-03",
+      "sharedPages": "Monday–Friday / Monday–Saturday",
+      "carryIn": 37,
+      "limitation": "Existing branch and full-endpoint PDF exclusions remain; Friday-night/Saturday PDF service requires a separate page audit."
+    },
+    "coverage": "Retained Friday delivery, published shared-weekday PDF branches. Original source hashes and exclusions are retained in friday-base-manifest.json."
+  }
+}

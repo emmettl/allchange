@@ -10,7 +10,7 @@ export default function LondonPassengerPulse({ stationName, hubId, time, isPlayi
   stationName: string; hubId: string; time: number; isPlaying: boolean; playbackRate: number; windowStart: number; windowEnd: number
   onTime: (time: number) => void; onSeek: (time: number) => void; onStation: (id: string) => void
 }) {
-  const { selection, loading, failed, retry } = usePassengerDemand(stationName)
+  const { selection, loading, failed, retry } = usePassengerDemand(stationName, time >= 0 && time < 18000)
   const localTime = useRef(time)
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   useEffect(() => { localTime.current = time }, [time])
@@ -35,12 +35,12 @@ export default function LondonPassengerPulse({ stationName, hubId, time, isPlayi
     return () => cancelAnimationFrame(frame)
   }, [isPlaying, playbackRate, windowStart, windowEnd, onTime])
   const station = selection?.data.station
-  const interval = passengerInterval(time)
-  const flows = station ? passengerFlows(station, time) : []
+  const interval = passengerInterval(time, selection?.data)
+  const flows = station ? passengerFlows(station, time, selection?.data) : []
   return <section className="london-passenger-pulse" aria-label="Passenger flow study" data-reduced-motion={reducedMotion}>
     <header>
       <label>Passenger flow <select aria-label="Passenger pulse station" value={hubId} onChange={event => onStation(event.target.value)}><option value="bank">Bank & Monument</option><option value="stratford">Stratford</option></select></label>
-      <p>Typical Friday · autumn 2025 · {interval === undefined ? 'No matching interval' : `${String(Math.floor(time / 3600)).padStart(2, '0')}:${String(Math.floor(time % 3600 / 900) * 15).padStart(2, '0')} · 15-minute demand`}</p>
+      <p>{selection?.data.start === 0 ? 'Thursday tail · typical Tue–Thu' : 'Typical Friday'} · autumn 2025 · {interval === undefined ? 'No matching interval' : `${String(Math.floor(time / 3600)).padStart(2, '0')}:${String(Math.floor(time % 3600 / 900) * 15).padStart(2, '0')} · 15-minute demand`}</p>
     </header>
     {failed ? <p role="status">Passenger data unavailable. <button onClick={retry}>Retry passenger pulse</button></p> : loading ? <p role="status">Loading passenger flow…</p> : station ? <>
       <svg viewBox="0 0 720 340" role="img" aria-label={`${station.name}. ${flows.map(flow => `${labels[flow.metric]}: ${flow.value === undefined ? 'unavailable' : `approximately ${Math.round(flow.value).toLocaleString('en-GB')}`} movements per 15 minutes`).join('. ')}`}>

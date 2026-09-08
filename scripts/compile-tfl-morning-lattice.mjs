@@ -76,6 +76,7 @@ export async function compileUnifiedApiLattice({
   loadJson = fetchJson,
   batchSize = 2,
   pauseMs = 400,
+  includePreviousDay = false,
 }) {
   const coveragePlan = planUnifiedApiCoverage(catalogue, modes)
   if (!coveragePlan.length) throw new Error('TfL catalogue produced no movement coverage tasks')
@@ -92,16 +93,35 @@ export async function compileUnifiedApiLattice({
     const timetablePath = `/Line/${encodeURIComponent(task.lineId)}/Timetable/${encodeURIComponent(task.origin)}?direction=${encodeURIComponent(task.direction)}`
     try {
       const timetable = await loadJson(timetablePath)
-      const snapshot = compileTflLineProof({
+      const compile = (date, offset) => compileTflLineProof({
         routeSequence: routeSequences.get(`${task.lineId}:${task.direction}`),
         timetable,
-        serviceDate,
+        serviceDate: date,
+        timeOffsetSeconds: offset,
         windowStart,
         windowEnd,
         retrievedAt,
         routeUrl: `${apiUrl(routePath).origin}${apiUrl(routePath).pathname}`,
         timetableUrl: `${apiUrl(timetablePath).origin}${apiUrl(timetablePath).pathname}`,
       })
+      const snapshots = []
+      const days = includePreviousDay ? [[new Date(Date.parse(`${serviceDate}T12:00:00Z`) - 86400000).toISOString().slice(0, 10), -86400], [serviceDate, 0]] : [[serviceDate, 0]]
+      const calendar = []
+      for (const [date, offset] of days) {
+        try {
+          const value = compile(date, offset)
+          if (offset) value.trains = value.trains.map(train => ({ ...train, id: `${date}:${train.id}` }))
+          calendar.push({ date, offset, journeys: value.trains.length, schedule: value.metadata.note })
+          value.metadata.serviceDate = serviceDate
+          snapshots.push(value)
+        } catch (error) {
+          if (!error.message.includes('produced no journeys in the study window') && !error.message.includes('has no suitable weekday schedule')) throw error
+          calendar.push({ date, offset, journeys: 0, reason: error.message })
+        }
+      }
+      if (!snapshots.length) return { task, inactiveReason: calendar.map(day => `${day.date}: ${day.reason ?? 'no included calls'}`).join('; ') }
+      const snapshot = snapshots.length === 1 ? snapshots[0] : mergeNetworkSnapshots(snapshots, { retrievedAt })
+      snapshot.metadata.calendar = calendar
       return { task, snapshot }
     } catch (error) {
       if (error.message.includes('has no suitable weekday schedule') ||
@@ -138,6 +158,8 @@ export async function compileUnifiedApiLattice({
     inactiveOrigins,
     advertisedBranchCount: coveragePlan.reduce((total, { branchCount }) => total + branchCount, 0),
     compiledSnapshotCount: snapshots.length,
+    calendar: results.flatMap(({ task, snapshot }) => snapshot ? [{ ...task, days: snapshot.metadata.calendar }] : []),
+    includesPreviousDay: includePreviousDay,
   }
   return merged
 }
@@ -157,6 +179,7 @@ async function main() {
     modes,
     batchSize: Number(argument(argv, 'batch-size', '2')),
     pauseMs: Number(argument(argv, 'pause-ms', '400')),
+    includePreviousDay: argv.includes('--include-previous-day'),
   })
   await mkdir(dirname(resolve(output)), { recursive: true })
   await writeFile(resolve(output), `${JSON.stringify(lattice)}\n`)

@@ -7,9 +7,22 @@ import audit from '../../fixtures/passenger-demand/audit.json'
 import { decodePassengerCatalogue, decodePassengerDemand, passengerAreaIds, passengerInterval, type PassengerDemand } from './passenger-demand.ts'
 
 const profiles = import.meta.glob('../../fixtures/passenger-demand/stations/*.json', { eager: true, import: 'default' })
+const precedingProfiles = import.meta.glob('../../fixtures/passenger-demand/preceding/*.json', { eager: true, import: 'default' })
 const catalogue = decodePassengerCatalogue(catalogueFixture)
 const decode = (value: unknown, asc = 'BNKu') => decodePassengerDemand(value, catalogue.areas[asc], catalogue.source.sha256)
 describe('audited NUMBAT coverage', () => {
+  it('validates all Thursday tails independently and changes source at 05:00', () => {
+    expect(Object.keys(precedingProfiles)).toHaveLength(432)
+    for (const [asc, area] of Object.entries(catalogue.areas)) {
+      const raw = precedingProfiles[`../../fixtures/passenger-demand/preceding/${asc}.json`]
+      const data = decodePassengerDemand(raw, area, catalogue.precedingSource!.sha256, true)
+      expect(data.station.entries).toHaveLength(20)
+      expect(passengerInterval(0,data)).toBe(0)
+      expect(passengerInterval(17999,data)).toBe(19)
+      expect(passengerInterval(18000,data)).toBeUndefined()
+      expect(()=>decodePassengerDemand(raw,area,catalogue.source.sha256)).toThrow()
+    }
+  })
   it('validates every shipped source area and its metric totals', () => {
     expect(Object.keys(profiles)).toHaveLength(Object.keys(catalogue.areas).length)
     for (const [asc, area] of Object.entries(catalogue.areas)) {

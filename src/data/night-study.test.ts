@@ -7,9 +7,9 @@ describe('night departure context', () => {
   it('looks beyond the loaded chunk without wrapping time or treating missing coverage as closure', () => {
     const bank = nightDepartures(data, ['940GZZLUBNK', '940GZZDLBNK'], 9000)
     expect(bank.partial).toBe(true)
-    expect(bank.previous).toBeUndefined()
+    expect(bank.previous?.[0]).toBe(2280)
     expect(bank.next?.[0]).toBe(19800)
-    expect(bank.count).toBe(0)
+    expect(bank.count).toBe(37)
     expect(nightDepartures(data, ['crs:WAT'], 60).next?.[0]).toBe(60)
     expect(nightDepartures(data, ['crs:WAT'], 1800).next?.[0]).toBe(1980)
     expect(nightDepartures(data, ['crs:WAT'], 9000).next?.[0]).toBe(18300)

@@ -61,7 +61,7 @@ Every included row's interval sum is reconciled to its published total before ro
 
 ### Time alignment
 
-The source traffic day runs from Friday 05:00 to Saturday 05:00 in 96 intervals. Every time header is checked in sequence. The daily chart retains and shades the Saturday tail, but the app only matches Friday study times from 05:00 inclusive to 24:00 exclusive. Friday before 05:00 needs the preceding Thursday traffic-day tail and remains unavailable. The end-of-study 24:00 sentinel also has no interval. Neither case wraps onto another day.
+The source traffic day runs from Friday 05:00 to Saturday 05:00 in 96 intervals. Every time header is checked in sequence. The daily chart retains and shades the Saturday tail, but the app only matches Friday study times from 05:00 inclusive to 24:00 exclusive. Friday before 05:00 now uses a separate, audited Thursday traffic-day tail from the typical Tuesday–Thursday workbook. The end-of-study 24:00 sentinel also has no interval. Neither case wraps onto another day.
 
 ## Reproduction and validation
 
@@ -89,4 +89,12 @@ Validation includes all 432 area files, identity and total reconciliation, sourc
 
 Powered by TfL Open Data. [TfL transport-data terms](https://tfl.gov.uk/corporate/terms-and-conditions/transport-data-service) apply. The terms also specify: Contains OS data © Crown copyright and database rights 2016; Geomni UK Map data © and database rights 2019. This extraction uses counts, not source geometry. No TfL endorsement is implied.
 
-Remaining work includes preceding-day demand for early Friday, directional link loads along tracks, boarders/alighters, an authored city-wide morning/evening sequence, and additional passenger pulse compositions. Measured crowding, capacity, individual-train loads, origin–destination journeys and combined-operator departure boards remain separate work.
+The first directional link-load, boarding/alighting and authored morning/evening sequence now covers the Central line between St Paul’s and Leyton; see [Where does the morning go?](MORNING-FLOW.md). Remaining work includes additional corridors and passenger pulse compositions. Measured crowding, capacity, individual-train loads, origin–destination journeys and combined-operator departure boards remain separate work.
+
+## Preceding Thursday demand — calendar increment
+
+The [NUMBAT 2025 Tuesday–Thursday workbook](https://crowding.data.tfl.gov.uk/NUMBAT/NUMBAT%202025/NBT25TWT_Outputs.xlsx) is pinned by SHA-256 `a10e5f767750538ecac99cf0d2131243672574df88b9c933f03b9357c5f67db2`. Its cover defines a typical 05:00–04:59 traffic day. Thursday’s final 20 quarter-hours (source indexes 76–95) map to Friday 00:00–05:00. This is the typical Tuesday–Thursday profile applied to Thursday, not a Thursday-only observation.
+
+The existing identity, sum and duplicate-interchange checks apply independently to the workbook. All 432 shipped areas match Friday’s NLC/ASC/name identities. Only those 20 intervals are shipped under `preceding/`; the source, metric totals and source rows remain in the audit. The catalogue carries both source hashes. Before 05:00 the card and Bank/Stratford pulse request the preceding profile, display its day type, and use its 00:00–05:00 clock. At 05:00 they switch to Friday’s profile. Failed downloads retry independently; area selection is preserved across the boundary.
+
+Rebuild with `python3 -B scripts/compile-numbat.py /path/to/NBT25FRI_Outputs.xlsx --preceding-workbook /path/to/NBT25TWT_Outputs.xlsx`. Each preceding profile has a 1 KiB gzip cap; all preceding profiles together have a 350 KiB cap. They remain optional, separate from the unchanged Friday profile and opening budgets.

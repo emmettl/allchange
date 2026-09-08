@@ -430,7 +430,7 @@ export function compileTflLineProof({
 function scheduleScore(name, weekday) {
   const normalised = name.toLowerCase()
   const weekdayName = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'][weekday]
-  if (normalised === weekdayName) return 100
+  if (normalised === weekdayName || normalised === `${weekdayName}s`) return 100
   if (weekday >= 1 && weekday <= 5 && /monday\s*(?:-|to)\s*friday/.test(normalised)) return 90
   if (weekday >= 1 && weekday <= 4 && /monday\s*(?:-|to)\s*thursday/.test(normalised)) return 85
   if (weekday === 6 && /saturday/.test(normalised)) return 80

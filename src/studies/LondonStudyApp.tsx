@@ -121,6 +121,7 @@ const LondonPassengerPulse = lazy(() => import('./LondonPassengerPulse.tsx'))
 const LondonCycleStudy = lazy(() => import('./LondonCycleStudy.tsx'))
 const LondonPassengerDemand = lazy(() => import('./LondonPassengerDemand.tsx'))
 const LondonStationDepartures = lazy(() => import('./LondonStationDepartures.tsx').then(module => ({ default: module.LondonStationDepartures })))
+const LondonMorningFlow = lazy(() => import('./LondonMorningFlow.tsx'))
 const LondonNightStudy = lazy(() => import('./LondonNightStudy.tsx'))
 const LondonCombinedStationBoard = lazy(() => import('./LondonCombinedStationBoard.tsx'))
 import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
@@ -288,6 +289,9 @@ function searchNetworkChoices(
 
 export function LondonStudyApp({ edition }: { readonly edition: LondonEdition }) {
   const [morningNetwork, setMorningNetwork] = useState<NetworkSnapshot>()
+  const [morningFlowEnabled, setMorningFlowEnabled] = useState(false)
+  const morningFlowActive = useRef(false)
+  useEffect(() => { morningFlowActive.current = morningFlowEnabled }, [morningFlowEnabled])
   const [nightEnabled, setNightEnabled] = useState(false)
   const [nightRailSelected, setNightRailSelected] = useState(false)
   const [studyWindow, setStudyWindow] = useState<StudyWindow>('morning')
@@ -300,6 +304,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const [geography, setGeography] = useState<LondonGeographySnapshot>()
   const [loadError, setLoadError] = useState(false)
   const [time, setTime] = useState(edition.defaultNetworkTime)
+  const setMapTime = useCallback((next: number) => { if (!morningFlowActive.current) setTime(next) }, [])
   const [isPlaying, setIsPlaying] = useState(true)
   const [playbackRate, setPlaybackRate] = useState(120)
   const [operationsMode, setOperationsMode] = useState<OperationsMode>('plan')
@@ -1000,6 +1005,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   ])
 
   const clearSelection = useCallback(() => {
+    setMorningFlowEnabled(false)
     setNightRailSelected(false)
     setBoardAreaId(undefined)
     setPulseView('services')
@@ -1022,6 +1028,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   const activateStudyWindow = useCallback(
     (nextWindow: StudyWindow) => {
+      setMorningFlowEnabled(false)
       setNightEnabled(false)
       if (
         nextWindow === studyWindow &&
@@ -1062,6 +1069,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   const activateOperationsMode = useCallback(
     (nextMode: OperationsMode) => {
+      setMorningFlowEnabled(false)
       setNightEnabled(false)
       if (
         nextMode === operationsMode &&
@@ -1532,7 +1540,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     onPulse={() => { clearSelection(); setPulseLens('all'); setPulseHubId(activeBoard.id) }} />
 
   if (cycleEnabled) return <Suspense fallback={<main className="cycle-opening" role="status">Loading cycle study… <button onClick={() => setCycleEnabled(false)}>Back to rail</button></main>}>
-    <LondonCycleStudy time={time} onTime={setTime} isPlaying={isPlaying} onPlaying={setIsPlaying} rate={playbackRate} onRate={setPlaybackRate} geography={geography} railStops={morningNetwork?.stops}
+    <LondonCycleStudy time={time} onTime={setMapTime} isPlaying={isPlaying} onPlaying={setIsPlaying} rate={playbackRate} onRate={setPlaybackRate} geography={geography} railStops={morningNetwork?.stops}
       onClose={() => { setCycleEnabled(false); if (network && (time < network.metadata.windowStart || time > network.metadata.windowEnd)) setStudyWindow('day') }} />
   </Suspense>
 
@@ -1542,6 +1550,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       data-limited-chrome={limitedChrome}
       data-spatial-layout={layout}
       data-night-study={nightEnabled}
+      data-morning-flow={morningFlowEnabled}
       data-study-window={studyWindow}
       data-day-loading={dayLoading}
       data-layout-mix={layoutMix.toFixed(3)}
@@ -1562,11 +1571,14 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       data-pulse-lens={pulseHub ? pulseLens : undefined}
       data-pulse-night={pulseHub ? pulseNightMix.toFixed(2) : undefined}
     >
-      <div className="scene" aria-hidden={webglAvailable && !isPassengerPulse ? true : undefined}>
+      <div className="scene" aria-hidden={webglAvailable && !isPassengerPulse && !morningFlowEnabled ? true : undefined}>
         <Suspense fallback={null}>
-          {network && pulseHub && isPassengerPulse ? (
+          {morningFlowEnabled ? (
+            <LondonMorningFlow time={time} isPlaying={isPlaying} playbackRate={playbackRate} mix={layoutMix} onTime={setTime}
+              onSeek={next => { setTime(next); setIsPlaying(false) }} onClose={() => setMorningFlowEnabled(false)} />
+          ) : network && pulseHub && isPassengerPulse ? (
             <LondonPassengerPulse stationName={pulseHub.name} hubId={pulseHub.id} time={time} isPlaying={isPlaying} playbackRate={playbackRate}
-              windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd} onTime={setTime}
+              windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd} onTime={setMapTime}
               onSeek={nextTime => { setStudyWindow('day'); setTime(nextTime); setIsPlaying(false) }}
               onStation={id => { setPulseHubId(id); setDismissedHero(true) }} />
           ) : !webglAvailable ? (
@@ -1582,7 +1594,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               calls={pulseCalls}
               isPlaying={isPlaying}
               time={time}
-              onTime={setTime}
+              onTime={setMapTime}
               playbackRate={playbackRate}
               selectedCategory={selectedCategory}
               showTaktOverlay
@@ -1604,7 +1616,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               isPlaying={isPlaying}
               time={sceneTime}
               selectedTrain={selectedTrain}
-              onTime={setTime}
+              onTime={setMapTime}
               cameraCommand={cameraCommand}
               playbackRate={playbackRate}
               selectedCategory={nationalRailSelectedId ? 'intercity' : selectedCategory}
@@ -1750,6 +1762,11 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           <span className="london-mobile-label">24H</span>
           {studyWindow === 'day' && dayLoading && <small>Loading</small>}
         </button>
+        <button type="button" aria-label="Where does the morning go?" aria-pressed={morningFlowEnabled} disabled={!morningNetwork} onClick={() => {
+          setOperationsRequested(false); setOperationsTransitionNetwork(undefined); setOperationsMode('plan'); setNightEnabled(false); setCycleEnabled(false)
+          setSurfaceEnabled(false); setBusEnabled(false); setNationalRailEnabled(false)
+          morningFlowActive.current = true; setStudyWindow('day'); setDayError(false); setTime(30600); setIsPlaying(false); setMorningFlowEnabled(true); setMobileControlsOpen(false)
+        }} data-tooltip="Explore directional Central line demand, morning and evening">People</button>
         <button type="button" aria-label="After midnight study" disabled={!morningNetwork} aria-pressed={nightEnabled} onClick={activateNight} data-tooltip="Explore Thursday night into Friday, 00:00–05:00, with explicit source gaps">
           <span className="london-wide-label">After midnight</span><span className="london-mobile-label">Night</span>
         </button>
@@ -2095,7 +2112,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         )}
       </section>
 
-      {hasPassengerPulse && <nav className="london-pulse-view" aria-label="Pulse view">
+      {hasPassengerPulse && !morningFlowEnabled && <nav className="london-pulse-view" aria-label="Pulse view">
         <button type="button" aria-label="Train services pulse" aria-pressed={!isPassengerPulse} onClick={() => { setPulseView('services'); setDismissedHero(false) }}>Trains</button>
         <button type="button" aria-label="Passenger flow pulse" aria-pressed={isPassengerPulse} onClick={() => { setPulseView('passengers'); setDismissedHero(true) }}>People</button>
       </nav>}
@@ -2232,7 +2249,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         {nightEnabled && selectedStation && !selectedBoard && !pulseHub && network && <Suspense fallback={null}>
           <LondonNightStudy date={network.metadata.serviceDate} time={time} name={selectedStation.name} stopIds={selectedStation.stopIndexes.flatMap(index => infrastructureNetwork?.stops[index]?.[4] ? [infrastructureNetwork.stops[index][4]!] : [])} onTime={next => { setTime(next); setIsPlaying(false) }} />
         </Suspense>}
-        {passengerName && !nightEnabled && <Suspense fallback={<p>Loading passenger profile…</p>}>
+        {passengerName && <Suspense fallback={<p>Loading passenger profile…</p>}>
           <LondonPassengerDemand stationName={passengerName} time={time}
             onPulse={['Bank', 'Monument', 'Stratford', 'Stratford (London)'].includes(passengerName) ? () => {
               const id = passengerName.startsWith('Stratford') ? 'stratford' : 'bank'
@@ -2328,7 +2345,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       )}
 
       {(nationalRailEnabled || pulseHub || searchOpen) && railCatalogue.error && <p className="london-layout-status" role="status">Rail station list unavailable · <button type="button" onClick={railCatalogue.retry}>Retry station list</button></p>}
-      {nationalRailEnabled && (!nightEnabled || nightRailSelected) && !selectedBoard && !railBoardSnapshot && !railBoardInterchange && !pulseHub && (
+      {!morningFlowEnabled && nationalRailEnabled && (!nightEnabled || nightRailSelected) && !selectedBoard && !railBoardSnapshot && !railBoardInterchange && !pulseHub && (
         <section className="london-national-rail-board" aria-label="National Rail loading" data-hero-dismissed={dismissedRail}>
           <HeroCardDismiss name={`${railStation.name} National Rail`} dismissed={dismissedRail} onToggle={() => setDismissedRail(value => !value)} />
           <label className="london-rail-station-picker">Station
@@ -2340,13 +2357,13 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           {railStation.corridors.some(id => railFeed.errors[id]) && <button type="button" onClick={railFeed.retry}>Retry National Rail</button>}
         </section>
       )}
-      {nationalRailEnabled && (!nightEnabled || nightRailSelected) && !selectedBoard && (railBoardSnapshot || railBoardInterchange) && !pulseHub && network && (
+      {!morningFlowEnabled && nationalRailEnabled && (!nightEnabled || nightRailSelected) && !selectedBoard && (railBoardSnapshot || railBoardInterchange) && !pulseHub && network && (
         <Suspense fallback={<span className="london-layout-status" role="status">Loading rail board…</span>}><LondonNationalRailBoard
           dismissed={dismissedRail} dismissControl={<HeroCardDismiss name={`${railStation.name} National Rail`} dismissed={dismissedRail} onToggle={() => setDismissedRail(value => !value)} />}
           snapshot={railBoardSnapshot ?? { ...network, trains: [], corridorPaths: [], fadeKilometres: 4 }} stations={railStations} stationId={nationalRailStationId} time={time} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd}
           boardContent={railBoardInterchange ? combinedBoard : undefined}
           night={nightEnabled}
-          passengerContent={operationsMode === 'plan' && !nightEnabled ? <Suspense fallback={<p>Loading passenger profile…</p>}><LondonPassengerDemand key={railStation.id} stationName={railStation.stationName} onPulse={railStation.id === 'stratford' ? () => { clearSelection(); setPulseHubId('stratford'); setPulseView('passengers'); setDismissedHero(true) } : undefined} time={time} /></Suspense> : undefined}
+          passengerContent={operationsMode === 'plan' ? <Suspense fallback={<p>Loading passenger profile…</p>}><LondonPassengerDemand key={railStation.id} stationName={railStation.stationName} onPulse={railStation.id === 'stratford' ? () => { clearSelection(); setPulseHubId('stratford'); setPulseView('passengers'); setDismissedHero(true) } : undefined} time={time} /></Suspense> : undefined}
           partial={railStation.corridors.some(id => !railFeed.snapshots[id])} animate={!isPlaying || playbackRate <= 30}
           onStation={id => {
             clearSelection()

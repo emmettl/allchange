@@ -112,7 +112,7 @@ Bank/Monument and Stratford have a passenger-flow pulse with separate entering, 
 
 Hero cards now expose 432 validated NUMBAT source areas matched to 440 station-name variants. A source-area selector separates places such as Canary Wharf and Paddington; unavailable interchange metrics are omitted. Tram placeholder rows are excluded. The catalogue and selected area's profile load on demand, with independent retry and transfer budgets.
 
-Demand is a typical autumn Friday in 2025, distinct from the September 2026 timetable. The source day runs from Friday 05:00 to Saturday 05:00. Friday before 05:00 stays unavailable rather than borrowing Saturday's counts. See [the passenger-demand audit](docs/PASSENGER-DEMAND.md) for identities, aggregation, confidence, coverage and reproduction.
+Demand is a typical autumn Friday in 2025, distinct from the September 2026 timetable. The source day runs from Friday 05:00 to Saturday 05:00. Friday before 05:00 uses a separately loaded Thursday tail from the typical Tuesday–Thursday workbook, with its day type visible. See [the passenger-demand audit](docs/PASSENGER-DEMAND.md) for identities, aggregation, confidence, coverage and reproduction.
 
 ### Dismissing hero cards
 
@@ -120,4 +120,8 @@ The top-right × on station, pulse, National Rail and airport cards hides the ca
 
 ## After midnight
 
-The **After midnight** preset explores **Thursday night into Friday 4 September, 00:00–05:00**, with scheduled rail and buses, three time checkpoints, and Waterloo/Bank/Upminster comparisons. Station cards show the next retained rail departure and explicitly qualified gaps, even beyond the current map chunk. The preceding Thursday TfL rail tail is incomplete, so empty intervals are not presented as closed lines; pre-05:00 passenger demand is unavailable. See [the night source audit and controls](docs/AFTER-MIDNIGHT.md). Rebuild the optional index with `npm run data:london:night`.
+The **After midnight** preset explores **Thursday night into Friday 4 September, 00:00–05:00**, with scheduled rail and buses, three time checkpoints, and Waterloo/Bank/Upminster comparisons. Station cards show the next retained rail departure and explicitly qualified gaps, even beyond the current map chunk. The audited Thursday tail adds 302 TfL trains crossing midnight, and pre-05:00 passenger profiles use typical Tuesday–Thursday demand. Source branch exclusions remain visible; timetable gaps do not prove closure. See [the night source audit and controls](docs/AFTER-MIDNIGHT.md). Rebuild the optional index with `npm run data:london:night`.
+
+## Where does the morning go?
+
+Choose **People** to explore directional Central line demand from Leyton to St Paul’s. Compare **07:30**, **08:30** and **17:30**, switch between geography and diagram, or scrub the shared clock. Twelve directional links use one fixed dot scale; seven selectable stations show Central line boarders and alighters. The independently loaded study uses typical autumn 2025 Friday NUMBAT demand, not tracked passengers or individual train occupancy. It preserves the selected place when returning to the transport map. See [the source audit and reproduction](docs/MORNING-FLOW.md).

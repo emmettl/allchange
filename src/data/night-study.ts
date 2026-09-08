@@ -1,4 +1,4 @@
-export interface NightProfile { name: string; kind: 'tfl' | 'rail' | 'eurostar'; calls: readonly (readonly [number, number])[] }
+export interface NightProfile { name?: string; kind: 'tfl' | 'rail' | 'eurostar'; calls: readonly (readonly [number, number])[] }
 export interface NightGroup { journeys: number; routes: readonly string[] }
 export interface NightStudy {
   format: 'london-night-v1'; serviceDate: string; windowStart: number; windowEnd: number

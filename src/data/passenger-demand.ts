@@ -6,11 +6,11 @@ export type PassengerStation = PassengerArea & Partial<Record<PassengerMetric, n
   unavailable?: Partial<Record<PassengerMetric, string>>
   crossAreaLinksExcluded: number
 }
-interface PassengerSource { url: string; year: 2025; dayType: 'Friday'; season: 'autumn'; sha256: string }
-export interface PassengerCatalogue { version: 2; source: PassengerSource; matches: Record<string, string[]>; areas: Record<string, PassengerArea> }
-export interface PassengerDemand { version: 2; start: 18000; step: 900; source: PassengerSource; station: PassengerStation }
+interface PassengerSource { url: string; year: 2025; dayType: 'Friday' | 'Tuesday–Thursday'; season: 'autumn'; sha256: string }
+export interface PassengerCatalogue { version: 2; source: PassengerSource; precedingSource?: PassengerSource; matches: Record<string, string[]>; areas: Record<string, PassengerArea> }
+export interface PassengerDemand { version: 2; start: 0 | 18000; step: 900; source: PassengerSource; station: PassengerStation }
 function validSource(source: PassengerSource) {
-  return source?.year === 2025 && source.dayType === 'Friday' && source.season === 'autumn' && /^[a-f0-9]{64}$/.test(source.sha256)
+  return source?.year === 2025 && ['Friday', 'Tuesday–Thursday'].includes(source.dayType) && source.season === 'autumn' && /^[a-f0-9]{64}$/.test(source.sha256)
 }
 export function decodePassengerCatalogue(value: unknown): PassengerCatalogue {
   const data = value as PassengerCatalogue
@@ -23,16 +23,16 @@ export function decodePassengerCatalogue(value: unknown): PassengerCatalogue {
   }
   return data
 }
-export function decodePassengerDemand(value: unknown, area: PassengerArea, sourceHash: string): PassengerDemand {
+export function decodePassengerDemand(value: unknown, area: PassengerArea, sourceHash: string, preceding = false): PassengerDemand {
   const data = value as PassengerDemand
-  if (data?.version !== 2 || data.start !== 18000 || data.step !== 900 || !validSource(data.source) || data.source.sha256 !== sourceHash) throw new Error('Unsupported passenger demand source')
+  if (data?.version !== 2 || data.start !== (preceding ? 0 : 18000) || data.step !== 900 || !validSource(data.source) || data.source.dayType !== (preceding ? 'Tuesday–Thursday' : 'Friday') || data.source.sha256 !== sourceHash) throw new Error('Unsupported passenger demand source')
   const station = data.station
   if (!station || station.nlc !== area.nlc || station.asc !== area.asc || station.name !== area.name) throw new Error('Passenger station identity mismatch')
   let count = 0
   for (const metric of PASSENGER_METRICS) {
     const values = station[metric], total = station.totals?.[metric]
     if (values === undefined && total === undefined) continue
-    if (!Array.isArray(values) || values.length !== 96 || values.some(v => typeof v !== 'number' || !Number.isFinite(v) || v < 0) || typeof total !== 'number' || !Number.isFinite(total) || Math.abs(values.reduce((a, b) => a + b, 0) - total) > 0.1) throw new Error('Incomplete passenger demand profile')
+    if (!Array.isArray(values) || values.length !== (preceding ? 20 : 96) || values.some(v => typeof v !== 'number' || !Number.isFinite(v) || v < 0) || typeof total !== 'number' || !Number.isFinite(total) || Math.abs(values.reduce((a, b) => a + b, 0) - total) > 0.1) throw new Error('Incomplete passenger demand profile')
     count += 1
   }
   if (!count) throw new Error('Empty passenger profile')
@@ -43,8 +43,9 @@ export function passengerAreaIds(catalogue: PassengerCatalogue, name: string): s
   return Object.hasOwn(catalogue.matches, key) ? catalogue.matches[key] : []
 }
 // Friday's post-midnight tail belongs to Saturday, not Friday before 05:00.
-export function passengerInterval(time: number): number | undefined {
-  return Number.isFinite(time) && time >= 18000 && time < 86400 ? Math.floor((time - 18000) / 900) : undefined
+export function passengerInterval(time: number, data?: PassengerDemand): number | undefined {
+  const start = data?.start ?? 18000, end = start === 0 ? 18000 : 86400
+  return Number.isFinite(time) && time >= start && time < end ? Math.floor((time - start) / 900) : undefined
 }
 async function json(path: string): Promise<unknown> {
   const response = await fetch(`${import.meta.env.BASE_URL}data/all-change-passenger-demand/${path}`)
@@ -56,11 +57,14 @@ const stationCache = new Map<string, Promise<PassengerDemand>>()
 export function loadPassengerCatalogue(): Promise<PassengerCatalogue> {
   return catalogueCache ??= json('catalogue.json').then(decodePassengerCatalogue).catch(error => { catalogueCache = undefined; throw error })
 }
-export async function loadPassengerSelection(name: string, preferredArea?: string) {
+export async function loadPassengerSelection(name: string, preferredArea?: string, preceding = false) {
   const catalogue = await loadPassengerCatalogue()
   const ids = passengerAreaIds(catalogue, name)
   if (!ids.length) return undefined
   const id = preferredArea && ids.includes(preferredArea) ? preferredArea : ids[0]
-  if (!stationCache.has(id)) stationCache.set(id, json(`stations/${id}.json`).then(value => decodePassengerDemand(value, catalogue.areas[id], catalogue.source.sha256)).catch(error => { stationCache.delete(id); throw error }))
-  return { data: await stationCache.get(id)!, areas: ids.map(asc => catalogue.areas[asc]) }
+  const source = preceding ? catalogue.precedingSource : catalogue.source
+  if (!source) return undefined
+  const key = `${preceding}:${id}`
+  if (!stationCache.has(key)) stationCache.set(key, json(`${preceding ? 'preceding' : 'stations'}/${id}.json`).then(value => decodePassengerDemand(value, catalogue.areas[id], source.sha256, preceding)).catch(error => { stationCache.delete(key); throw error }))
+  return { data: await stationCache.get(key)!, areas: ids.map(asc => catalogue.areas[asc]) }
 }

@@ -26,6 +26,9 @@ export async function compileNightStudy() {
     return { ...manifest, trains: [...new Map(chunks.flatMap(chunk => chunk.trains).map(train => [train.id, train])).values()] }
   }
   const tfl = await day('fixtures/tfl/all-change-day-manifest.json')
+  const calendar = await read('fixtures/night/rail-calendar-audit.json')
+  const demand = await read('fixtures/passenger-demand/catalogue.json')
+  if (calendar.serviceDate !== DATE || !calendar.coverage.includesPreviousDay || !demand.precedingSource) throw new Error('Missing preceding-day audit')
   const bus = await day('fixtures/tfl/all-change-bus-day-manifest.json', true)
   const catalogue = await read('fixtures/national-rail/catalogue.json')
   const families = []
@@ -70,10 +73,10 @@ export async function compileNightStudy() {
     serviceDate: DATE, nightStart: 0, nightEnd: END, previousServiceDate: '2026-09-03',
     sourceFiles: sources,
     coverage: {
-      tfl: 'Partial: existing rail compilation selects Friday recurring/PDF schedules; the preceding Thursday service-day tail is not fully established. Do not treat an empty interval as no service.',
+      tfl: 'Thursday carry-in audited across all advertised Unified API origins and retained shared-weekday PDF branches. Existing source branch and full-endpoint exclusions remain; recurring timetable gaps do not prove no service ran.',
       rail: 'Dated WTT service UIDs retain originating dates, including Thursday carry-in; published timetable, not temporary alterations or live running.',
       bus: 'Compiler includes preceding Thursday schedules at -86400 seconds and Friday schedules at zero offset. Friday Night 24+ belongs to Saturday, not this view. Existing branch exclusions remain in the bus manifest.',
-      demand: 'Unavailable before 05:00: the retained NUMBAT Friday traffic day starts at Friday 05:00. Never wrap its Saturday tail into early Friday.',
+      demand: 'Friday 00:00–05:00 uses the Thursday 24:00–29:00 tail of NUMBAT 2025 typical Tuesday–Thursday demand, loaded independently by station. Friday workbook Saturday tail is never wrapped into early Friday.',
     },
     carryIn: { tfl: tfl.trains.filter(t => t.start < 0 && t.end > 0).length, rail: rail.trains.filter(t => t.start < 0 && t.end > 0).length, bus: bus.trains.filter(t => t.start < 0 && t.end > 0).length },
   }

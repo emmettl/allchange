@@ -10,17 +10,17 @@ The night preset shows the separate National Rail card after an explicit rail se
 
 ## Service-day audit
 
-This increment audits the existing committed delivery artifacts; it does not claim newly complete overnight coverage or fetch a fresh timetable.
+The calendar increment retains the reviewed Friday daytime delivery and adds Thursday carry-in from TfL recurring schedules captured on 8 September and the retained shared-weekday PDF branches. It audits the published model, not whether services actually ran.
 
 | Source | What is established | Limitation |
 | --- | --- | --- |
 | TfL buses | The compiler selects preceding Thursday schedules at a −86,400-second offset and Friday schedules at zero offset. Thursday Night 25:30 maps to Friday 01:30; Friday Night 25:30 remains Saturday 01:30, outside this view. | Recurring school-day timetable model, not actual operations. The bus manifest's existing branch exclusions still apply. |
 | National Rail | WTT UIDs retain originating dates; the calendar-day layer includes 136 journeys already in progress at midnight. | Published timetable; live running and temporary alterations are not applied. |
-| TfL rail | Existing recurring/PDF Friday timetable calls remain visible. The retained full-day chunks contain zero trains crossing in from negative time. | The preceding Thursday tail is **not fully established** by this compilation. Empty intervals and long gaps must not be presented as closed lines or proven absence of service. |
+| TfL rail | All 48 advertised Unified API origins were audited for Thursday. The calendar fixture adds 493 Thursday journeys, including 302 crossing midnight (265 API and 37 PDF). | Recurring schedules captured 8 September; existing unmatched branch patterns and full-endpoint PDF exclusions remain. Gaps are not proof of closure. |
 | Eurostar | The separate dated passenger board supplies published calls; movement coverage remains the audited subset. | Its first departures are beyond this 00:00–05:00 view. |
-| Passenger demand | The retained NUMBAT Friday traffic day begins at Friday 05:00. | Thursday's tail is unavailable. Passenger charts are omitted in the night view; Saturday's tail is never wrapped into Friday morning. |
+| Passenger demand | All 432 supported areas have a separate 00:00–05:00 profile from the typical Tuesday–Thursday workbook’s Thursday tail. | Typical autumn 2025 demand, not observed Friday counts. The Friday workbook’s Saturday tail is never wrapped into Friday morning. |
 
-The initial audit finds **3,256 buses and 136 National Rail trains** crossing midnight from negative start times in the retained snapshots. These are modelled journeys, not observed vehicles. At 02:30, the retained data contains **567 moving buses on 123 routes**, **4 National Rail trains**, and **0 TfL rail services**. The TfL zero is always labelled partial coverage. The source audit and every input SHA-256 live in `fixtures/night/study.json`.
+The initial audit finds **302 TfL trains, 3,256 buses and 136 National Rail trains** crossing midnight from negative start times in the retained snapshots. These are modelled journeys, not observed vehicles. At 02:30, the retained data contains **567 moving buses on 123 routes**, **4 National Rail trains**, and **0 TfL rail services**. The TfL zero is qualified by the audited source scope and branch exclusions. The source audit and every input SHA-256 live in `fixtures/night/study.json`.
 
 ## Station scope and gap semantics
 
@@ -30,19 +30,19 @@ Existing combined boards retain their explicit TfL and National Rail source IDs;
 
 | Comparison | Source stop identities | Retained rail departures, 00:00–05:00 |
 | --- | --- | --- |
-| Waterloo | `940GZZLUWLO`, `crs:WAT` | 5 |
-| Bank | `940GZZLUBNK`, `940GZZDLBNK` | 0 — partial TfL coverage |
+| Waterloo | `940GZZLUWLO`, `crs:WAT` | 44 |
+| Bank | `940GZZLUBNK`, `940GZZDLBNK` | 37 |
 | Upminster | `940GZZLUUPM`, `910GUPMNSTR`, `crs:UPM` | 8 |
 
 Upminster's night context therefore includes District, Liberty and c2c sources even when its existing departure widget is scoped to TfL. This is an explicit night-summary aggregation, not a new combined-board join. Buses are separate from these rail station counts; nearby bus stops are not silently treated as interchange connections.
 
-At 02:30, Bank's next retained call is 05:30 and Waterloo's is 05:05. These are the next calls in the retained source model, **not guaranteed waiting times**. TfL profiles carry the incomplete-tail caveat; no earlier retained call means the earlier endpoint of a gap is unknown. No later call in the calendar-day data means unavailable evidence, not a permanent closure. The preset makes no door-to-door reachability or connection guarantee.
+At 02:30, Bank's next retained call is 05:30 and Waterloo's is 05:05. These are the next calls in the retained source model, **not guaranteed waiting times**. TfL profiles retain the source-scope caveat; no earlier retained call means the earlier endpoint of a gap is unknown. No later call in the calendar-day data means unavailable evidence, not a permanent closure. The preset makes no door-to-door reachability or connection guarantee.
 
 ## Delivery and checks
 
 `npm run data:london:night` rebuilds the optional artifact from committed TfL rail/day chunks, compact bus chunks, domestic rail families and the Eurostar passenger board. Chunk sizes and hashes are verified; source dates must agree. `node scripts/compile-london-night.mjs --check` verifies exact reproduction. The build stages `all-change-night-study.json`; the opening page does not request it. Runtime validation rejects a wrong date, broken profiles or malformed checkpoints. Consumers share the download and its successful cache, with independent retry on failure.
 
-The optional view is bounded by **4 KiB JS / 1 KiB CSS / 28 KiB data** gzip. Its data currently uses **21.8 KiB**. Existing opening, station-board and combined-board caps remain unchanged. Run checks with Node 24:
+The optional view is bounded by **4 KiB JS / 1 KiB CSS / 28 KiB data** gzip. The browser payload is approximately **23 KiB**. Source audit records and redundant station names remain in the committed fixture and are omitted when staging; the app already knows the selected station name. Existing opening, station-board and combined-board caps remain unchanged. Run checks with Node 24:
 
 ```sh
 npm test
@@ -55,4 +55,14 @@ npm exec playwright test e2e/night-study.spec.ts e2e/combined-station-board.spec
 
 Unit checks cover exact source reproduction, Thursday/Friday Night semantics, carry-in, passenger-call restrictions, authored comparison totals, simultaneous departures, chunk-independent next calls, unavailable coverage and time boundaries. Browser checks cover the preset, clock bounds, layer activation, checkpoints, guided comparisons, seeking, dismissal, source failure/retry, leaving night mode and narrow-card behavior on desktop Chromium and emulated iPhone WebKit.
 
-Remaining work: establish the preceding Thursday TfL rail tail from retained or freshly audited sources before claiming complete overnight rail gaps; acquire Thursday NUMBAT demand for early Friday; separately audit Friday-night/Saturday coverage; physical-phone review. Those coverage gaps remain open roadmap items.
+## Calendar reproduction and Friday-night audit
+
+`npm run data:london:calendar` replays the cached source capture offline and rebuilds the night index. To acquire a fresh capture deliberately, run `node scripts/compile-tfl-calendar-day.mjs --cache /path/to/cache`; requests retry TfL rate limits. Each source URL and SHA-256 is recorded in `fixtures/night/rail-calendar-audit.json`. Credentials are unnecessary and no source key is stored.
+
+`fixtures/night/friday-base-manifest.json` pins the reviewed original Friday delivery. Its original 00:00–02:00 chunk is retained beside it; all other original chunks remain in `fixtures/tfl`. The compiler checks every hash, adds the Thursday tail, and rejects any change to daytime journeys. It preserves the opening scene and diagram. Repeating the offline compilation produces identical artifacts. Raw API responses remain in `/tmp/allchange-tfl-rail-calendar-2026-09-08`, or the explicit cache directory.
+
+Plural weekday names such as **Thursdays** are now accepted. Thursday 24:30 becomes Friday 00:30; Friday 25:30 remains Saturday 01:30. The retained PDF parser admits shared Monday–Friday or Monday–Saturday pages: its 23xx-origin trains crossing midnight are shifted, while 00xx-origin columns already carry early calendar-day clocks. Original endpoint and branch exclusions still apply.
+
+`node scripts/compile-tfl-calendar-day.mjs --saturday-audit --offline` independently audits Friday-night/Saturday Tube, DLR and tram coverage. The retained subset has 41 moving services at Saturday 02:30. **This is not complete Saturday coverage:** the captured Piccadilly origins contain Tuesday/Wednesday/Thursday schedules only, and Saturday PDF branches, buses and mainline service have not been combined into a Saturday study. Missing schedules and zero included calls are distinguished in `fixtures/night/saturday-audit.json`.
+
+Remaining work: resolve the missing Saturday sources, audit the Saturday PDF/day model before offering a weekend night preset, and review physical phones. Browser emulation is separate from physical-device evidence.

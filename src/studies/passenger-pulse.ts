@@ -1,8 +1,8 @@
-import { passengerInterval, type PassengerStation, PASSENGER_METRICS } from '../data/passenger-demand.ts'
+import { passengerInterval, type PassengerStation, type PassengerDemand, PASSENGER_METRICS } from '../data/passenger-demand.ts'
 export const PEOPLE_PER_MARK = 250
 export const FLOW_COLOURS = { entries: '#a2d5c2', exits: '#edb779', interchanges: '#b8aff1' }
-export function passengerFlows(station: PassengerStation, time: number) {
-  const interval = passengerInterval(time)
+export function passengerFlows(station: PassengerStation, time: number, data?: PassengerDemand) {
+  const interval = passengerInterval(time, data)
   return PASSENGER_METRICS.map(metric => {
     const value = interval === undefined ? undefined : station[metric]?.[interval]
     return { metric, value, marks: value === undefined ? [] : Array.from({ length: Math.ceil(value / PEOPLE_PER_MARK) }, (_, index) => Math.min(1, (value - index * PEOPLE_PER_MARK) / PEOPLE_PER_MARK)) }

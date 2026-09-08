@@ -533,6 +533,7 @@ const cycleComparisonKey = 'src/studies/LondonCycleComparison.tsx'
 const hubPulseKey = 'node_modules/@motionstudies/three/HubPulseScene.js'
 const passengerCardKey = 'src/studies/LondonPassengerDemand.tsx'
 const stationBoardKey = 'src/studies/LondonStationDepartures.tsx'
+const morningFlowKey = 'src/studies/LondonMorningFlow.tsx'
 const nightStudyKey = 'src/studies/LondonNightStudy.tsx'
 const eurostarKey = 'src/data/eurostar.ts'
 const combinedBoardKey = 'src/studies/LondonCombinedStationBoard.tsx'
@@ -548,7 +549,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // Selected cards and alternate studies load only after interaction. Budget
   // them separately; retain their shared static dependencies in the opening.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -684,3 +685,15 @@ if (transferFailures.length) {
       .join(', ')}`,
   )
 }
+
+const morningFlowCode = await optionalCardSize(morningFlowKey)
+const morningFlowData = gzipSync(await readFile('public/data/all-change-morning-flow.json'), { level: 9 }).byteLength
+console.log(`All Change optional morning flow: ${kibibytes(morningFlowCode.javaScript)} JS / 8 KiB; ${kibibytes(morningFlowData)} data / 24 KiB`)
+if (morningFlowCode.javaScript > 8 * 1024 || morningFlowCode.css > 2 * 1024 || morningFlowData > 24 * 1024) throw new Error('Morning flow budget exceeded')
+let precedingTotal = 0
+for (const asc of Object.keys(passengerCatalogue.areas)) {
+  const bytes = gzipSync(await readFile(`fixtures/passenger-demand/preceding/${asc}.json`), { level: 9 }).byteLength
+  if (bytes > 1024) throw new Error('Preceding passenger area exceeds 1 KiB')
+  precedingTotal += bytes
+}
+if (precedingTotal > 350 * 1024) throw new Error('Preceding profiles exceed 350 KiB')

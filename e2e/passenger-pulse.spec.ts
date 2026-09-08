@@ -34,8 +34,8 @@ test('passenger pulse compares morning/evening with separate flows and a shared 
   await expect(page.getByRole('combobox', { name: 'Pulse interchange' })).toHaveValue('stratford')
   await page.getByRole('button', { name: 'Passenger flow pulse', exact: true }).click()
   await page.locator('.london-transport input[type="range"]').fill('3600')
-  await expect(pulse.locator('[data-flow="entries"]')).toHaveAttribute('data-value', 'unavailable')
-  await expect(pulse.locator('circle')).toHaveCount(0)
+  await expect(pulse.locator('[data-flow="entries"]')).toHaveAttribute('data-value', '10.509')
+  await expect(pulse).toContainText('Thursday tail · typical Tue–Thu')
   expect(errors).toEqual([])
 })
 

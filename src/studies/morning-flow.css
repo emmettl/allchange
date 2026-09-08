@@ -1,0 +1,70 @@
+.london-morning-flow { position:absolute; inset:210px var(--london-gutter,32px) 170px; display:grid; grid-template-columns:310px minmax(0,1fr); gap:40px; color:#eee9d7; font:11px/1.55 'DM Mono',monospace; pointer-events:auto; }
+.morning-flow-copy { overflow:auto; padding-right:8px; }
+.morning-flow-copy header { position:relative; padding-right:36px; }
+.morning-flow-kicker { color:#a2d5c2; text-transform:uppercase; letter-spacing:.12em; font-size:10px; }
+.morning-flow-copy h2 { font:400 32px/1.12 Georgia,serif; margin:10px 0; }
+.london-morning-flow button,.london-morning-flow select { min-height:44px; background:#111120; color:#eee9d7; border:1px solid #b9afd444; font:inherit; cursor:pointer; padding:6px 10px; }
+.london-morning-flow :focus-visible { outline:2px solid #eee9d7; outline-offset:3px; }
+.morning-flow-close { position:absolute; top:0; right:0; min-width:44px; font-size:20px!important; }
+.morning-flow-source,.morning-flow-boarding,.morning-flow-copy details { color:#bdb8ca; font-size:10px; }
+.morning-flow-copy nav { display:flex; flex-wrap:wrap; gap:5px; margin:16px 0; }
+.morning-flow-copy button[aria-pressed=true] { border-color:#a2d5c2; color:#a2d5c2; }
+.morning-flow-story { min-height:52px; }
+.morning-flow-comparison { border-top:1px solid #b9afd433; padding-top:14px; margin-bottom:3px; }
+.morning-flow-comparison span { display:block; color:#bdb8ca; font-size:10px; }
+.morning-flow-counts { display:flex; justify-content:space-between; margin:7px 0 14px; }
+.morning-flow-counts div:first-child { color:#a2d5c2; }.morning-flow-counts div:last-child { color:#edb779; }
+.morning-flow-counts dd { margin:0; font-size:25px; }.morning-flow-counts dt { font-size:10px; }
+.morning-flow-station { display:flex; align-items:center; gap:10px; }.morning-flow-station select { min-width:0; flex:1; }
+.morning-flow-copy summary { cursor:pointer; padding:10px 0; }.morning-flow-copy a { color:#a2d5c2; }
+.morning-flow-map { min-width:0; min-height:0; display:flex; flex-direction:column; }
+.morning-flow-map-tools { display:flex; align-items:center; gap:6px; justify-content:flex-end; color:#bdb8ca; }.morning-flow-map-tools span { margin-right:auto; text-transform:uppercase; letter-spacing:.14em; }.morning-flow-map-tools button { min-width:44px; }.morning-flow-map-tools button:disabled { opacity:.4; }
+.morning-flow-map svg { width:100%; flex:1; min-height:0; overflow:hidden; }.morning-flow-stop { cursor:pointer; }.morning-flow-stop text { fill:#eee9d7; font-size:12px; paint-order:stroke; stroke:#101021; stroke-width:4px; }
+.morning-flow-legend { display:flex; flex-wrap:wrap; gap:6px 18px; color:#bdb8ca; font-size:10px; }.morning-flow-legend span:first-child { color:#a2d5c2; }.morning-flow-legend span:nth-child(2) { color:#edb779; }
+.london-experience[data-morning-flow=true] .london-status-card { display:none; }
+@media(max-width:760px) { .london-morning-flow { inset:174px 12px 166px; display:flex; flex-direction:column; gap:6px; overflow:auto; }.morning-flow-copy { overflow:visible; padding:0; }.morning-flow-copy h2 { font-size:25px; }.morning-flow-copy h2 br { display:none; }.morning-flow-copy nav { margin:8px 0; gap:4px; }.morning-flow-copy nav button { flex:1; padding:5px; font-size:9px; }.morning-flow-story { min-height:0; margin:7px 0; }.morning-flow-source br { display:none; }.morning-flow-source { margin:5px 0; }.morning-flow-map { order:-1; flex:0 0 225px; }.morning-flow-map-tools { min-height:44px; }.morning-flow-map svg { min-height:155px; }.morning-flow-legend { font-size:9px; gap:3px 9px; margin:0; }.morning-flow-counts { margin:4px 0 8px; }.morning-flow-copy details { margin-bottom:12px; } }
+
+.london-experience[data-morning-flow=true] .london-map-tools,
+.london-experience[data-morning-flow=true] .london-service-legend { display:none; }
+.morning-flow-copy nav { flex-wrap:nowrap; }
+.morning-flow-copy nav button { flex:1; min-width:0; padding:5px; font-size:9px; }
+.morning-flow-summary { display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.morning-flow-summary .morning-flow-comparison { border:0; padding:0; }
+.morning-flow-summary .morning-flow-counts { flex:0 0 250px; margin:5px 0; }
+@media(max-width:760px) {
+ .morning-flow-copy { display:contents; }
+ .morning-flow-copy header { order:0; }
+ .morning-flow-copy .morning-flow-source { order:1; }
+ .morning-flow-copy nav { order:2; }
+ .morning-flow-map { order:3; flex-basis:270px; }
+ .morning-flow-copy .morning-flow-story { order:4; }
+ .morning-flow-station { order:5; }
+ .morning-flow-boarding { order:6; }
+ .morning-flow-copy details { order:7; }
+ .morning-flow-summary { gap:8px; }
+ .morning-flow-summary .morning-flow-counts { flex-basis:180px; }
+ .morning-flow-counts dd { font-size:22px; }
+ .morning-flow-summary .morning-flow-comparison { font-size:9px; }
+}
+
+.london-experience[data-morning-flow=true] .london-spatial-cta { display:none; }
+.morning-flow-stop text { font-size:18px; }
+@media(max-width:760px) {
+ .london-morning-flow { top:118px; bottom:142px; gap:4px; }
+ .morning-flow-copy h2 { font-size:22px; margin:5px 0; }
+ .morning-flow-kicker { margin:0; font-size:9px; }
+ .morning-flow-copy .morning-flow-source { font-size:9px; margin:0; }
+ .morning-flow-copy nav { margin:5px 0; }
+ .morning-flow-map { flex-basis:225px; }
+ .morning-flow-map svg { min-height:120px; }
+ .morning-flow-stop text { font-size:24px; }
+ .morning-flow-map-tools span { font-size:9px; }
+}
+
+.london-experience[data-morning-flow=true] .london-search { display:none; }
+.london-morning-flow { top:162px; }
+@media(max-width:760px) { .london-morning-flow { top:76px; } }
+@media(max-width:760px) {
+ .morning-flow-copy > * { flex-shrink:0; }
+ .morning-flow-map { flex-basis:260px; }
+}

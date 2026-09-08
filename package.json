@@ -57,7 +57,10 @@
     "worker:roads:build": "wrangler deploy --config wrangler.london-roads.jsonc --dry-run --outdir .worker-dist/london-roads",
     "data:london:national-rail:kings-cross": "node scripts/compile-kings-cross-national-rail.mjs",
     "data:london:national-rail:compile": "node scripts/compile-london-national-rail.mjs",
-    "data:air:routes": "node scripts/enrich-air-routes.mjs"
+    "data:air:routes": "node scripts/enrich-air-routes.mjs",
+    "data:london:calendar": "node scripts/compile-tfl-calendar-day.mjs --offline && node scripts/compile-london-night.mjs",
+    "data:london:morning-flow": "python3 -B scripts/compile-morning-flow.py",
+    "data:london:demand": "python3 -B scripts/compile-numbat.py"
   },
   "dependencies": {
     "@motionstudies/core": "0.1.0-alpha.5",

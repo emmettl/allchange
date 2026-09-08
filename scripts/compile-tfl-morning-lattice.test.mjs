@@ -75,6 +75,27 @@ function timetable(direction, origin) {
 }
 
 describe('TfL morning lattice compiler', () => {
+  it('selects plural Thursday labels and keeps Friday 24+ out of Friday morning', async () => {
+    const lattice = await compileUnifiedApiLattice({ catalogue, serviceDate: '2026-09-04', retrievedAt: '2026-09-08T18:00:00Z',
+      windowStart: 0, windowEnd: 18000, includePreviousDay: true, pauseMs: 0,
+      loadJson: async path => {
+        const origin = path.split('/').at(-1).split('?')[0]
+        const direction = path.includes('/inbound') || (path.includes('/Timetable/') && origin !== 'A') ? 'inbound' : 'outbound'
+        if (path.includes('/Route/Sequence/')) return routeSequence(direction)
+        const data = timetable(direction, origin)
+        data.timetable.routes[0].schedules = [
+          { name: 'Thursdays', knownJourneys: [{ hour: '23', minute: '58', intervalId: 0 }, { hour: '24', minute: '30', intervalId: 0 }] },
+          { name: 'Friday', knownJourneys: [{ hour: '25', minute: '30', intervalId: 0 }] },
+        ]
+        return data
+      },
+    })
+    expect(lattice.trains).toHaveLength(6)
+    expect(lattice.trains.map(train=>train.start).sort((a,b)=>a-b)).toEqual([-120,-120,-120,1800,1800,1800])
+    expect(lattice.trains.every(train=>train.id.startsWith('2026-09-03:'))).toBe(true)
+    expect(lattice.metadata.serviceDate).toBe('2026-09-04')
+    expect(lattice.trains[0].stops.at(-1)[1]).toBe(180)
+  })
   it('plans every distinct directional branch origin without duplicate API calls', () => {
     expect(planUnifiedApiCoverage(catalogue)).toEqual([
       expect.objectContaining({ direction: 'outbound', origin: 'A', branchCount: 2 }),
@@ -101,7 +122,7 @@ describe('TfL morning lattice compiler', () => {
       },
     })
 
-    expect(lattice.metadata.coverage).toEqual({
+    expect(lattice.metadata.coverage).toMatchObject({
       status: 'complete-for-unified-api-modes',
       modes: ['tube', 'dlr', 'tram'],
       lineCount: 1,
