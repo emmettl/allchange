@@ -110,6 +110,8 @@ import { useProgressiveRoadStudy } from '@motionstudies/web/use-progressive-road
 import { useObservedOperations } from '@motionstudies/web/use-observed-operations'
 import { useNationalRail, useRailCatalogue } from '../data/use-national-rail.ts'
 import { LONDON_RAIL_CORRIDORS, type RailBoardStation, type RailBoardStationId } from '../editions/london-national-rail.ts'
+const AirportHeroCard = lazy(() => import('./AirportCard.tsx'))
+
 const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
 import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
 const LondonNationalRailBoard = lazy(() => import('./LondonNationalRailBoard.tsx').then(module => ({ default: module.LondonNationalRailBoard })))
@@ -2042,6 +2044,15 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         )}
       </section>
 
+      {selectedAirport ? (
+        <Suspense fallback={null}><AirportHeroCard key={selectedAirport.id} className="edition-airport-card"
+          airport={selectedAirport} aircraft={searchableAircraft}
+          study={{ time: sceneTime, windowStart: Math.max(sceneNetwork?.metadata.windowStart ?? 0, activeAirSnapshot?.metadata.windowStart ?? 0), windowEnd: Math.min(sceneNetwork?.metadata.windowEnd ?? 86400, activeAirSnapshot?.metadata.windowEnd ?? 86400) }}
+          maxRows={4} dateLabel="04.09.2026"
+          loading={studyWindow === 'day' ? !airDay.manifest : !morningAir} error={airLoadError || airDay.error ? 'Air study unavailable' : undefined}
+          onSelectFlight={selectAirTrack}
+        /></Suspense>
+      ) : (
       <section
         className={`london-status-card${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
         aria-live="polite"
@@ -2103,8 +2114,6 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                   ? selectedRoad.label
                   : roadStatus
                     ? reconstructedRoadVehicleCount.toLocaleString('en-GB')
-                  : selectedAirport
-                  ? selectedAirport.iata
                   : selectedAirIndexEntry
                   ? selectedAirIndexEntry.callsign
                   : airStatus
@@ -2124,8 +2133,6 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                 ? selectedRoad.description
                 : roadStatus
                   ? 'London motorway flow'
-              : selectedAirport
-                ? selectedAirport.name
                 : selectedAirTelemetry
                 ? `Heading ${Math.round(selectedAirTelemetry.headingDegrees).toString().padStart(3, '0')}°`
                 : selectedStation?.name ?? displayedSelectedRoute?.name ?? (selectedTrain ? `${selectedTrain.route} ${selectedTrain.shortName}` : airStatus ? 'Observed London airspace' : !networkSelection && (airEnabled || roadEnabled || nationalRailEnabled) ? 'Enabled transport layers' : studyWindow === 'day' ? '24-hour lattice' : 'Morning lattice')}
@@ -2163,6 +2170,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           <p>Drawing London…</p>
         )}
       </section>
+      )}
 
       {sceneNetwork && (
         <section className="london-transport" aria-label="Playback controls">

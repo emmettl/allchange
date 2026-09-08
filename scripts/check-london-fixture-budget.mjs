@@ -12,7 +12,7 @@ const FILES = [
 const BUDGETS = {
   raw: 1_600 * 1024,
   gzip: 260 * 1024,
-  javaScript: 340 * 1024,
+  javaScript: 344 * 1024, // Airport selection shell; the board has a separate lazy budget.
   css: 14 * 1024,
   total: 650 * 1024,
   layoutRaw: 90 * 1024,
@@ -21,9 +21,9 @@ const BUDGETS = {
   dayChunkGzip: 190 * 1024,
   dayTotalGzip: 1_600 * 1024,
   airMorningGzip: 220 * 1024,
-  airManifestGzip: 75 * 1024,
+  airManifestGzip: 135 * 1024, // Full-day origin/destination evidence (~119 KiB).
   airChunkGzip: 145 * 1024,
-  airDayTotalGzip: 2_100 * 1024,
+  airDayTotalGzip: 2_300 * 1024,
   roadTopologyGzip: 65 * 1024,
   roadManifestGzip: 8 * 1024,
   roadChunkGzip: 50 * 1024,
@@ -527,6 +527,7 @@ const styles = new Set()
 const visited = new Set()
 const roadDetailKey = 'src/studies/LondonRoadObservations.tsx'
 const railBoardKey = 'src/studies/LondonNationalRailBoard.tsx'
+const airportCardKey = 'src/studies/AirportCard.tsx'
 const railLayerKey = 'src/studies/LondonNationalRailLayer.tsx'
 const visit = (key) => {
   if (visited.has(key)) return
@@ -538,7 +539,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // This panel is requested only after road selection. Budget its own payload
   // separately; it is not part of the opening network scene's transfer.
-  for (const importedKey of chunk.dynamicImports ?? []) if (importedKey !== roadDetailKey && importedKey !== railBoardKey && importedKey !== railLayerKey) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (importedKey !== airportCardKey && importedKey !== roadDetailKey && importedKey !== railBoardKey && importedKey !== railLayerKey) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -551,6 +552,12 @@ async function totalGzipSize(files) {
 }
 
 const javaScript = await totalGzipSize(scripts)
+const airportCard = manifest[airportCardKey]
+if (!airportCard?.isDynamicEntry || airportCard.imports?.some(key => !visited.has(key))) throw new Error('The airport card must remain lazy with budgeted dependencies')
+const airportCardScript = await totalGzipSize([airportCard.file])
+const airportCardStyles = await totalGzipSize(airportCard.css ?? [])
+console.log(`All Change optional airport card: ${kibibytes(airportCardScript)} JavaScript / 4.0 KiB; ${kibibytes(airportCardStyles)} CSS / 3.0 KiB`)
+if (airportCardScript > 4 * 1024 || airportCardStyles > 3 * 1024) throw new Error('Airport card transfer budget exceeded')
 const roadDetail = manifest[roadDetailKey]
 if (!roadDetail?.isDynamicEntry || roadDetail.imports?.some(key => !visited.has(key))) {
   throw new Error('The road detail panel must remain lazy with no unbudgeted dependencies')

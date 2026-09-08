@@ -718,7 +718,7 @@ test('observed aircraft load lazily, join category emphasis and are searchable b
 
 test('airport search enters air-only mode and isolates its observed flights', async ({
   page,
-}) => {
+}, testInfo) => {
   const search = page.getByRole('searchbox', {
     name: 'Find a London station, line, service, airport, flight or motorway',
   })
@@ -740,10 +740,14 @@ test('airport search enters air-only mode and isolates its observed flights', as
   await expect(experience).toHaveClass(/has-airport-selection/)
   await expect(experience).toHaveAttribute('data-selected-airport', 'heathrow')
   await expect(search).toHaveValue('Heathrow Airport · LHR')
-  await expect(page.locator('.london-status-card')).toContainText('LHR')
-  await expect(page.locator('.london-status-card')).toContainText(
-    'airport movements',
-  )
+  const card = page.locator('.ms-airport-hero')
+  await expect(card).toContainText('LHR')
+  await expect(card.locator('tbody button').first()).toBeVisible()
+  await card.getByRole('button', { name: 'Arrivals' }).click()
+  await expect(card.getByRole('region', { name: 'LHR Arrivals' })).toBeVisible()
+  await expect(card.locator('tbody button').first()).toBeVisible()
+  await page.waitForTimeout(1000) // Capture the settled characters after switching direction.
+  await page.screenshot({ path: testInfo.outputPath('airport-hero.png') })
   await setMobileControls(page, true)
   await expect(page.getByRole('button', { name: 'Hide observed aircraft' })).toHaveAttribute(
     'aria-pressed',
