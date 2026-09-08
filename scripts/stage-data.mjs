@@ -35,3 +35,5 @@ await mkdir('public/data/all-change-cycle', { recursive: true })
 await copyFile('fixtures/cycle-hire/manifest.json', 'public/data/all-change-cycle/manifest.json')
 await cp('fixtures/cycle-hire/days', 'public/data/all-change-cycle/days', { recursive: true })
 await cp('fixtures/cycle-hire/profiles', 'public/data/all-change-cycle/profiles', { recursive: true })
+
+await copyFile('fixtures/night/study.json', 'public/data/all-change-night-study.json')

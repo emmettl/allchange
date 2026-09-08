@@ -1,0 +1,19 @@
+.london-night { color: #ddd8e5; font: 400 11px/1.5 'DM Mono', monospace; margin: 12px 0; min-width: 0; }
+.london-night h3 { margin: 8px 0; font: 500 13px/1.4 'DM Mono', monospace; }
+.london-night p, .london-status-card .london-night p { display: block; margin: 9px 0; font: inherit; letter-spacing: 0; text-transform: none; }
+.london-night strong, .london-status-card .london-night strong { display: inline; font: inherit; color: #ffe3b8; }
+.london-night button { cursor: pointer; min-height: 44px; padding: 6px 9px; color: inherit; border: 1px solid #d2c8e855; background: #12121d; font: inherit; text-align: left; }
+.london-night button:focus-visible, .london-night summary:focus-visible { outline: 2px solid #ffe3b8; outline-offset: 2px; }
+.london-night button[aria-pressed=true] { color: #ffe3b8; border-color: #ffe3b8; }
+.london-night-times { display: flex; gap: 8px; }
+.london-night-times button { flex: 1; text-align: center; }
+.london-night-comparisons { display: grid; gap: 6px; margin: 9px 0; }
+.london-night-comparisons span { display: block; font: inherit; color: #bbb7c5; }
+.london-night summary { cursor: pointer; min-height: 44px; align-content: center; }
+.london-night table { width: 100%; text-align: left; border-collapse: collapse; }
+.london-night th, .london-night td { padding: 4px; border-bottom: 1px solid #d2c8e833; }
+.london-night caption { text-align: left; color: #bbb7c5; }
+.london-experience[data-night-study=true] .london-status-card.has-station-board { width: min(420px, calc(100vw - 40px)); max-height: calc(100dvh - clamp(202px, 28vh, 260px) - 163px); overflow-y: auto; }
+@media (max-width: 760px) {
+  .london-experience[data-night-study=true] .london-status-card.has-station-board { width: calc(100vw - 84px); max-width: 420px; max-height: calc(100dvh - 310px); }
+}

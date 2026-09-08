@@ -75,3 +75,5 @@ npm exec playwright test e2e/eurostar.spec.ts e2e/combined-station-board.spec.ts
 ```
 
 Other stations retain their existing separate timetable scopes until their source identities and coverage are verified. Physical-device and shared widget-lab review remain outstanding. Platforms, live predictions, cancellations and freshness require their own supported sources.
+
+The [After midnight preset](AFTER-MIDNIGHT.md) adds a separately loaded rail departure context to station cards. It can find the next retained call beyond the active map chunk, respects the 05:00 view boundary, and labels incomplete preceding-day TfL coverage. Ordinary board rows keep their existing source windows and permissions.

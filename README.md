@@ -117,3 +117,7 @@ Demand is a typical autumn Friday in 2025, distinct from the September 2026 time
 ### Dismissing hero cards
 
 The top-right × on station, pulse, National Rail and airport cards hides the card while preserving the selected place, map focus and playback. A compact details button restores it with its metric and board state intact. Selecting another place or selecting the same search result again opens its card. Close controls have a 44-pixel touch target; the existing Release, clear-search and Escape actions still clear selection.
+
+## After midnight
+
+The **After midnight** preset explores **Thursday night into Friday 4 September, 00:00–05:00**, with scheduled rail and buses, three time checkpoints, and Waterloo/Bank/Upminster comparisons. Station cards show the next retained rail departure and explicitly qualified gaps, even beyond the current map chunk. The preceding Thursday TfL rail tail is incomplete, so empty intervals are not presented as closed lines; pre-05:00 passenger demand is unavailable. See [the night source audit and controls](docs/AFTER-MIDNIGHT.md). Rebuild the optional index with `npm run data:london:night`.

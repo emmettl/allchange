@@ -533,6 +533,7 @@ const cycleComparisonKey = 'src/studies/LondonCycleComparison.tsx'
 const hubPulseKey = 'node_modules/@motionstudies/three/HubPulseScene.js'
 const passengerCardKey = 'src/studies/LondonPassengerDemand.tsx'
 const stationBoardKey = 'src/studies/LondonStationDepartures.tsx'
+const nightStudyKey = 'src/studies/LondonNightStudy.tsx'
 const eurostarKey = 'src/data/eurostar.ts'
 const combinedBoardKey = 'src/studies/LondonCombinedStationBoard.tsx'
 const airportCardKey = 'src/studies/AirportCard.tsx'
@@ -547,7 +548,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // Selected cards and alternate studies load only after interaction. Budget
   // them separately; retain their shared static dependencies in the opening.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![eurostarKey, airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -585,7 +586,7 @@ async function optionalCardSize(key, parentKey) {
     files.add(chunk.file)
     for (const file of chunk.css ?? []) if (!loadedStyles.has(file)) css.add(file)
     for (const dependency of chunk.imports ?? []) collect(dependency)
-    if (chunk.dynamicImports?.some(dependency => id !== cycleStudyKey || dependency !== cycleComparisonKey)) throw new Error(`Unbudgeted optional dynamic dependencies in ${id}`)
+    if (chunk.dynamicImports?.some(dependency => !((id === cycleStudyKey && dependency === cycleComparisonKey) || ([railBoardKey, combinedBoardKey].includes(id) && dependency === nightStudyKey)))) throw new Error(`Unbudgeted optional dynamic dependencies in ${id}`)
   }
   collect(key)
   return { javaScript: await totalGzipSize(files), css: await totalGzipSize(css) }
@@ -645,6 +646,10 @@ console.log(`All Change optional combined station board: ${kibibytes(combinedBoa
 if (combinedBoard.javaScript > 6 * 1024 || combinedBoard.css > 3 * 1024) throw new Error('Combined station board transfer budget exceeded')
 console.log(`All Change optional rail board (including station widget): ${kibibytes(railBoard.javaScript)} JavaScript / 6.0 KiB; ${kibibytes(railBoard.css)} CSS / 3.0 KiB`)
 if (railBoard.javaScript > 6 * 1024 || railBoard.css > 3 * 1024) throw new Error('Rail board transfer budget exceeded')
+const nightCode = await optionalCardSize(nightStudyKey)
+const nightData = gzipSync(await readFile('public/data/all-change-night-study.json'), { level: 9 }).byteLength
+console.log(`All Change optional night study: ${kibibytes(nightCode.javaScript)} JS / 4 KiB; ${kibibytes(nightCode.css)} CSS / 1 KiB; ${kibibytes(nightData)} data / 28 KiB`)
+if (nightCode.javaScript > 4 * 1024 || nightCode.css > 1024 || nightData > 28 * 1024) throw new Error('Night study budget exceeded')
 const eurostarCode = await optionalCardSize(eurostarKey)
 const eurostarData = gzipSync(await readFile('public/data/all-change-national-rail-network-eurostar.json'), { level: 9 }).byteLength
 console.log(`All Change optional Eurostar: ${kibibytes(eurostarData)} data / 24.0 KiB; ${kibibytes(eurostarCode.javaScript)} validation / 2.0 KiB`)

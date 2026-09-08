@@ -1,11 +1,13 @@
-import { useState, type ReactNode } from 'react'
+import { lazy, Suspense, useState, type ReactNode } from 'react'
 import { formatServiceTime } from '@motionstudies/core/domain/network'
 import { type NationalRailSnapshot } from '../data/national-rail.ts'
 import { LONDON_RAIL_CORRIDORS, type RailBoardStation, type RailBoardStationId } from '../editions/london-national-rail.ts'
 import { LondonStationDepartures } from './LondonStationDepartures.tsx'
 
-export function LondonNationalRailBoard({ snapshot, stations, stationId, time, windowStart, windowEnd, selectedId, onStation, onSelect, onSeek, onPulse, partial, animate, passengerContent, dismissed, dismissControl, boardContent }: {
-  snapshot: NationalRailSnapshot; stations: readonly RailBoardStation[]; stationId: RailBoardStationId; time: number; windowStart: number; windowEnd: number; selectedId?: string
+const LondonNightStudy = lazy(() => import('./LondonNightStudy.tsx'))
+
+export function LondonNationalRailBoard({ night, snapshot, stations, stationId, time, windowStart, windowEnd, selectedId, onStation, onSelect, onSeek, onPulse, partial, animate, passengerContent, dismissed, dismissControl, boardContent }: {
+  night?: boolean; snapshot: NationalRailSnapshot; stations: readonly RailBoardStation[]; stationId: RailBoardStationId; time: number; windowStart: number; windowEnd: number; selectedId?: string
   dismissed?: boolean; dismissControl?: ReactNode
   passengerContent?: ReactNode
   boardContent?: ReactNode
@@ -30,6 +32,7 @@ export function LondonNationalRailBoard({ snapshot, stations, stationId, time, w
         </select>
       </label>
       {passengerContent}
+      {night && !boardContent && <Suspense fallback={null}><LondonNightStudy date={snapshot.metadata.serviceDate} time={time} name={station.name} stopIds={[station.stopId ?? `crs:${station.code}`]} onTime={onSeek} /></Suspense>}
       {boardContent ?? <LondonStationDepartures key={station.id} snapshot={snapshot} stationName={station.stationName} time={time}
         windowStart={windowStart} windowEnd={windowEnd} maxRows={3} selectedId={selectedId} animate={animate}
         onDirection={setDirection} emptyMessage={station.note}

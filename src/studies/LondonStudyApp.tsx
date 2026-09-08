@@ -121,6 +121,7 @@ const LondonPassengerPulse = lazy(() => import('./LondonPassengerPulse.tsx'))
 const LondonCycleStudy = lazy(() => import('./LondonCycleStudy.tsx'))
 const LondonPassengerDemand = lazy(() => import('./LondonPassengerDemand.tsx'))
 const LondonStationDepartures = lazy(() => import('./LondonStationDepartures.tsx').then(module => ({ default: module.LondonStationDepartures })))
+const LondonNightStudy = lazy(() => import('./LondonNightStudy.tsx'))
 const LondonCombinedStationBoard = lazy(() => import('./LondonCombinedStationBoard.tsx'))
 import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
 import type { MapSelectionSceneExtension } from './LondonMapSelection.tsx'
@@ -287,6 +288,8 @@ function searchNetworkChoices(
 
 export function LondonStudyApp({ edition }: { readonly edition: LondonEdition }) {
   const [morningNetwork, setMorningNetwork] = useState<NetworkSnapshot>()
+  const [nightEnabled, setNightEnabled] = useState(false)
+  const [nightRailSelected, setNightRailSelected] = useState(false)
   const [studyWindow, setStudyWindow] = useState<StudyWindow>('morning')
   const [dayManifest, setDayManifest] = useState<NetworkDayManifest>()
   const [dayChunks, setDayChunks] = useState<
@@ -460,10 +463,11 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     surfaceEnabled,
     surfaceNetwork,
   ])
-  const network =
+  const activeNetwork =
     operationsRequested && operationsTransitionNetwork
       ? operationsTransitionNetwork
       : assembledNetwork
+  const network = useMemo(() => nightEnabled && activeNetwork ? { ...activeNetwork, metadata: { ...activeNetwork.metadata, windowStart: 0, windowEnd: 18000 } } : activeNetwork, [nightEnabled, activeNetwork])
   const operationsAge = observedOperations.snapshot
     ? operationsAgeSeconds(observedOperations.snapshot)
     : Number.POSITIVE_INFINITY
@@ -998,6 +1002,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   ])
 
   const clearSelection = useCallback(() => {
+    setNightRailSelected(false)
     setBoardAreaId(undefined)
     setPulseView('services')
     setDismissedHero(false)
@@ -1019,6 +1024,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   const activateStudyWindow = useCallback(
     (nextWindow: StudyWindow) => {
+      setNightEnabled(false)
       if (
         nextWindow === studyWindow &&
         operationsMode === 'plan' &&
@@ -1049,8 +1055,16 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     ],
   )
 
+  const activateNight = () => {
+    clearSelection(); setOperationsRequested(false); setOperationsTransitionNetwork(undefined); setOperationsMode('plan')
+    setStudyWindow('day'); setDayError(false); setNightEnabled(true); setTime(1800); setIsPlaying(false)
+    setTflEnabled(true); setBusEnabled(true); setNationalRailEnabled(true); setSurfaceEnabled(false); setAirEnabled(false); setRoadEnabled(false)
+    setDismissedRail(true); activateLayout('geographic')
+  }
+
   const activateOperationsMode = useCallback(
     (nextMode: OperationsMode) => {
+      setNightEnabled(false)
       if (
         nextMode === operationsMode &&
         !(nextMode === 'plan' && operationsRequested)
@@ -1150,6 +1164,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   const selectNationalRail = useCallback((id: string) => {
     clearSelection()
+    setNightRailSelected(true)
     setNationalRailSelectedId(id)
     setSearchOpen(false)
   }, [clearSelection])
@@ -1161,6 +1176,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       setPulseHubId(undefined)
       if (choice.kind === 'rail-station' || choice.kind === 'rail-train') {
         clearSelection()
+        setNightRailSelected(true)
         setOperationsRequested(false)
         setOperationsTransitionNetwork(undefined)
         setOperationsMode('plan')
@@ -1169,7 +1185,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         const train = choice.kind === 'rail-train' ? choice.value : undefined
         const station = choice.kind === 'rail-station' ? choice.value : railStations.find(station => train?.stops.some(([index]) => nationalRail?.stops[index][4] === (station.stopId ?? `crs:${station.code}`)))
         if (station) { setNationalRailStationId(station.id); moveCamera('focus-location', station.focus, 0.25) }
-        if (train) { setNationalRailSelectedId(train.id); setStudyWindow('day'); setTime(Math.max(0, Math.min(86399, train.start + 60))); setIsPlaying(false) }
+        if (train) { setNightEnabled(false); setNationalRailSelectedId(train.id); setStudyWindow('day'); setTime(Math.max(0, Math.min(86399, train.start + 60))); setIsPlaying(false) }
         setQuery(train ? `${train.route} ${train.shortName}` : station?.name ?? '')
         setSearchOpen(false)
       } else if (choice.kind === 'airport') {
@@ -1496,7 +1512,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const activeBoard = selectedBoard ?? railBoardInterchange
   const combinedBoard = activeBoard && baseNetwork && network && <LondonCombinedStationBoard key={activeBoard.id}
     areas={selectedBoard ? boardAreas : undefined} onArea={id => { setBoardAreaId(id); setSelectedTrain(undefined); setNationalRailSelectedId(undefined) }}
-    station={activeBoard} tfl={baseNetwork} rail={nationalRail} snapshots={railFeed.snapshots} errors={railFeed.errors}
+    night={nightEnabled} onNightTime={next => { setTime(next); setIsPlaying(false) }} station={activeBoard} tfl={baseNetwork} rail={nationalRail} snapshots={railFeed.snapshots} errors={railFeed.errors}
     time={time} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd}
     tflStart={studyWindow === 'day' ? activeDayChunk?.windowStart ?? network.metadata.windowStart : network.metadata.windowStart}
     tflEnd={studyWindow === 'day' ? Math.min(network.metadata.windowEnd, activeDayChunk?.windowEnd ?? network.metadata.windowEnd) : network.metadata.windowEnd}
@@ -1527,6 +1543,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       className={`experience view-${pulseHub ? 'hub' : 'network'} london-experience${pulseHub ? ' is-pulse-study' : ''}${pulseHub && pulseNightMix > 0.5 ? ' is-pulse-night' : ''}${limitedChrome ? ' is-limited-chrome' : ''}${airEnabled ? ' has-air-layer' : ''}${airCategorySelected ? ' has-air-category' : ''}${selectedAirport ? ' has-airport-selection' : ''}${roadEnabled ? ' has-road-layer' : ''}${roadCategorySelected ? ' has-road-category' : ''}${surfaceEnabled ? ' has-surface-layer' : ''}${busEnabled ? ' has-bus-layer' : ''}${selectedStation || selectedRoute || selectedTrain || selectedAirTrackId || selectedAirport || selectedRoad || selectedCategory || airCategorySelected || roadCategorySelected ? ' has-selection' : ''}`}
       data-limited-chrome={limitedChrome}
       data-spatial-layout={layout}
+      data-night-study={nightEnabled}
       data-study-window={studyWindow}
       data-day-loading={dayLoading}
       data-layout-mix={layoutMix.toFixed(3)}
@@ -1634,7 +1651,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           <small>
             {operationsEngaged
               ? 'Observed rail · prediction-derived'
-              : `${surfaceEnabled && busEnabled ? 'Rail + river + bus' : surfaceEnabled ? 'Rail + river' : busEnabled ? 'Rail + bus' : 'Rail'} study · ${studyWindow === 'day' ? '24-hour Friday' : '06:45–08:45'}`}
+              : `${surfaceEnabled && busEnabled ? 'Rail + river + bus' : surfaceEnabled ? 'Rail + river' : busEnabled ? 'Rail + bus' : 'Rail'} study · ${nightEnabled ? '00:00–05:00 Friday' : studyWindow === 'day' ? '24-hour Friday' : '06:45–08:45'}`}
           </small>
         </div>
       </header>
@@ -1727,13 +1744,16 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         <button
           type="button"
           data-tooltip="Load the full Friday timetable and explore all 24 hours" aria-label="24-hour study"
-          aria-pressed={studyWindow === 'day'}
+          aria-pressed={studyWindow === 'day' && !nightEnabled}
           aria-busy={studyWindow === 'day' && dayLoading}
           onClick={() => activateStudyWindow('day')}
         >
           <span className="london-wide-label">24 hours</span>
           <span className="london-mobile-label">24H</span>
           {studyWindow === 'day' && dayLoading && <small>Loading</small>}
+        </button>
+        <button type="button" aria-label="After midnight study" disabled={!morningNetwork} aria-pressed={nightEnabled} onClick={activateNight} data-tooltip="Explore Thursday night into Friday, 00:00–05:00, with explicit source gaps">
+          <span className="london-wide-label">After midnight</span><span className="london-mobile-label">Night</span>
         </button>
         <button
           className="london-operations-toggle"
@@ -1833,7 +1853,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           <span className="london-mobile-label">NR</span>
         </button>
         <button type="button" aria-label="Explore cycle-hire day" data-tooltip="Santander cycle hires · 28–31 May 2026 · weekday/weekend comparison"
-          onClick={() => { clearSelection(); setOperationsRequested(false); setOperationsMode('plan'); setCycleEnabled(true); setMobileControlsOpen(false) }}>Cycles</button>
+          onClick={() => { clearSelection(); setOperationsRequested(false); setOperationsMode('plan'); setNightEnabled(false); setCycleEnabled(true); setMobileControlsOpen(false) }}>Cycles</button>
         {nationalRailEnabled && nationalRailError && <span className="london-layout-status" role="status">National Rail unavailable · toggle to retry</span>}
         {nationalRailEnabled && railFeed.loading && <span className="london-layout-status" role="status">Loading National Rail…</span>}
         {layoutError && (
@@ -2092,11 +2112,11 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         /></Suspense>
       ) : (
       <section
-        className={`london-status-card${selectedStation && !pulseHub && operationsMode === 'plan' ? ' has-station-board' : ''}${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
+        className={`london-status-card${(nightEnabled || selectedStation) && !pulseHub && operationsMode === 'plan' ? ' has-station-board' : ''}${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
         data-hero-dismissed={dismissedHero}
         aria-live={dismissedHero || selectedStation || passengerName ? 'off' : 'polite'}
       >
-        <HeroCardDismiss name={pulseHub?.displayName ?? selectedStation?.name ?? selectedRoad?.label ?? selectedAirIndexEntry?.callsign ?? displayedSelectedRoute?.name ?? (selectedTrain ? `${selectedTrain.route} ${selectedTrain.shortName}` : 'Study')} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />
+        <HeroCardDismiss name={pulseHub?.displayName ?? selectedStation?.name ?? selectedRoad?.label ?? selectedAirIndexEntry?.callsign ?? displayedSelectedRoute?.name ?? (selectedTrain ? `${selectedTrain.route} ${selectedTrain.shortName}` : nightEnabled ? 'After midnight' : 'Study')} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />
         {pulseHub && (
           <>
             <label className="london-pulse-picker">
@@ -2174,7 +2194,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                   ? 'London motorway flow'
                 : selectedAirTelemetry
                 ? `Heading ${Math.round(selectedAirTelemetry.headingDegrees).toString().padStart(3, '0')}°`
-                : selectedStation?.name ?? displayedSelectedRoute?.name ?? (selectedTrain ? `${selectedTrain.route} ${selectedTrain.shortName}` : airStatus ? 'Observed London airspace' : !networkSelection && (airEnabled || roadEnabled || nationalRailEnabled) ? 'Enabled transport layers' : studyWindow === 'day' ? '24-hour lattice' : 'Morning lattice')}
+                : selectedStation?.name ?? displayedSelectedRoute?.name ?? (selectedTrain ? `${selectedTrain.route} ${selectedTrain.shortName}` : airStatus ? 'Observed London airspace' : !networkSelection && (airEnabled || roadEnabled || nationalRailEnabled) ? (nightEnabled ? 'After midnight' : 'Enabled transport layers') : studyWindow === 'day' ? '24-hour lattice' : 'Morning lattice')}
             </p>
             <small>
               {pulseHub
@@ -2208,7 +2228,13 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         ) : (
           <p>Drawing London…</p>
         )}
-        {passengerName && <Suspense fallback={<p>Loading passenger profile…</p>}>
+        {nightEnabled && !nightRailSelected && !pulseHub && !selectedStation && !selectedRoute && !selectedTrain && <Suspense fallback={<p>Loading night study…</p>}>
+          <LondonNightStudy date={morningNetwork?.metadata.serviceDate ?? '2026-09-04'} time={time} onTime={next => { setTime(next); setIsPlaying(false) }} onStation={name => { const station = stations.find(station => station.name === name); if (station) selectStation(station) }} />
+        </Suspense>}
+        {nightEnabled && selectedStation && !selectedBoard && !pulseHub && network && <Suspense fallback={null}>
+          <LondonNightStudy date={network.metadata.serviceDate} time={time} name={selectedStation.name} stopIds={selectedStation.stopIndexes.flatMap(index => infrastructureNetwork?.stops[index]?.[4] ? [infrastructureNetwork.stops[index][4]!] : [])} onTime={next => { setTime(next); setIsPlaying(false) }} />
+        </Suspense>}
+        {passengerName && !nightEnabled && <Suspense fallback={<p>Loading passenger profile…</p>}>
           <LondonPassengerDemand stationName={passengerName} time={time}
             onPulse={['Bank', 'Monument', 'Stratford', 'Stratford (London)'].includes(passengerName) ? () => {
               const id = passengerName.startsWith('Stratford') ? 'stratford' : 'bank'
@@ -2304,7 +2330,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       )}
 
       {(nationalRailEnabled || pulseHub || searchOpen) && railCatalogue.error && <p className="london-layout-status" role="status">Rail station list unavailable · <button type="button" onClick={railCatalogue.retry}>Retry station list</button></p>}
-      {nationalRailEnabled && !selectedBoard && !railBoardSnapshot && !railBoardInterchange && !pulseHub && (
+      {nationalRailEnabled && (!nightEnabled || nightRailSelected) && !selectedBoard && !railBoardSnapshot && !railBoardInterchange && !pulseHub && (
         <section className="london-national-rail-board" aria-label="National Rail loading" data-hero-dismissed={dismissedRail}>
           <HeroCardDismiss name={`${railStation.name} National Rail`} dismissed={dismissedRail} onToggle={() => setDismissedRail(value => !value)} />
           <label className="london-rail-station-picker">Station
@@ -2316,15 +2342,17 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           {railStation.corridors.some(id => railFeed.errors[id]) && <button type="button" onClick={railFeed.retry}>Retry National Rail</button>}
         </section>
       )}
-      {nationalRailEnabled && !selectedBoard && (railBoardSnapshot || railBoardInterchange) && !pulseHub && network && (
+      {nationalRailEnabled && (!nightEnabled || nightRailSelected) && !selectedBoard && (railBoardSnapshot || railBoardInterchange) && !pulseHub && network && (
         <Suspense fallback={<span className="london-layout-status" role="status">Loading rail board…</span>}><LondonNationalRailBoard
           dismissed={dismissedRail} dismissControl={<HeroCardDismiss name={`${railStation.name} National Rail`} dismissed={dismissedRail} onToggle={() => setDismissedRail(value => !value)} />}
           snapshot={railBoardSnapshot ?? { ...network, trains: [], corridorPaths: [], fadeKilometres: 4 }} stations={railStations} stationId={nationalRailStationId} time={time} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd}
           boardContent={railBoardInterchange ? combinedBoard : undefined}
-          passengerContent={operationsMode === 'plan' ? <Suspense fallback={<p>Loading passenger profile…</p>}><LondonPassengerDemand key={railStation.id} stationName={railStation.stationName} onPulse={railStation.id === 'stratford' ? () => { clearSelection(); setPulseHubId('stratford'); setPulseView('passengers'); setDismissedHero(true) } : undefined} time={time} /></Suspense> : undefined}
+          night={nightEnabled}
+          passengerContent={operationsMode === 'plan' && !nightEnabled ? <Suspense fallback={<p>Loading passenger profile…</p>}><LondonPassengerDemand key={railStation.id} stationName={railStation.stationName} onPulse={railStation.id === 'stratford' ? () => { clearSelection(); setPulseHubId('stratford'); setPulseView('passengers'); setDismissedHero(true) } : undefined} time={time} /></Suspense> : undefined}
           partial={railStation.corridors.some(id => !railFeed.snapshots[id])} animate={!isPlaying || playbackRate <= 30}
           onStation={id => {
             clearSelection()
+            setNightRailSelected(true)
             setNationalRailStationId(id)
             const station = railStations.find(value => value.id === id)!
             moveCamera('focus-location', station.focus, 0.25)
@@ -2335,7 +2363,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
             setPulseHubId(nationalRailStationId)
           }}
           selectedId={nationalRailSelectedId}
-          onSelect={id => { clearSelection(); setNationalRailSelectedId(id) }}
+          onSelect={id => { clearSelection(); setNightRailSelected(true); setNationalRailSelectedId(id) }}
           onSeek={nextTime => {
             setTime(Math.max(network.metadata.windowStart, Math.min(network.metadata.windowEnd - 1, nextTime)))
             setIsPlaying(false)

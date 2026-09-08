@@ -8,6 +8,7 @@
     "node": ">=24.0.0"
   },
   "scripts": {
+    "data:london:night": "node scripts/compile-london-night.mjs",
     "data:london:eurostar": "python3 scripts/compile-eurostar.py",
     "data:london:national-rail": "node scripts/fetch-london-rail-sources.mjs && node scripts/compile-london-national-rail.mjs",
     "data:london:national-rail:swr": "node scripts/compile-swr-national-rail.mjs",
