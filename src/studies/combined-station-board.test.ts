@@ -1,18 +1,24 @@
 import { describe, expect, it } from 'vitest'
 import type { NetworkSnapshot, NetworkTrain } from '@motionstudies/core/domain/network'
 import { mergeNetworkLayers } from '@motionstudies/core/domain/network-layers'
-import tflFixture from '../../fixtures/tfl/all-change-rail-led-day.json'
+import tflManifest from '../../fixtures/tfl/all-change-day-manifest.json'
 import angliaFixture from '../../fixtures/national-rail/network-liverpool-street.json'
 import swrFixture from '../../fixtures/national-rail/network-waterloo.json'
 import southernFixture from '../../fixtures/national-rail/network-southern.json'
+import paddingtonFixture from '../../fixtures/national-rail/network-paddington.json'
+import thameslinkFixture from '../../fixtures/national-rail/network-thameslink.json'
+import southeasternFixture from '../../fixtures/national-rail/network-southeastern.json'
+import eustonFixture from '../../fixtures/national-rail/network-euston.json'
 import catalogue from '../../fixtures/national-rail/catalogue.json'
 import { BOARD_INTERCHANGES, boardInterchange } from '../editions/london-board-interchanges.ts'
 import { combinedStationCalls } from './combined-station-board.ts'
 import { upcomingStationCalls } from './station-board.ts'
 import type { NationalRailTrain } from '../data/national-rail.ts'
 
-const tfl = tflFixture as unknown as NetworkSnapshot
-const rail = mergeNetworkLayers([angliaFixture, swrFixture, southernFixture] as unknown as NetworkSnapshot[])
+// Reconstruct from committed delivery artifacts; the compiler's full-day output is ignored by Git.
+const chunks = import.meta.glob<{ trains: NetworkTrain[] }>('../../fixtures/tfl/all-change-day-chunks/*.json', { eager: true, import: 'default' })
+const tfl = { ...tflManifest, trains: [...new Map(Object.values(chunks).flatMap(chunk => chunk.trains).map(train => [train.id, train])).values()] } as unknown as NetworkSnapshot
+const rail = mergeNetworkLayers([angliaFixture, swrFixture, southernFixture, paddingtonFixture, thameslinkFixture, southeasternFixture, eustonFixture] as unknown as NetworkSnapshot[])
 const source = (snapshot: NetworkSnapshot, windowStart = 0, windowEnd = 86400) => ({ snapshot, windowStart, windowEnd })
 
 describe('combined interchange boards', () => {
@@ -22,6 +28,7 @@ describe('combined interchange boards', () => {
       expect(nr.id).toBe(station.id)
       expect([...nr.corridors].sort()).toEqual([...station.corridors].sort())
       expect(tfl.stops.filter(stop => station.tflStopIds.includes(stop[4]!))).toHaveLength(station.tflStopIds.length)
+      for (const alias of station.aliases) expect(boardInterchange(alias)).toBe(station)
       const calls = combinedStationCalls(station, '2026-09-04', source(tfl), source(rail))
       expect(new Set(calls.map(call => call.id)).size).toBe(calls.length)
       for (const [kind, snapshot, ids] of [['tfl', tfl, station.tflStopIds], ['national-rail', rail, [`crs:${station.railCode}`]]] as const) {
@@ -47,6 +54,10 @@ describe('combined interchange boards', () => {
     }
     expect(boardInterchange('Stratford International')).toBeUndefined()
     expect(boardInterchange('Stratford High Street')).toBeUndefined()
+    expect(boardInterchange('Waterloo East')).toBeUndefined()
+    expect(boardInterchange('London Waterloo East')).toBeUndefined()
+    expect(boardInterchange('Euston Square')).toBeUndefined()
+    expect(boardInterchange('Royal Victoria')).toBeUndefined()
     expect(boardInterchange('Stratford (London)')?.id).toBe('stratford')
   })
   it('retains repeated visits and same-time services, deduplicates IDs and honours source ownership', () => {
