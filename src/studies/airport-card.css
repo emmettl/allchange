@@ -19,3 +19,7 @@
   .edition-airport-card .ms-airport-hero__identity h2 { font-size: 16px; min-width: 100px; }
   .edition-airport-card .ms-airport-hero__clock { font-size: 10px; }
 }
+
+.edition-airport-card { background: #0d0d20; border: 1px solid #d2c8e833; }
+.edition-airport-card > .ms-airport-hero { border: 0; padding: 0; background: transparent; }
+.edition-airport-card .ms-airport-hero__masthead { padding-right: 44px; }

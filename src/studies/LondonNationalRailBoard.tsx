@@ -4,8 +4,9 @@ import { type NationalRailSnapshot } from '../data/national-rail.ts'
 import { LONDON_RAIL_CORRIDORS, type RailBoardStation, type RailBoardStationId } from '../editions/london-national-rail.ts'
 import { LondonStationDepartures } from './LondonStationDepartures.tsx'
 
-export function LondonNationalRailBoard({ snapshot, stations, stationId, time, windowStart, windowEnd, selectedId, onStation, onSelect, onSeek, onPulse, partial, animate, passengerContent }: {
+export function LondonNationalRailBoard({ snapshot, stations, stationId, time, windowStart, windowEnd, selectedId, onStation, onSelect, onSeek, onPulse, partial, animate, passengerContent, dismissed, dismissControl }: {
   snapshot: NationalRailSnapshot; stations: readonly RailBoardStation[]; stationId: RailBoardStationId; time: number; windowStart: number; windowEnd: number; selectedId?: string
+  dismissed?: boolean; dismissControl?: ReactNode
   passengerContent?: ReactNode
   partial?: boolean; animate?: boolean
   onStation: (id: RailBoardStationId) => void; onSelect: (id: string | undefined) => void; onSeek: (time: number) => void; onPulse: () => void
@@ -18,7 +19,8 @@ export function LondonNationalRailBoard({ snapshot, stations, stationId, time, w
   const selectedCalls = selected?.stops.filter(([index], ordinal) => snapshot.stops[index][2] === station.stationName && !selected.passIndexes?.includes(ordinal))
   const selectedCall = selected && boardSelection?.trainId === selected.id ? selected.stops[boardSelection.index] : selectedCalls?.find(stop => stop[direction === 'departure' ? 2 : 1] >= time) ?? selectedCalls?.at(-1)
   const intermediateCalls = selected?.stops.slice(1, -1).filter((_, index) => !selected.passIndexes?.includes(index + 1)).length ?? 0
-  return <section className="london-national-rail-board" aria-label={`National Rail at ${station.name}`}>
+  return <section className="london-national-rail-board" aria-label={`National Rail at ${station.name}`} data-hero-dismissed={dismissed}>
+    {dismissControl}
     <details open={expanded} onToggle={event => setExpanded(event.currentTarget.open)}>
       <summary><span>National Rail</span><strong>{station.name}</strong></summary>
       <label className="london-rail-station-picker">Station

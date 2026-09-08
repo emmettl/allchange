@@ -1,0 +1,7 @@
+.london-experience .london-hero-dismiss { position: sticky; top: 0; z-index: 2; float: right; display: block; min-width: 44px; min-height: 44px; margin: -8px -8px 0 8px; padding: 6px; border: 1px solid #d2c8e833; border-radius: 2px; background: #0d0d20; color: #eee9d7; font: 400 11px/1.4 'DM Mono', ui-monospace, monospace; cursor: pointer; }
+.london-experience .london-hero-dismiss span { font: 400 24px/1 sans-serif; color: inherit; }
+.london-experience .london-hero-dismiss:focus-visible { outline: 2px solid #ffe3b8; outline-offset: 2px; }
+.london-experience [data-hero-dismissed='true'] { width: fit-content !important; max-width: calc(100vw - 84px); min-height: 0; padding: 4px !important; overflow: visible; backdrop-filter: none; }
+.london-experience [data-hero-dismissed='true'] > :not(.london-hero-dismiss) { display: none !important; }
+.london-experience [data-hero-dismissed='true'] > .london-hero-dismiss { position: static; float: none; margin: 0; max-width: 230px; padding: 6px 12px; }
+.london-national-rail-board > details > summary { min-height: 36px; padding-right: 44px; }

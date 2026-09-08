@@ -115,6 +115,7 @@ const AirportHeroCard = lazy(() => import('./AirportCard.tsx'))
 const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
 import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
 const LondonNationalRailBoard = lazy(() => import('./LondonNationalRailBoard.tsx').then(module => ({ default: module.LondonNationalRailBoard })))
+import { HeroCardDismiss } from './HeroCardDismiss.tsx'
 import { passengerStationId } from '../editions/london-passenger-stations.ts'
 const LondonPassengerDemand = lazy(() => import('./LondonPassengerDemand.tsx'))
 const LondonStationDepartures = lazy(() => import('./LondonStationDepartures.tsx').then(module => ({ default: module.LondonStationDepartures })))
@@ -300,6 +301,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const [operationsTransitionNetwork, setOperationsTransitionNetwork] =
     useState<NetworkSnapshot>()
   const [selectedCategory, setSelectedCategory] = useState<ServiceCategory>()
+  const [dismissedHero, setDismissedHero] = useState(false)
+  const [dismissedRail, setDismissedRail] = useState(false)
   const [selectedStation, setSelectedStation] = useState<StationIndexEntry>()
   const [selectedRoute, setSelectedRoute] = useState<NetworkRouteIndexEntry>()
   const [selectedTrain, setSelectedTrain] = useState<NetworkTrain>()
@@ -1024,6 +1027,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   ])
 
   const clearSelection = useCallback(() => {
+    setDismissedHero(false)
+    setDismissedRail(false)
     setNationalRailSelectedId(undefined)
     setSelectedCategory(undefined)
     setSelectedStation(undefined)
@@ -1143,6 +1148,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   const selectStation = useCallback(
     (station: StationIndexEntry) => {
+      setDismissedHero(false)
       setNationalRailSelectedId(undefined)
       setSelectedStation(station)
       setSelectedRoute(undefined)
@@ -1177,6 +1183,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   const activateChoice = useCallback(
     (choice: SearchChoice) => {
+      setDismissedHero(false)
+      setDismissedRail(false)
       setPulseHubId(undefined)
       if (choice.kind === 'rail-station' || choice.kind === 'rail-train') {
         clearSelection()
@@ -1310,6 +1318,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         activeAirSnapshot?.tracks.find((candidate) => candidate.id === trackId) ??
         searchableAircraft.find((candidate) => candidate.id === trackId)
       if (!track) return
+      setDismissedHero(false)
       setTime((current) =>
         current >= track.start && current <= track.end
           ? current
@@ -1873,6 +1882,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                 } as CSSProperties
               }
               onClick={() => {
+                setDismissedHero(false)
                 setSelectedCategory((value) =>
                   value === category.id ? undefined : category.id,
                 )
@@ -1898,6 +1908,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               data-tooltip={airCategorySelected ? 'Restore the other transport layers' : 'Isolate observed aircraft and attenuate the other transport layers'}
               style={{ '--service-accent': edition.theme.air } as CSSProperties}
               onClick={() => {
+                setDismissedHero(false)
                 setAirCategorySelected((value) => !value)
                 setSelectedCategory(undefined)
                 setSelectedStation(undefined)
@@ -1921,6 +1932,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               data-tooltip={roadCategorySelected ? 'Restore the other transport layers' : 'Isolate reconstructed motorway traffic and attenuate the other layers'}
               style={{ '--service-accent': edition.theme.roadHeavy } as CSSProperties}
               onClick={() => {
+                setDismissedHero(false)
                 setRoadCategorySelected((value) => !value)
                 setSelectedCategory(undefined)
                 setSelectedStation(undefined)
@@ -2058,6 +2070,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
       {selectedAirport ? (
         <Suspense fallback={null}><AirportHeroCard key={selectedAirport.id} className="edition-airport-card"
+          dismissControl={<HeroCardDismiss name={selectedAirport.iata} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />} dismissed={dismissedHero}
           airport={selectedAirport} aircraft={searchableAircraft}
           study={{ time: sceneTime, windowStart: Math.max(sceneNetwork?.metadata.windowStart ?? 0, activeAirSnapshot?.metadata.windowStart ?? 0), windowEnd: Math.min(sceneNetwork?.metadata.windowEnd ?? 86400, activeAirSnapshot?.metadata.windowEnd ?? 86400) }}
           maxRows={4} dateLabel="04.09.2026"
@@ -2067,8 +2080,10 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       ) : (
       <section
         className={`london-status-card${passengerId ? ' has-passenger-demand' : ''}${selectedStation && !pulseHub && operationsMode === 'plan' ? ' has-station-board' : ''}${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
-        aria-live={selectedStation || passengerId ? 'off' : 'polite'}
+        data-hero-dismissed={dismissedHero}
+        aria-live={dismissedHero || selectedStation || passengerId ? 'off' : 'polite'}
       >
+        <HeroCardDismiss name={pulseHub?.displayName ?? selectedStation?.name ?? selectedRoad?.label ?? selectedAirIndexEntry?.callsign ?? displayedSelectedRoute?.name ?? (selectedTrain ? `${selectedTrain.route} ${selectedTrain.shortName}` : 'Study')} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />
         {pulseHub && (
           <>
             <label className="london-pulse-picker">
@@ -2077,6 +2092,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                 aria-label="Pulse interchange"
                 value={pulseHub.id}
                 onChange={(event) => {
+                  setDismissedHero(false)
                   setPulseLens('all')
                   setSelectedCategory(undefined)
                   setPulseHubId(event.target.value as LondonHubId)
@@ -2274,9 +2290,10 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
       {(nationalRailEnabled || pulseHub || searchOpen) && railCatalogue.error && <p className="london-layout-status" role="status">Rail station list unavailable · <button type="button" onClick={railCatalogue.retry}>Retry station list</button></p>}
       {nationalRailEnabled && !railBoardSnapshot && !pulseHub && (
-        <section className="london-national-rail-board" aria-label="National Rail loading">
+        <section className="london-national-rail-board" aria-label="National Rail loading" data-hero-dismissed={dismissedRail}>
+          <HeroCardDismiss name={`${railStation.name} National Rail`} dismissed={dismissedRail} onToggle={() => setDismissedRail(value => !value)} />
           <label className="london-rail-station-picker">Station
-            <select aria-label="National Rail station" value={nationalRailStationId} onChange={event => setNationalRailStationId(event.target.value as RailBoardStationId)}>
+            <select aria-label="National Rail station" value={nationalRailStationId} onChange={event => { setDismissedRail(false); setNationalRailStationId(event.target.value as RailBoardStationId) }}>
               {railStations.map(station => <option key={station.id} value={station.id}>{station.name}</option>)}
             </select>
           </label>
@@ -2286,6 +2303,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       )}
       {nationalRailEnabled && railBoardSnapshot && !pulseHub && network && (
         <Suspense fallback={<span className="london-layout-status" role="status">Loading rail board…</span>}><LondonNationalRailBoard
+          dismissed={dismissedRail} dismissControl={<HeroCardDismiss name={`${railStation.name} National Rail`} dismissed={dismissedRail} onToggle={() => setDismissedRail(value => !value)} />}
           snapshot={railBoardSnapshot} stations={railStations} stationId={nationalRailStationId} time={time} windowStart={network.metadata.windowStart} windowEnd={network.metadata.windowEnd}
           passengerContent={operationsMode === 'plan' && passengerStationId(railStation.stationName) ? <Suspense fallback={<p>Loading passenger profile…</p>}><LondonPassengerDemand key={railStation.id} stationId={passengerStationId(railStation.stationName)!} time={time} /></Suspense> : undefined}
           partial={railStation.corridors.some(id => !railFeed.snapshots[id])} animate={!isPlaying || playbackRate <= 30}
