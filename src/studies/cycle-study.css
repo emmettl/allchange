@@ -5,8 +5,11 @@
 .cycle-study :focus-visible { outline: 2px solid #ffe3b8; outline-offset: 2px; }
 .cycle-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .cycle-header p { margin: 0; color: #7ce8ee; letter-spacing: .12em; font-size: 10px; }
-.cycle-header h1 { font: 500 34px/1.2 'DM Mono', monospace; letter-spacing: -.06em; margin: 5px 0; }
+.cycle-header h1 { max-width: none; font: 500 34px/1.2 'DM Mono', monospace; letter-spacing: -.06em; margin: 5px 0; }
 .cycle-header span { color: #b9b3c7; }
+.cycle-header > div { min-width: 0; }
+.cycle-date { display: flex; align-items: center; gap: 8px; margin: 6px 0; }
+.cycle-date select { min-width: 0; max-width: 100%; }
 .cycle-toolbar { display: flex; gap: 12px; }
 .cycle-search { position: relative; flex: 1; max-width: 600px; }
 .cycle-search input { width: 100%; box-sizing: border-box; }
@@ -45,6 +48,8 @@
   .cycle-header h1 { font-size: 23px; }
   .cycle-header span { font-size: 9px; }
   .cycle-header p { font-size: 8px; }
+  .cycle-date { gap: 4px; font-size: 9px; }
+  .cycle-date select { padding: 4px; font-size: 9px; }
   .cycle-header button { padding: 6px; flex-shrink: 0; }
   .cycle-toolbar { flex-wrap: wrap; gap: 6px; }
   .cycle-search { flex-basis: 100%; }

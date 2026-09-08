@@ -1,9 +1,42 @@
 import { describe, expect, it } from 'vitest'
-import fixture from '../../fixtures/cycle-hire/day.json'
-import audit from '../../fixtures/cycle-hire/audit.json'
-import { activeCycleTrips, cycleInterval, cycleProfiles, cycleProgress, decodeCycleDay, type CycleDay, type CycleTrip } from './cycle-hire.ts'
+import fixture from '../../fixtures/cycle-hire/days/2026-05-29.json'
+import audit from '../../fixtures/cycle-hire/audits/2026-05-29.json'
+import manifestFixture from '../../fixtures/cycle-hire/manifest.json'
+import { activeCycleTrips, cycleInterval, cycleProfiles, cycleProgress, decodeCycleDay, decodeCycleManifest, type CycleDay, type CycleTrip } from './cycle-hire.ts'
+
+const days = import.meta.glob('../../fixtures/cycle-hire/days/*.json', { eager: true, import: 'default' })
+const audits = import.meta.glob('../../fixtures/cycle-hire/audits/*.json', { eager: true, import: 'default' })
 
 describe('cycle-hire day', () => {
+  it('audits four independently loaded days against shared identities and fixed scales', () => {
+    const manifest = decodeCycleManifest(manifestFixture)
+    const peakByDock: Record<string, number> = {}, totals: number[] = []
+    for (const date of manifest.dates) {
+      const day = decodeCycleDay(days[`../../fixtures/cycle-hire/days/${date}.json`], date, manifest)
+      const evidence = audits[`../../fixtures/cycle-hire/audits/${date}.json`] as typeof audit
+      const { profiles, total } = cycleProfiles(day)
+      expect(day.trips.length + day.excludedJourneys).toBe(evidence.counts.overlappingRows)
+      expect(total.departures.reduce((a, b) => a + b, 0)).toBe(evidence.counts.departures)
+      expect(total.returns.reduce((a, b) => a + b, 0)).toBe(evidence.counts.returns)
+      profiles.forEach((p, i) => { const id = day.stations[i].id; peakByDock[id] = Math.max(peakByDock[id] ?? 1, ...p.departures, ...p.returns) })
+      totals.push(Math.max(...total.departures, ...total.returns))
+      if (date === '2026-05-30') expect(day.stations.some(dock => dock.id === '1084')).toBe(false)
+      else expect(day.stations.some(dock => dock.id === '1084')).toBe(true)
+    }
+    expect(peakByDock).toEqual(manifest.profileMax)
+    expect(Math.max(...totals)).toBe(manifest.totalProfileMax)
+    expect(manifest.totalProfileMax).toBe(1227)
+  })
+  it('rejects mismatched dates, sources and reused identities during comparison', () => {
+    const manifest = decodeCycleManifest(manifestFixture)
+    expect(() => decodeCycleDay(fixture, '2026-05-30', manifest)).toThrow()
+    const changed = structuredClone(fixture)
+    changed.stations[0].name = 'A different dock'
+    expect(() => decodeCycleDay(changed, '2026-05-29', manifest)).toThrow()
+    expect(() => decodeCycleDay(fixture, '2026-05-29', { ...manifest, sourceSha256: '0'.repeat(64) })).toThrow()
+    expect(() => decodeCycleManifest({ ...manifest, totalProfileMax: 0 })).toThrow()
+    expect(() => decodeCycleManifest({ ...manifest, bounds: [0, 0, 0, 0] })).toThrow()
+  })
   it('reconciles all mapped endpoint events to the audited day', () => {
     const day = decodeCycleDay(fixture), { total } = cycleProfiles(day)
     expect(day.stations).toHaveLength(792)

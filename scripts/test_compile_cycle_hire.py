@@ -20,6 +20,19 @@ def trip(identity='1', start='2026-05-29 08:00', end='2026-05-29 08:10', origin=
 
 
 class CompileCycleTests(unittest.TestCase):
+    def test_date_origin_and_comparison_scale_are_shared_without_reindexing_identity(self):
+        points = [point('1', 'Alpha'), point('2', 'Beta')]
+        friday, _ = cycle.compile_day([trip()], points)
+        saturday, audit = cycle.compile_day([trip(start='2026-05-30 08:00', end='2026-05-30 08:10')], points, '2026-05-30')
+        self.assertEqual(saturday['trips'][0][:2], [28800, 29400])
+        self.assertEqual(audit['date'], '2026-05-30')
+        manifest = cycle.comparison_manifest([friday, saturday])
+        self.assertEqual(manifest['profileMax'], {'1': 1, '2': 1})
+        self.assertEqual(manifest['totalProfileMax'], 1)
+        saturday['stations'][0]['name'] = 'Reused identity'
+        with self.assertRaises(ValueError):
+            cycle.comparison_manifest([friday, saturday])
+
     def test_identity_requires_terminal_and_name(self):
         data, audit = cycle.compile_day([trip()], [point('1', 'Alpha'), point('2', 'Reused terminal')])
         self.assertEqual(data['trips'], [])

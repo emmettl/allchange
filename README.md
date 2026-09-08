@@ -96,9 +96,9 @@ The board and its styles load on selection, with a separate dependency-inclusive
 
 ### Cycle-hire day
 
-Choose **Cycles** to replay Friday 29 May 2026 across 792 matched Santander docking stations. Search or select a dock for departures, returns, net balance and a daily profile; compare 08:30 with 17:30 using the shared clock. Dismissible cards, reduced motion and zoom support the phone view. Rail-interchange markers provide geographic context.
+Choose **Cycles** to compare Thursday 28 May through Sunday 31 May 2026 across 792 validated Santander docking stations. Switching days preserves the clock, selected dock, zoom and card state, and pauses for comparison. Map and profile scales stay fixed across dates; a dock without included records remains selected with unavailable counts. Search or select a dock for departures, returns, net balance and a daily profile; compare 08:30 with 17:30 using the shared clock. Dismissible cards, reduced motion and zoom support the phone view. Rail-interchange markers provide geographic context.
 
-The separately dated study contains 31,247 included journey records and loads only when opened. Connections are schematic dock-to-dock lines, not recorded street routes; net returns do not imply bike availability. The source audit records unmapped/reused station identities, long-hire exclusions and midnight treatment. See [Cycle-hire source and validation](docs/CYCLE-HIRE.md).
+The four day artifacts load independently, starting with Friday’s 31,247 included records. Connections are schematic dock-to-dock lines, not recorded street routes; net returns do not imply bike availability. The source audits record unmapped/reused station identities, long-hire exclusions and midnight treatment for every date. See [Cycle-hire source and validation](docs/CYCLE-HIRE.md).
 
 ### Passenger rhythm
 

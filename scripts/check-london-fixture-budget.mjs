@@ -593,9 +593,12 @@ console.log(`All Change optional rail renderer: ${kibibytes(railLayerSize)} / 6.
 if (railLayerSize > 6 * 1024) throw new Error('Rail renderer transfer budget exceeded')
 const passengerCard = await optionalCardSize(passengerCardKey)
 const cycleStudy = await optionalCardSize(cycleStudyKey)
-const cycleData = gzipSync(await readFile('fixtures/cycle-hire/day.json'), { level: 9 }).byteLength
-console.log(`All Change optional cycle study: ${kibibytes(cycleStudy.javaScript)} JS / 9 KiB; ${kibibytes(cycleStudy.css)} CSS / 3 KiB; ${kibibytes(cycleData)} data / 300 KiB`)
-if (cycleStudy.javaScript > 9 * 1024 || cycleStudy.css > 3 * 1024 || cycleData > 300 * 1024) throw new Error('Cycle study transfer budget exceeded')
+const cycleManifestBytes = await readFile('fixtures/cycle-hire/manifest.json')
+const cycleManifestSize = gzipSync(cycleManifestBytes, { level: 9 }).byteLength
+let cycleLargestDay = 0
+for (const date of JSON.parse(cycleManifestBytes).dates) cycleLargestDay = Math.max(cycleLargestDay, gzipSync(await readFile(`fixtures/cycle-hire/days/${date}.json`), { level: 9 }).byteLength)
+console.log(`All Change optional cycle study: ${kibibytes(cycleStudy.javaScript)} JS / 9 KiB; ${kibibytes(cycleStudy.css)} CSS / 3 KiB; ${kibibytes(cycleManifestSize)} index / 24 KiB; ${kibibytes(cycleLargestDay + cycleManifestSize)} index + largest day / 300 KiB`)
+if (cycleStudy.javaScript > 9 * 1024 || cycleStudy.css > 3 * 1024 || cycleManifestSize > 24 * 1024 || cycleLargestDay + cycleManifestSize > 300 * 1024) throw new Error('Cycle study transfer budget exceeded')
 const passengerPulse = await optionalCardSize(passengerPulseKey)
 const passengerCatalogue = JSON.parse(await readFile('fixtures/passenger-demand/catalogue.json', 'utf8'))
 const passengerIndexBytes = gzipSync(await readFile('fixtures/passenger-demand/catalogue.json'), { level: 9 }).byteLength

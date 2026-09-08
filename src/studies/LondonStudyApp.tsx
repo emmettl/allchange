@@ -1799,7 +1799,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           <span className="london-wide-label">National Rail</span>
           <span className="london-mobile-label">NR</span>
         </button>
-        <button type="button" aria-label="Explore cycle-hire day" data-tooltip="Santander cycle hires · Friday 29 May 2026 · separately dated study"
+        <button type="button" aria-label="Explore cycle-hire day" data-tooltip="Santander cycle hires · 28–31 May 2026 · weekday/weekend comparison"
           onClick={() => { clearSelection(); setOperationsRequested(false); setOperationsMode('plan'); setCycleEnabled(true); setMobileControlsOpen(false) }}>Cycles</button>
         {nationalRailEnabled && nationalRailError && <span className="london-layout-status" role="status">National Rail unavailable · toggle to retry</span>}
         {nationalRailEnabled && railFeed.loading && <span className="london-layout-status" role="status">Loading National Rail…</span>}
