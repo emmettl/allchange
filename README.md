@@ -18,7 +18,9 @@ Run transfer checks on Node 24 as CI does: gzip measurements can differ between 
 
 CI builds once and tests that artifact on separate Chromium and iPhone WebKit runners, each with one worker to avoid software WebGL contention. Frame cadence runs on the WebKit runner after its functional tests. Deployment waits for both browsers. Each runner uploads its own `e2e-report-…` artifact and lists wall time and the slowest tests in the Actions summary.
 
-The exhaustive vehicle-count combinations run in Vitest (`src/studies/vehicle-counts.test.ts`): all 64 enabled-layer combinations at morning and evening times, category isolation, station/route filtering, missing data and time boundaries. Two browser tests in `e2e/london.spec.ts` retain coverage of layer controls, category and station selection, scrubbing, count labels and the quiet state. Run these alone with `npx playwright test --grep 'vehicles in motion follows|vehicle count follows' --workers=1`.
+Vitest owns fixture audits, station/operator permutations, time boundaries, loader caching, independent retries and stale responses. DOM tests mount the real app, hooks and cards with only the GPU scene boundary replaced; they read committed fixtures directly and require no build. The browser suite retains 30 cases for production lazy loading, representative scene journeys, real animation/rendering, map picking and responsive keyboard/touch behavior. See [the E2E migration and coverage map](docs/E2E-REVIEW.md).
+
+All 64 enabled-layer combinations and category/station filtering run in `src/studies/vehicle-counts.test.ts`, with DOM selection/release coverage in `src/studies/app-state.test.tsx`. The remaining real air/road adapter smoke can be run with `npx playwright test --grep 'vehicle count follows' --workers=1`.
 
 Set `E2E_PREBUILT=1` when running Playwright against an already-current `dist` to skip rebuilding; otherwise Playwright builds automatically.
 

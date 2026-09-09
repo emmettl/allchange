@@ -1,5 +1,4 @@
 import { expect, test, type Page } from '@playwright/test'
-import { setMobileControls } from './mobile-controls.ts'
 
 async function selectTflStation(page: Page, name: string) {
   await page.getByRole('searchbox').fill(name)
@@ -12,99 +11,7 @@ async function open(page: Page) {
   await page.locator('.london-transport input[type="range"]').fill('27900')
 }
 
-test('the shared Tube hero keeps King’s Cross and both St Pancras areas separate', async ({ page }, info) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' })
-  await page.route('**/all-change-national-rail-network-st-pancras.json', route => route.fulfill({ status: 503, body: 'Unavailable' }))
-  await open(page)
-  await selectTflStation(page, "King's Cross St. Pancras")
-  const areas = page.getByRole('combobox', { name: 'Rail station area', exact: true })
-  await expect(areas.locator('option')).toHaveText(['King’s Cross', 'St. Pancras International', 'St Pancras Thameslink', 'St Pancras Eurostar'])
-  await expect(areas).toHaveValue('kings-cross')
-  const combined = page.locator('.london-combined-board')
-  for (const [id, name, route, excluded] of [
-    ['kings-cross', 'King’s Cross', 'LNER', 'East Midlands Railway'],
-    ['st-pancras', 'St. Pancras International', 'Southeastern', 'LNER'],
-    ['st-pancras-thameslink', 'St Pancras Thameslink', 'Thameslink', 'Southeastern'],
-  ]) {
-    await areas.selectOption(id)
-    const board = page.getByRole('region', { name: `${name} timetable`, exact: true })
-    const filter = board.getByRole('combobox', { name: `${name} board line` })
-    await expect(filter.locator('option')).toContainText(['Piccadilly'])
-    await expect(filter.locator('option')).toContainText([route])
-    await expect(filter.locator('option').filter({ hasText: excluded })).toHaveCount(0)
-    await filter.selectOption(route)
-    await board.locator('tbody tr button').first().click()
-    await expect(board.locator('.london-station-board-selection')).toContainText(route)
-    await expect(page.locator('.london-transport input[type="range"]')).toHaveValue('27900')
-  }
-  await areas.selectOption('st-pancras')
-  await expect(combined).toContainText('some National Rail services unavailable')
-  await expect(combined).toContainText('Eurostar and Thameslink have separate boards')
-  await expect(combined.locator('.london-station-board-selection')).toHaveCount(0)
-  await page.unroute('**/all-change-national-rail-network-st-pancras.json')
-  await combined.getByRole('button', { name: 'Retry National Rail board' }).click()
-  const filter = page.getByRole('combobox', { name: 'St. Pancras International board line' })
-  await expect(filter.locator('option')).toContainText(['East Midlands Railway'])
-  await filter.selectOption('East Midlands Railway')
-  await combined.locator('tbody tr button').first().click()
-  const service = await page.locator('.london-experience').getAttribute('data-selected-rail-service')
-  await page.getByRole('button', { name: "Close King's Cross St. Pancras card", exact: true }).click()
-  await page.getByRole('button', { name: "Show King's Cross St. Pancras card", exact: true }).click()
-  await expect(areas).toHaveValue('st-pancras')
-  await areas.scrollIntoViewIfNeeded()
-  expect((await areas.boundingBox())!.height).toBeGreaterThanOrEqual(44)
-  expect(await combined.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
-  await page.screenshot({ path: `/tmp/allchange-pancras/${info.project.name}.png`, animations: 'disabled' })
-  await combined.getByRole('button', { name: 'Show movement', exact: true }).click()
-  await expect(page.locator('.london-experience')).toHaveAttribute('data-selected-rail-service', service!)
-  await expect(page.getByRole('region', { name: 'National Rail at St. Pancras International', exact: true })).toHaveAttribute('data-hero-dismissed', 'true')
-})
-
-test('each northern terminal rail entry uses its own calls and the shared Tube station', async ({ page }, info) => {
-  await open(page)
-  for (const [code, name, route] of [['KGX', 'King’s Cross', 'LNER'], ['STP', 'St. Pancras International', 'East Midlands Railway'], ['SPL', 'St Pancras Thameslink', 'Thameslink']]) {
-    await page.getByRole('searchbox').fill(code)
-    await page.getByRole('option').filter({ hasText: `NATIONAL RAIL · ${code}` }).click()
-    const card = page.getByRole('region', { name: `National Rail at ${name}`, exact: true })
-    if (info.project.name === 'iphone-webkit' && await card.locator(':scope > details').getAttribute('open') === null) await card.locator(':scope > details > summary').click()
-    await expect(card.getByRole('combobox', { name: `${name} board line` }).locator('option')).toContainText([route])
-    await expect(card.getByRole('combobox', { name: `${name} board line` }).locator('option')).toContainText(['Piccadilly'])
-    await expect(card.getByRole('combobox', { name: 'Rail station area', exact: true })).toHaveCount(0)
-    await expect(page.locator('.london-transport input[type="range"]')).toHaveValue('27900')
-  }
-})
-
-test('gateway boards join audited station areas through TfL and rail entry points', async ({ page }, info) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' })
-  await open(page)
-  for (const [name, code, railRoute, tflRoute] of [
-    ['Paddington', 'PAD', 'GWR', 'Elizabeth line'],
-    ['Waterloo', 'WAT', 'South Western Railway', 'Waterloo & City'],
-    ['Victoria', 'VIC', 'Southern', 'Victoria'],
-    ['London Bridge', 'LBG', 'Thameslink', 'Northern'],
-    ['Euston', 'EUS', 'Avanti West Coast', 'Lioness'],
-  ]) {
-    await selectTflStation(page, name)
-    const board = page.getByRole('region', { name: `${name} timetable`, exact: true })
-    const filter = board.getByRole('combobox', { name: `${name} board line` })
-    await expect(filter.locator('option')).toContainText([railRoute])
-    await expect(filter.locator('option')).toContainText([tflRoute])
-    await filter.selectOption(railRoute)
-    await expect(board.locator('tbody tr:has(button)')).toHaveCount(4)
-    const calls = await board.locator('tbody tr').allTextContents()
-    await page.getByRole('searchbox').fill(code)
-    await page.getByRole('option').filter({ hasText: `NATIONAL RAIL · ${code}` }).click()
-    const railCard = page.getByRole('region', { name: `National Rail at ${name}`, exact: true })
-    if (info.project.name === 'iphone-webkit') await railCard.locator(':scope > details > summary').click()
-    await railCard.getByRole('combobox', { name: `${name} board line` }).selectOption(railRoute)
-    await expect(railCard.locator('tbody tr')).toHaveText(calls)
-    await expect(page.locator('.london-transport input[type="range"]')).toHaveValue('27900')
-  }
-  await selectTflStation(page, 'Paddington (H&C Line)-Underground')
-  await expect(page.getByRole('region', { name: 'Paddington timetable', exact: true })).toBeVisible()
-})
-
-test('Stratford joins its aliases, keeps TfL on rail failure and seeks the selected rail service', async ({ page }, info) => {
+test('Stratford joins its aliases, keeps TfL on rail failure and seeks the selected rail service', async ({ page }) => {
   const requests: string[] = [], errors: string[] = []
   page.on('request', request => requests.push(request.url()))
   page.on('pageerror', error => errors.push(error.message))
@@ -134,7 +41,6 @@ test('Stratford joins its aliases, keeps TfL on rail failure and seeks the selec
   expect(boardBounds!.width).toBeGreaterThan(cardBounds!.width * .8)
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await board.scrollIntoViewIfNeeded()
-  await page.screenshot({ path: `/tmp/allchange-combined/${info.project.name}-stratford.png`, animations: 'disabled' })
   await board.getByRole('button', { name: 'Show movement', exact: true }).click()
   await expect(page.locator('.london-experience')).toHaveAttribute('data-selected-rail-service', service!)
   await expect(page.getByRole('button', { name: 'Hide National Rail', exact: true, includeHidden: true })).toBeAttached()
@@ -167,32 +73,4 @@ test('the rail entry offers the same Stratford board and sends a TfL service to 
   await expect(page.locator('.london-experience')).toHaveAttribute('data-selected-tfl-service', service!)
   await expect(card).toHaveAttribute('data-hero-dismissed', 'true')
   await expect(page.locator('.has-station-board')).toHaveCount(0)
-})
-
-test('Clapham retains available operators and each source recovers independently across day boundaries', async ({ page }) => {
-  await page.route('**/all-change-national-rail-network-southern.json', route => route.fulfill({ status: 503, body: 'Unavailable' }))
-  await page.route('**/all-change-day-chunks/06-08.json', route => route.fulfill({ status: 503, body: 'Unavailable' }))
-  await open(page)
-  await setMobileControls(page, true)
-  await page.getByRole('button', { name: '24-hour study', exact: true }).click()
-  await page.getByRole('button', { name: 'Pause motion', exact: true }).click()
-  await setMobileControls(page, false)
-  await selectTflStation(page, 'Clapham Junction')
-  const combined = page.locator('.london-combined-board')
-  const board = page.getByRole('region', { name: 'Clapham Junction timetable', exact: true })
-  await expect(combined).toContainText('TfL timetable unavailable')
-  await expect(combined).toContainText('some National Rail services unavailable')
-  await expect(board.locator('tbody tr:has(button)')).toHaveCount(4)
-  await page.unroute('**/all-change-day-chunks/06-08.json')
-  await combined.getByRole('button', { name: 'Retry TfL board' }).click()
-  await expect(combined).toContainText('TfL calls loaded: 06:00–08:00')
-  await expect(combined).toContainText('TfL coverage does not span this whole window')
-  const filter = board.getByRole('combobox', { name: 'Clapham Junction board line' })
-  await expect(filter.locator('option')).toHaveText(['All lines', 'Mildmay', 'South Western Railway', 'Windrush'])
-  await page.unroute('**/all-change-national-rail-network-southern.json')
-  await combined.getByRole('button', { name: 'Retry National Rail board' }).click()
-  await expect(filter.locator('option')).toHaveText(['All lines', 'Mildmay', 'South Western Railway', 'Southern', 'Windrush'])
-  await page.locator('.london-transport input[type="range"]').fill('86400')
-  await expect(board.locator('tbody tr button')).toHaveCount(0)
-  await expect(board).toContainText('Outside study window')
 })

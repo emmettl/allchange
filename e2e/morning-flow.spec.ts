@@ -15,7 +15,6 @@ test('directional study is lazy, follows the shared clock and preserves selectio
   const study=page.getByRole('region',{name:'Where does the morning go?',exact:true}), clock=page.locator('.london-transport input[type="range"]')
   await expect(study).toContainText('≈2,169'); await expect(study).toContainText('≈694')
   await expect(clock).toHaveValue('30600'); await expect(page.locator('.scene canvas')).toHaveCount(0)
-  await page.screenshot({path:`/tmp/allchange-morning-opening-${info.project.name}.png`,animations:'disabled'})
   await study.getByRole('combobox',{name:'Morning flow station'}).selectOption('SFDu')
   await study.getByRole('button',{name:'17:30 · The return',exact:true}).click()
   await expect(clock).toHaveValue('63000'); await expect(study).toContainText('≈2,591'); await expect(study).toContainText('≈1,379')
@@ -34,7 +33,6 @@ test('directional study is lazy, follows the shared clock and preserves selectio
     expect(story!.y+story!.height).toBeLessThanOrEqual(selector!.y)
     await study.evaluate(node=>{node.scrollTop=0})
   }
-  await page.screenshot({path:`/tmp/allchange-morning-flow-${info.project.name}.png`,animations:'disabled'})
   await clock.fill('3600'); await expect(study).toContainText('No matching Friday interval')
   await expect(study.locator('[data-link] circle')).toHaveCount(0)
   await clock.fill('30600'); await page.getByRole('button',{name:'Resume motion',exact:true}).click()
@@ -46,27 +44,4 @@ test('directional study is lazy, follows the shared clock and preserves selectio
   await expect(page.locator('.london-status-card')).toContainText('Bank')
   expect(requests.filter(url=>url.endsWith('/all-change-morning-flow.json'))).toHaveLength(1)
   expect(errors).toEqual([])
-})
-
-test('directional study recovers a failed optional download',async({page})=>{
-  await page.route('**/all-change-morning-flow.json',route=>route.fulfill({status:503,body:'Unavailable'}))
-  await page.goto('/'); await expect(page.locator('.scene canvas')).toBeVisible(); await setMobileControls(page,true)
-  await page.getByRole('button',{name:'Where does the morning go?',exact:true}).click(); await setMobileControls(page,false)
-  const study=page.getByRole('region',{name:'Where does the morning go?',exact:true})
-  await expect(study).toContainText('Directional demand unavailable')
-  await page.unroute('**/all-change-morning-flow.json'); await study.getByRole('button',{name:'Retry morning flow'}).click()
-  await expect(study).toContainText('≈2,169')
-})
-
-test('the night-to-people handoff enables the directional diagram and holds its checkpoint',async({page})=>{
-  await page.goto('/'); await expect(page.locator('.scene canvas')).toBeVisible(); await setMobileControls(page,true)
-  await page.getByRole('button',{name:'After midnight study',exact:true}).click()
-  await page.getByRole('button',{name:'Where does the morning go?',exact:true}).click()
-  await setMobileControls(page,true)
-  await expect(page.getByRole('button',{name:'Diagram layout',exact:true})).toBeEnabled()
-  await page.getByRole('button',{name:'Diagram layout',exact:true}).click(); await setMobileControls(page,false)
-  const study=page.getByRole('region',{name:'Where does the morning go?',exact:true})
-  await expect(study).toContainText('≈2,169')
-  await expect(study).toHaveAttribute('data-layout-mix','1')
-  await expect(page.locator('.london-transport input[type="range"]')).toHaveValue('30600')
 })

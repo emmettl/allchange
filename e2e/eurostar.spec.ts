@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 
-test('Eurostar has a separate dated board, independent retry, and honest movement availability', async ({ page }, info) => {
+test('Eurostar has a separate dated board, independent retry, and honest movement availability', async ({ page }) => {
   const errors: string[] = [], requests: string[] = []
   page.on('pageerror', error => errors.push(error.message))
   page.on('request', request => requests.push(request.url()))
@@ -54,35 +54,10 @@ test('Eurostar has a separate dated board, independent retry, and honest movemen
   expect((await area.boundingBox())!.height).toBeGreaterThanOrEqual(44)
   expect(await combined.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
   await board.scrollIntoViewIfNeeded()
-  await page.screenshot({ path: `/tmp/allchange-eurostar/${info.project.name}.png`, animations: 'disabled' })
   await selection.getByRole('button', { name: 'Show movement', exact: true }).click()
   await expect(clock).toHaveValue('30600')
   await expect(page.locator('.london-experience')).toHaveAttribute('data-selected-rail-service', 'eurostar:9007-0904:2026-09-04')
   await expect(page.locator('.london-experience')).toHaveAttribute('data-spatial-layout', 'geographic')
   await expect(page.getByRole('region', { name: 'National Rail at St Pancras Eurostar', exact: true })).toHaveAttribute('data-hero-dismissed', 'true')
   expect(errors).toEqual([])
-})
-
-test('the UIC station entry opens Eurostar directly and respects the end of the day', async ({ page }, info) => {
-  await page.goto('/')
-  await expect(page.locator('.scene canvas')).toBeVisible()
-  await page.getByRole('button', { name: 'Pause motion', exact: true }).click()
-  await page.locator('.london-transport input[type="range"]').fill('27900')
-  await page.getByRole('searchbox').fill('7015400')
-  await page.getByRole('option').filter({ hasText: 'NATIONAL RAIL · 7015400' }).click()
-  const card = page.getByRole('region', { name: 'National Rail at St Pancras Eurostar', exact: true })
-  if (info.project.name === 'iphone-webkit' && await card.locator(':scope > details').getAttribute('open') === null) await card.locator(':scope > details > summary').click()
-  await expect(card).toContainText('40 of 55')
-  await expect(card.getByRole('combobox', { name: 'Rail station area', exact: true })).toHaveCount(0)
-  await card.getByRole('combobox', { name: 'St Pancras Eurostar board line' }).selectOption('Eurostar')
-  await card.locator('tbody tr button').first().click()
-  await expect(card.locator('.london-station-board-selection')).toContainText('Eurostar 9008 · 08:01')
-  await page.getByRole('searchbox').fill('9008')
-  await page.getByRole('option').filter({ hasText: 'Eurostar 9008' }).click()
-  await expect(page.locator('.london-experience')).toHaveAttribute('data-selected-rail-service', 'eurostar:9008-0904:2026-09-04')
-  await expect(card).toBeVisible()
-  await expect(page.locator('.london-experience')).toHaveAttribute('data-study-window', 'day')
-  await page.locator('.london-transport input[type="range"]').fill('86400')
-  await expect(card).toContainText('Outside study window')
-  await expect(card.locator('tbody tr:has(button)')).toHaveCount(0)
 })

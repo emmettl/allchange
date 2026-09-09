@@ -13,8 +13,8 @@ test.beforeEach(async ({ page }) => {
   await setMobileControls(page, true)
 })
 
-test('boots as a separate edition without loading Swiss network data', async ({
-  page,
+test('boots as a separate edition without loading optional studies or Swiss data', async ({
+  page, isMobile,
 }) => {
   const resources = await page.evaluate(() => {
     const browser = globalThis as unknown as {
@@ -37,6 +37,11 @@ test('boots as a separate edition without loading Swiss network data', async ({
   expect(resources.some((url) => url.includes('all-change-bus-'))).toBe(false)
   expect(resources.some((url) => url.includes('swiss-rail-morning.json'))).toBe(false)
 
+  expect(resources.some(url => /national-rail-network|passenger-demand|all-change-cycle|all-change-night-study|all-change-morning-flow/.test(url))).toBe(false)
+  if (!isMobile) {
+    await expect(page.locator('#london-controls-toggle')).not.toBeVisible()
+    await expect(page.getByRole('button', { name: 'Zoom in', exact: true })).toBeVisible()
+  }
   await expect(page.locator('.london-status-card')).toContainText('trains in motion')
   await expect(page.locator('.london-transport')).toContainText('06:45')
   await expect(page.locator('.london-transport')).toContainText('08:45')
@@ -129,17 +134,6 @@ test('London buses load progressively with route search and time scrubbing', asy
   await expect(experience).toHaveAttribute('data-bus-loading', 'false')
   await expect(page.locator('.london-status-card')).toContainText('journeys')
 
-  const nightChunkResponse = page.waitForResponse((response) =>
-    response.url().includes('all-change-bus-day-chunks/02-04.json'),
-  )
-  await page.locator('.london-transport input[type="range"]').fill('9000')
-  expect((await nightChunkResponse).ok()).toBe(true)
-  await expect(experience).toHaveAttribute('data-bus-loading', 'false')
-  await search.fill('N26')
-  await expect(page.getByRole('option').first().locator('strong')).toHaveText('N26')
-  await page.getByRole('option').first().click()
-  await expect(page.locator('.london-status-card')).toContainText('N26')
-
   await setMobileControls(page, true)
   const morningStudy = page.getByRole('button', { name: 'Morning study' })
   await morningStudy.focus()
@@ -147,68 +141,6 @@ test('London buses load progressively with route search and time scrubbing', asy
   await expect(experience).toHaveAttribute('data-study-window', 'morning')
   await expect(experience).toHaveAttribute('data-bus-enabled', 'false')
   await expect(page.getByRole('button', { name: 'Diagram layout' })).toBeEnabled()
-})
-
-test('a damaged bus chunk can be retried without losing the rail study', async ({ page }) => {
-  const busChunks = '**/all-change-bus-day-chunks/*.json'
-  await page.route(busChunks, (route) => route.fulfill({ contentType: 'application/json', body: '{}' }))
-  await page.getByRole('button', { name: 'Show London buses' }).click()
-  await expect(page.getByRole('status').filter({ hasText: 'Bus study unavailable' })).toBeVisible()
-  await expect(page.locator('.scene canvas')).toBeVisible()
-  await expect(page.locator('.london-experience')).toHaveAttribute('data-bus-loading', 'false')
-  await page.getByRole('button', { name: 'Hide London buses' }).click()
-  await expect(page.getByText('Bus study unavailable', { exact: true })).toBeHidden()
-  await page.unroute(busChunks)
-  await page.getByRole('button', { name: 'Show London buses' }).click()
-  await expect(page.locator('.london-experience')).toHaveAttribute('data-bus-loading', 'false')
-  await expect(page.getByText('Bus study unavailable', { exact: true })).toBeHidden()
-  await expect(page.getByRole('button', { name: 'Buses', exact: true })).toBeVisible()
-})
-
-test('station search selects and reveals a London interchange', async ({ page }) => {
-  const search = page.getByRole('searchbox', {
-    name: 'Find a London station, line, service, airport, flight or motorway',
-  })
-  await search.fill('Whitechapel')
-  const result = page.getByRole('option', { name: /Whitechapel/ }).first()
-  await expect(result).toBeVisible()
-  await search.press('Enter')
-
-  await expect(page.locator('.london-status-card')).toContainText('Whitechapel')
-  await expect(search).toHaveValue('Whitechapel')
-})
-
-test('vehicles in motion follows category and station selections', async ({ page }) => {
-  await page.getByRole('button', { name: 'Show River Bus and cable car' }).click()
-  await expect(page.getByRole('button', { name: 'River', exact: true })).toBeVisible()
-  await page.getByRole('button', { name: 'Pause motion' }).click()
-  await page.locator('.london-transport input[type="range"]').fill('27900')
-  await expect(page.locator('.london-experience')).toHaveAttribute('data-day-loading', 'false')
-
-  const status = page.locator('.london-status-card')
-  const count = status.locator('strong').first()
-  const readCount = async () => Number((await count.innerText()).replaceAll(',', ''))
-  await expect(status).toContainText('vehicles in motion')
-  const total = await readCount()
-  expect(total).toBeGreaterThan(0)
-
-  const river = page.getByRole('button', { name: 'River', exact: true })
-  await river.click()
-  await expect.poll(readCount).toBeLessThan(total)
-  expect(await readCount()).toBeGreaterThan(0)
-  await river.click()
-  await expect.poll(readCount).toBe(total)
-
-  const search = page.getByRole('searchbox', {
-    name: 'Find a London station, line, service, airport, flight or motorway',
-  })
-  await search.fill('Whitechapel')
-  await page.getByRole('option', { name: /Whitechapel/ }).first().click()
-  await expect(status).toContainText('Whitechapel')
-  await expect.poll(readCount).toBeLessThan(total)
-  expect(await readCount()).toBeGreaterThan(0)
-  await page.getByRole('button', { name: 'Release', exact: true }).click()
-  await expect.poll(readCount).toBe(total)
 })
 
 test('vehicle count follows enabled air and road layers without a legend selection', async ({ page }) => {
@@ -251,24 +183,8 @@ test('vehicle count follows enabled air and road layers without a legend selecti
 
   await page.locator('.london-transport input[type="range"]').fill('29700')
   await expect.poll(readCount).not.toBe(roadCount)
-  const laterRoadCount = await readCount()
-  expect(laterRoadCount).toBeGreaterThan(0)
-  await road.click()
-  await expect.poll(readCount).toBe(laterRoadCount)
-  await road.click()
-  await expect.poll(readCount).toBe(laterRoadCount)
-
   await page.getByRole('button', { name: 'Hide reconstructed motorway traffic' }).click()
   await expect(status).toContainText('All quiet.')
-  await page.getByRole('button', { name: 'Show observed aircraft' }).click()
-  await expect(status).toContainText('aircraft observed')
-  await expect.poll(readCount).toBeGreaterThan(0)
-  const laterAircraftCount = await readCount()
-  expect(laterAircraftCount).not.toBe(aircraftCount)
-  await air.click()
-  await expect.poll(readCount).toBe(laterAircraftCount)
-  await air.click()
-  await expect.poll(readCount).toBe(laterAircraftCount)
 })
 
 test('observed operations stay distinct from the planned timetable', async ({
@@ -509,21 +425,6 @@ test('resolved diagram skips fully transparent geometry and restores geography',
   expect(geographic.zeroOpacityDraws).toBe(0)
 })
 
-test('reduced motion changes spatial layout without a sweep', async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: 'reduce' })
-  const diagramResponse = page.waitForResponse((response) =>
-    response.url().includes('all-change-diagram.json'),
-  )
-  await setMobileControls(page, true)
-  await page.getByRole('button', { name: /Diagram/ }).click()
-  expect((await diagramResponse).ok()).toBe(true)
-  await expect(page.locator('.london-experience')).toHaveAttribute(
-    'data-layout-mix',
-    '1.000',
-    { timeout: 1_000 },
-  )
-})
-
 test('limited chrome leaves the visualization and timeline in control', async ({
   page,
 }) => {
@@ -550,94 +451,9 @@ test('limited chrome leaves the visualization and timeline in control', async ({
   await expect(experience).toHaveAttribute('data-limited-chrome', 'true')
 })
 
-test('interchange pulse preserves the shared clock and switches character', async ({
-  page,
-}) => {
-  const pulseResponse = page.waitForResponse(response => response.url().includes('/assets/HubPulseScene-'))
-  await page.getByRole('button', { name: 'Interchange pulse' }).click()
-  expect((await pulseResponse).ok()).toBe(true)
-  const experience = page.locator('.london-experience')
-  await expect(experience).toHaveClass(/is-pulse-study/)
-  await expect(page.locator('.london-status-card')).toContainText("King's Cross")
-  await expect(page.locator('.london-status-card')).toContainText(
-    'movements in orbit',
-  )
-  await setMobileControls(page, false)
-  await page.getByRole('button', { name: 'radial movements' }).click()
-  await expect(experience).toHaveAttribute('data-pulse-lens', 'radial')
-  await expect(page.locator('.london-status-card')).toContainText(
-    'radial movements',
-  )
-  await setMobileControls(page, true)
-  await expect(page.getByRole('button', { name: 'Exit interchange pulse' })).toBeVisible()
-  await expect(page.locator('.london-map-tools')).not.toBeVisible()
-
-  await setMobileControls(page, false)
-  await page.getByRole('combobox', { name: 'Pulse interchange' }).selectOption(
-    'stratford',
-  )
-  await expect(page.locator('.london-status-card')).toContainText('Stratford')
-  await expect(experience).toHaveAttribute('data-pulse-lens', 'all')
-  await page.locator('.london-transport input[type="range"]').fill('28800')
-  await expect(page.locator('.london-time-copy')).toContainText('08:00')
-
-  expect(
-    await page.evaluate(() => {
-      const browser = globalThis as unknown as {
-        readonly document: {
-          readonly documentElement: { readonly scrollWidth: number }
-        }
-        readonly innerWidth: number
-      }
-      return browser.document.documentElement.scrollWidth - browser.innerWidth
-    }),
-  ).toBeLessThanOrEqual(1)
-
-  await setMobileControls(page, true)
-  await page.getByRole('button', { name: 'Exit interchange pulse' }).click()
-  await expect(experience).not.toHaveClass(/is-pulse-study/)
-})
-
-test('observed aircraft load lazily, join category emphasis and are searchable by code', async ({
-  page,
-}) => {
-  const airResponse = page.waitForResponse((response) =>
-    response.url().includes('all-change-air-morning.json'),
-  )
-  await page.getByRole('button', { name: 'Show observed aircraft' }).click()
-  expect((await airResponse).ok()).toBe(true)
-
-  const experience = page.locator('.london-experience')
-  await expect(experience).toHaveClass(/has-air-layer/)
-  const category = page.getByRole('button', { name: 'AIR', exact: true })
-  await expect(category).toBeVisible()
-  await category.click()
-  await expect(experience).toHaveClass(/has-air-category/)
-  await expect(page.locator('.london-status-card')).toContainText('aircraft observed')
-  await page.getByRole('button', { name: 'Pause motion' }).click()
-  await expect(page.getByRole('button', { name: 'Resume motion' })).toBeVisible()
-
-  const search = page.getByRole('searchbox', {
-    name: 'Find a London station, line, service, airport, flight or motorway',
-  })
-  await search.fill('BAW925')
-  await expect(page.getByRole('option', { name: /BAW925/ })).toBeVisible()
-  await search.press('Enter')
-  await expect(search).toHaveValue('BAW925 · 405A49')
-  await expect(page.locator('.london-status-card')).toContainText('BAW925')
-  await expect(page.locator('.london-status-card')).toContainText(/ft · \d+ kt/)
-
-  await setMobileControls(page, true)
-  await page.getByRole('button', { name: 'Diagram layout' }).click()
-  await expect(experience).not.toHaveClass(/has-air-layer/)
-  await expect(
-    page.getByRole('button', { name: 'Show observed aircraft' }),
-  ).toHaveAttribute('aria-pressed', 'false')
-})
-
 test('airport search enters air-only mode and isolates its observed flights', async ({
   page,
-}, testInfo) => {
+}) => {
   const search = page.getByRole('searchbox', {
     name: 'Find a London station, line, service, airport, flight or motorway',
   })
@@ -665,8 +481,6 @@ test('airport search enters air-only mode and isolates its observed flights', as
   await card.getByRole('button', { name: 'Arrivals' }).click()
   await expect(card.getByRole('region', { name: 'LHR Arrivals' })).toBeVisible()
   await expect(card.locator('tbody button').first()).toBeVisible()
-  await page.waitForTimeout(1000) // Capture the settled characters after switching direction.
-  await page.screenshot({ path: testInfo.outputPath('airport-hero.png') })
   await setMobileControls(page, true)
   await expect(page.getByRole('button', { name: 'Hide observed aircraft' })).toHaveAttribute(
     'aria-pressed',
@@ -740,22 +554,6 @@ test('motorway search loads observed flow lazily and enters ROAD isolation', asy
       name: 'Show reconstructed motorway traffic',
     }),
   ).toHaveAttribute('aria-pressed', 'false')
-})
-
-test('the London air day follows the 24-hour clock in progressive hourly chunks', async ({
-  page,
-}) => {
-  await page.getByRole('button', { name: '24-hour study' }).click()
-  const manifestResponse = page.waitForResponse((response) =>
-    response.url().includes('all-change-air-day-manifest.json'),
-  )
-  const hourResponse = page.waitForResponse((response) =>
-    response.url().includes('all-change-air-day-07.json'),
-  )
-  await page.getByRole('button', { name: 'Show observed aircraft' }).click()
-  expect((await manifestResponse).ok()).toBe(true)
-  expect((await hourResponse).ok()).toBe(true)
-  await expect(page.locator('.london-experience')).toHaveClass(/has-air-layer/)
 })
 
 test(

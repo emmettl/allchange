@@ -60,13 +60,3 @@ test('phone controls stay out of the map and remain reachable on short screens',
   await page.getByRole('button', { name: 'Exit limited chrome' }).click()
   await expect(toggle).toBeVisible()
 })
-
-test('desktop retains the visible controls', async ({ page }, info) => {
-  test.skip(info.project.name !== 'desktop-chromium')
-  await page.goto('/')
-  await expect(page.locator('.scene canvas')).toBeVisible()
-  await expect(page.locator('#london-controls-toggle')).not.toBeVisible()
-  await expect(page.getByRole('button', { name: 'Diagram layout' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Zoom in' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Tube · DLR', exact: true })).toBeVisible()
-})
