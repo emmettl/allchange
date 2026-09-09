@@ -1,0 +1,70 @@
+name: Publish to Cloudflare
+
+on:
+  workflow_run:
+    workflows: [Deploy Pages]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Successful main-branch Pages run to publish
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: cloudflare-allchange
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: >-
+      vars.CLOUDFLARE_ENABLED == 'true' &&
+      github.ref == 'refs/heads/main' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.workflow_run.conclusion == 'success' &&
+        github.event.workflow_run.head_repository.full_name == github.repository &&
+        contains(fromJSON('["push","schedule","workflow_dispatch"]'), github.event.workflow_run.event)))
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # Keep deployment credentials restricted to main.
+    environment:
+      name: cloudflare
+      url: https://motionstudies.app/allchange/
+    steps:
+      # Use trusted publishing code, not code from the downloaded Pages artifact.
+      - name: Check out pinned hosting tools
+        uses: actions/checkout@v7
+        with:
+          repository: emmettl/motionstudies
+          ref: 8b3ff8ff16647386233dfb56be3f08b3879a9545
+          path: hosting-tools
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: hosting-tools/.nvmrc
+      - name: Verify publishing gates
+        run: python3 hosting-tools/scripts/test-edition-hosting.py
+      - name: Publish verified Pages artifact and check live headers
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id || github.event.workflow_run.id }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo '::error::Set CLOUDFLARE_API_TOKEN in the cloudflare environment.'
+            exit 1
+          fi
+          python3 hosting-tools/scripts/publish-edition.py --edition allchange \
+            --run "$SOURCE_RUN_ID" --require-latest --deploy
+      - name: Link edition and release provenance
+        run: |
+          printf '%s\n' \
+            '[Open edition](https://motionstudies.app/allchange/)' \
+            '[Inspect live release metadata](https://motionstudies.app/allchange/_release.json)' \
+            >> "$GITHUB_STEP_SUMMARY"
