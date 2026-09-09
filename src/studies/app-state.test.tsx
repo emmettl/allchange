@@ -39,8 +39,10 @@ async function search(query: string, match: RegExp) {
 it('opens gateway and branch stations through the actual station picker and pulse callbacks', async () => {
   await open()
   fireEvent.click(button('Show National Rail'))
-  const picker = await screen.findByRole('combobox', { name: 'National Rail station' })
-  await waitFor(() => expect(within(picker).getAllByRole('option')).toHaveLength(302))
+  // The first rail board compiles its lazy modules on demand. Hosted CPUs can
+  // exceed the normal DOM wait while the fixture audit is running alongside it.
+  const picker = await screen.findByRole('combobox', { name: 'National Rail station' }, { timeout: 10_000 })
+  await waitFor(() => expect((picker as HTMLSelectElement).options).toHaveLength(302))
   for (const id of ['paddington', 'waterloo', 'kings-cross', 'victoria', 'london-bridge', 'charing-cross', 'cannon-street', 'liverpool-street', 'euston', 'marylebone', 'fenchurch-street', 'st-pancras', 'st-pancras-thameslink', 'moorgate', 'rail:HXX', 'rail:CSS', 'rail:HYS', 'rail:WAE', 'rail:BCZ', 'rail:LEB']) {
     const currentPicker = screen.getByRole('combobox', { name: 'National Rail station' })
     change(currentPicker, id)
@@ -56,7 +58,7 @@ it('opens gateway and branch stations through the actual station picker and puls
   }
   expect(network.requests('network-waterloo.json')).toHaveLength(1)
   expect(network.requests('network-paddington.json')).toHaveLength(1)
-}, 15_000)
+}, 30_000)
 
 it.each([
   ['KGX', 'King’s Cross', 'LNER'], ['STP', 'St. Pancras International', 'East Midlands Railway'], ['SPL', 'St Pancras Thameslink', 'Thameslink'],

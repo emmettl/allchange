@@ -26,16 +26,20 @@ jobs:
 
   e2e:
     needs: check
+    name: Browser tests (${{ matrix.project }}, ${{ matrix.shard }}/${{ matrix.shards }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         include:
-          - { project: desktop-chromium, browser: chromium }
-          - { project: iphone-webkit, browser: webkit }
+          # Split Chromium tests across machines, keeping one WebGL worker each.
+          - { project: desktop-chromium, browser: chromium, shard: 1, shards: 2 }
+          - { project: desktop-chromium, browser: chromium, shard: 2, shards: 2 }
+          - { project: iphone-webkit, browser: webkit, shard: 1, shards: 1 }
     env:
       E2E_PREBUILT: '1'
       E2E_PROJECT: ${{ matrix.project }}
+      E2E_SHARD: ${{ matrix.shard }}/${{ matrix.shards }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -53,7 +57,7 @@ jobs:
         id: e2e
         env:
           E2E_SUITE: functional
-        run: npx playwright test --grep-invert @frame-cadence --project="$E2E_PROJECT" --workers=1
+        run: npx playwright test --grep-invert @frame-cadence --project="$E2E_PROJECT" --shard="$E2E_SHARD" --workers=1
       - name: E2E frame cadence
         if: ${{ !cancelled() && matrix.browser == 'webkit' && (steps.e2e.outcome == 'success' || steps.e2e.outcome == 'failure') }}
         env:
@@ -64,7 +68,7 @@ jobs:
         if: ${{ !cancelled() && (steps.e2e.outcome == 'success' || steps.e2e.outcome == 'failure') }}
         uses: actions/upload-artifact@v7
         with:
-          name: e2e-report-${{ matrix.project }}
+          name: e2e-report-${{ matrix.project }}-${{ matrix.shard }}
           path: |
             playwright-report/
             test-results/

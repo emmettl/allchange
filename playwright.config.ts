@@ -6,7 +6,9 @@ const suiteName = environment?.E2E_SUITE || 'all'
 
 export default defineConfig({
   testDir: './e2e',
-  fullyParallel: false,
+  // Divide individual tests between CI shards, including tests in large specs.
+  // One worker per CI runner below still keeps WebGL rendering serial there.
+  fullyParallel: runningInCi,
   timeout: 90_000,
   expect: { timeout: 15_000 },
   forbidOnly: true,
@@ -14,7 +16,7 @@ export default defineConfig({
   retries: runningInCi ? 1 : 0,
   // Two continuously rendered WebGL editions can starve Chromium's input and
   // animation loop on the shared CI runner. Keep local feedback parallel, but
-  // run CI browsers on separate runners with one worker each.
+  // run CI shards on separate runners with one worker each.
   workers: runningInCi ? 1 : 2,
   reporter: runningInCi
     ? [
