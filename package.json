@@ -63,32 +63,32 @@
     "data:london:demand": "python3 -B scripts/compile-numbat.py"
   },
   "dependencies": {
-    "@motionstudies/core": "0.1.0-alpha.5",
-    "@motionstudies/three": "0.1.0-alpha.5",
-    "@motionstudies/web": "0.1.0-alpha.5",
+    "@motionstudies/core": "0.1.0-alpha.7",
+    "@motionstudies/three": "0.1.0-alpha.7",
+    "@motionstudies/web": "0.1.0-alpha.7",
     "@react-three/fiber": "9.7.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "three": "0.185.1"
   },
   "devDependencies": {
-    "@aws-sdk/client-s3": "3.1127.0",
+    "@aws-sdk/client-s3": "3.1131.0",
     "@babel/parser": "7.29.8",
-    "@cloudflare/workers-types": "5.20260905.1",
-    "@motionstudies/data": "0.1.0-alpha.5",
-    "@playwright/test": "1.62.1",
+    "@cloudflare/workers-types": "5.20260911.1",
+    "@motionstudies/data": "0.1.0-alpha.7",
+    "@playwright/test": "1.63.0",
     "@testing-library/react": "16.3.3",
-    "@types/node": "26.5.0",
+    "@types/node": "26.5.1",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",
     "@types/three": "0.185.4",
     "@vitejs/plugin-react": "6.1.1",
     "jsdom": "30.0.1",
-    "oxlint": "1.81.0",
+    "oxlint": "1.82.0",
     "typescript": "7.0.2",
-    "vite": "8.2.2",
+    "vite": "8.3.0",
     "vitest": "5.0.0",
-    "wrangler": "4.129.0"
+    "wrangler": "4.131.1"
   },
   "packageManager": "npm@11.19.0"
 }
