@@ -1,3 +1,4 @@
+@import '@motionstudies/web/study-layout.css';
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Inter:wght@400;500;600&display=swap');
 [data-edition='london'] body {
   background: #04040d;
@@ -1056,3 +1057,12 @@
   .london-pulse-view { top: calc(118px + env(safe-area-inset-top)); right: calc(12px + env(safe-area-inset-right)); }
   .london-pulse-view ~ .london-status-card[data-hero-dismissed='false'] { top: calc(174px + env(safe-area-inset-top)); max-height: calc(100dvh - 366px); }
 }
+
+/* Edition clearances; shared panels fill the space between search and playback. */
+.london-experience { --ms-layout-gutter: var(--london-gutter); --ms-layout-top: clamp(202px, 28vh, 260px); --ms-layout-bottom: 182px; --ms-layout-end: 72px; --ms-control-surface: #0d0d20; --ms-control-ink: #eee9d7; --ms-control-border: #d2c8e833; --ms-control-accent: #ffe3b8; }
+@media (max-width: 700px) {
+  .london-experience { --ms-layout-top: calc(118px + env(safe-area-inset-top)); --ms-layout-bottom: calc(174px + env(safe-area-inset-bottom)); --ms-layout-gutter: calc(12px + env(safe-area-inset-left)); --ms-layout-end: calc(72px + env(safe-area-inset-right)); }
+  .london-pulse-view ~ .ms-study-panel { --ms-panel-top: calc(174px + env(safe-area-inset-top)); }
+}
+
+@media (min-width: 701px) { .london-layout-switch { max-inline-size: calc(100% - var(--london-gutter) * 2); } }

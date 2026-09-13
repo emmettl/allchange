@@ -1550,7 +1550,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   return (
     <main
-      className={`experience view-${pulseHub ? 'hub' : 'network'} london-experience${pulseHub ? ' is-pulse-study' : ''}${pulseHub && pulseNightMix > 0.5 ? ' is-pulse-night' : ''}${limitedChrome ? ' is-limited-chrome' : ''}${airEnabled ? ' has-air-layer' : ''}${airCategorySelected ? ' has-air-category' : ''}${selectedAirport ? ' has-airport-selection' : ''}${roadEnabled ? ' has-road-layer' : ''}${roadCategorySelected ? ' has-road-category' : ''}${surfaceEnabled ? ' has-surface-layer' : ''}${busEnabled ? ' has-bus-layer' : ''}${selectedStation || selectedRoute || selectedTrain || selectedAirTrackId || selectedAirport || selectedRoad || selectedCategory || airCategorySelected || roadCategorySelected ? ' has-selection' : ''}`}
+      data-ms-chrome={limitedChrome ? 'hidden' : undefined}
+      className={`experience view-${pulseHub ? 'hub' : 'network'} london-experience ms-study-layout${pulseHub ? ' is-pulse-study' : ''}${pulseHub && pulseNightMix > 0.5 ? ' is-pulse-night' : ''}${limitedChrome ? ' is-limited-chrome' : ''}${airEnabled ? ' has-air-layer' : ''}${airCategorySelected ? ' has-air-category' : ''}${selectedAirport ? ' has-airport-selection' : ''}${roadEnabled ? ' has-road-layer' : ''}${roadCategorySelected ? ' has-road-category' : ''}${surfaceEnabled ? ' has-surface-layer' : ''}${busEnabled ? ' has-bus-layer' : ''}${selectedStation || selectedRoute || selectedTrain || selectedAirTrackId || selectedAirport || selectedRoad || selectedCategory || airCategorySelected || roadCategorySelected ? ' has-selection' : ''}`}
       data-limited-chrome={limitedChrome}
       data-spatial-layout={layout}
       data-night-study={nightEnabled}
@@ -1706,7 +1707,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         id="london-controls-panel"
         className={`london-controls-panel${mobileControlsOpen ? ' is-open' : ''}`}
       >
-      <section className="london-layout-switch" aria-label="Spatial layout">
+      <section className="london-layout-switch ms-control-strip" aria-label="Spatial layout">
         {edition.data.opening.layouts.map((option) => {
           const artifact = 'artifact' in option ? option.artifact : undefined
           const available =
@@ -2122,9 +2123,9 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         <button type="button" aria-label="Train services pulse" aria-pressed={!isPassengerPulse} onClick={() => { setPulseView('services'); setDismissedHero(false) }}>Trains</button>
         <button type="button" aria-label="Passenger flow pulse" aria-pressed={isPassengerPulse} onClick={() => { setPulseView('passengers'); setDismissedHero(true) }}>People</button>
       </nav>}
-      {selectedTrain && (!previewingBoardCall || dismissedRail) && !selectedStation && !pulseHub && sceneNetwork ? <div className="edition-vehicle-hero"><HeroCardDismiss name={selectedTrain.route} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />{!dismissedHero && <Suspense fallback={null}><VehicleJourneyCard snapshot={sceneNetwork} train={selectedTrain} time={sceneTime} presentation={selectedTrain.category === 'bus' ? 'uk-bus' : 'uk-rail'}
+      {selectedTrain && (!previewingBoardCall || dismissedRail) && !selectedStation && !pulseHub && sceneNetwork ? <div className="edition-vehicle-hero ms-study-panel"><HeroCardDismiss name={selectedTrain.route} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />{!dismissedHero && <Suspense fallback={null}><VehicleJourneyCard snapshot={sceneNetwork} train={selectedTrain} time={sceneTime} presentation={selectedTrain.category === 'bus' ? 'uk-bus' : 'uk-rail'}
         note={operationsMode === 'observed' ? 'Recorded predictions · loaded calls only; not a live arrival board.' : 'Published timetable · loaded calls only; not live.'} /></Suspense>}</div> : selectedAirport ? (
-        <Suspense fallback={null}><AirportHeroCard key={selectedAirport.id} className="edition-airport-card"
+        <Suspense fallback={null}><AirportHeroCard key={selectedAirport.id} className="edition-airport-card ms-study-panel"
           dismissControl={<HeroCardDismiss name={selectedAirport.iata} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />} dismissed={dismissedHero}
           airport={selectedAirport} aircraft={searchableAircraft}
           study={{ time: sceneTime, windowStart: Math.max(sceneNetwork?.metadata.windowStart ?? 0, activeAirSnapshot?.metadata.windowStart ?? 0), windowEnd: Math.min(sceneNetwork?.metadata.windowEnd ?? 86400, activeAirSnapshot?.metadata.windowEnd ?? 86400) }}
@@ -2134,7 +2135,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         /></Suspense>
       ) : (
       <section
-        className={`london-status-card${(nightEnabled || selectedStation) && !pulseHub && operationsMode === 'plan' ? ' has-station-board' : ''}${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
+        className={`london-status-card${(nightEnabled || selectedStation) && !pulseHub && operationsMode === 'plan' ? ' has-station-board ms-study-panel' : ''}${quietMap ? ' is-quiet' : ''}${operationsMode === 'observed' ? ' is-observed-operations' : ''}${pulseHub ? ' is-pulse-selection' : ''}${selectedAirIndexEntry || selectedAirport || airStatus ? ' is-air-selection' : ''}${selectedRoad || roadStatus ? ' is-road-selection' : ''}`}
         data-hero-dismissed={dismissedHero}
         aria-live={dismissedHero || selectedStation || passengerName ? 'off' : 'polite'}
       >

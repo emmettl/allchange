@@ -17,7 +17,7 @@ export default function AirportCard({ aircraft, airport, className, dismissed, d
   const movements = useMemo(() => airportBoardMovements(aircraft, airport), [aircraft, airport])
   return <section className={className} data-hero-dismissed={dismissed}>
     {dismissControl}
-    <AirportHeroCard {...props} airport={airport} {...movements}
+    <AirportHeroCard {...props} density="compact" airport={airport} {...movements}
     note={<><a href="https://www.adsb.lol/docs/open-data/historical/">ADSB.lol</a> · ODbL · <a href="https://ourairports.com/data/">OurAirports</a> · {AIRPORT_NOTES.en}</>} />
   </section>
 }

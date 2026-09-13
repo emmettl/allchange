@@ -1,3 +1,2 @@
-.edition-vehicle-hero { position: absolute; z-index: 12; top: 180px; left: 24px; width: min(440px, calc(100vw - 96px)); max-height: calc(100svh - 300px); overflow: auto; }
+.edition-vehicle-hero { --ms-panel-width: 440px; --ms-layer-panel: 12; }
 .edition-vehicle-hero > button { display: block; margin: 0 0 8px auto; }
-@media (max-width: 760px) { .edition-vehicle-hero { top: 205px; left: 12px; width: calc(100vw - 72px); max-height: calc(100svh - 335px); } }
