@@ -535,6 +535,7 @@ const cycleComparisonKey = 'src/studies/LondonCycleComparison.tsx'
 const hubPulseKey = 'node_modules/@motionstudies/three/HubPulseScene.js'
 const passengerCardKey = 'src/studies/LondonPassengerDemand.tsx'
 const stationBoardKey = 'src/studies/LondonStationDepartures.tsx'
+const busBoardKey = 'node_modules/@motionstudies/web/components/BusStopHeroCard.js'
 const morningFlowKey = 'src/studies/LondonMorningFlow.tsx'
 const nightStudyKey = 'src/studies/LondonNightStudy.tsx'
 const eurostarKey = 'src/data/eurostar.ts'
@@ -543,6 +544,7 @@ const railVehicleCardKey = 'src/studies/NationalRailVehicleCard.tsx'
 const vehicleCardKey = 'src/studies/VehicleJourneyCard.tsx'
 const airportCardKey = 'src/studies/AirportCard.tsx'
 const railLayerKey = 'src/studies/LondonNationalRailLayer.tsx'
+const operationsKey = 'node_modules/@motionstudies/core/domain/operations.js'
 const quietMapKey = 'src/studies/LondonQuietMap.tsx'
 const visit = (key) => {
   if (visited.has(key)) return
@@ -554,7 +556,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // Selected cards and alternate studies load only after interaction. Budget
   // them separately; retain their shared static dependencies in the opening.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![railVehicleCardKey, vehicleCardKey, quietMapKey, morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, roadOverlayKey, busCodecKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![operationsKey, railVehicleCardKey, vehicleCardKey, quietMapKey, morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, roadOverlayKey, busCodecKey, railBoardKey, stationBoardKey, busBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -592,11 +594,14 @@ async function optionalCardSize(key, parentKey) {
     files.add(chunk.file)
     for (const file of chunk.css ?? []) if (!loadedStyles.has(file)) css.add(file)
     for (const dependency of chunk.imports ?? []) collect(dependency)
-    if (chunk.dynamicImports?.some(dependency => !((id === railBoardKey && dependency === railVehicleCardKey) || (id === cycleStudyKey && dependency === cycleComparisonKey) || ([railBoardKey, combinedBoardKey].includes(id) && dependency === nightStudyKey)))) throw new Error(`Unbudgeted optional dynamic dependencies in ${id}`)
+    if (chunk.dynamicImports?.some(dependency => !((id === stationBoardKey && dependency === busBoardKey) || (id === railBoardKey && dependency === railVehicleCardKey) || (id === cycleStudyKey && dependency === cycleComparisonKey) || ([railBoardKey, combinedBoardKey].includes(id) && dependency === nightStudyKey)))) throw new Error(`Unbudgeted optional dynamic dependencies in ${id}`)
   }
   collect(key)
   return { javaScript: await totalGzipSize(files), css: await totalGzipSize(css) }
 }
+const operationsSize = await optionalCardSize(operationsKey)
+console.log(`All Change optional operations tools: ${kibibytes(operationsSize.javaScript)} JS / 5 KiB`)
+if (operationsSize.javaScript > 5 * 1024 || operationsSize.css) throw new Error('Operations tools transfer budget exceeded')
 const railVehicleCard = await optionalCardSize(railVehicleCardKey, railBoardKey)
 console.log(`All Change optional rail vehicle card: ${kibibytes(railVehicleCard.javaScript)} JS / 4 KiB; ${kibibytes(railVehicleCard.css)} CSS / 2.5 KiB`)
 if (railVehicleCard.javaScript > 4 * 1024 || railVehicleCard.css > 2.5 * 1024) throw new Error('Rail vehicle card transfer budget exceeded')
@@ -662,6 +667,9 @@ if (passengerCard.javaScript > 4 * 1024 || passengerCard.css > 2 * 1024 || passe
 const stationBoard = await optionalCardSize(stationBoardKey)
 console.log(`All Change optional station board: ${kibibytes(stationBoard.javaScript)} JavaScript / 8.0 KiB; ${kibibytes(stationBoard.css)} CSS / 5.0 KiB`)
 if (stationBoard.javaScript > 8 * 1024 || stationBoard.css > 5 * 1024) throw new Error('Station board transfer budget exceeded')
+const busBoard = await optionalCardSize(busBoardKey, stationBoardKey)
+console.log(`All Change optional bus board: ${kibibytes(busBoard.javaScript)} JavaScript / 2 KiB; ${kibibytes(busBoard.css)} CSS / 1 KiB`)
+if (busBoard.javaScript > 2 * 1024 || busBoard.css > 1024) throw new Error('Bus board transfer budget exceeded')
 const railBoard = await optionalCardSize(railBoardKey)
 const combinedBoard = await optionalCardSize(combinedBoardKey)
 console.log(`All Change optional combined station board: ${kibibytes(combinedBoard.javaScript)} JavaScript / 10.0 KiB; ${kibibytes(combinedBoard.css)} CSS / 5.0 KiB`)

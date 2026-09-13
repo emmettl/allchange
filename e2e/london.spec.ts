@@ -196,6 +196,9 @@ test('vehicle count follows enabled air and road layers without a legend selecti
 test('observed operations stay distinct from the planned timetable', async ({
   page,
 }) => {
+  const operationsRequests: string[] = []
+  page.on('request', request => { if (/operations-.*\.js/.test(request.url())) operationsRequests.push(request.url()) })
+  expect(await page.evaluate(() => performance.getEntriesByType('resource').filter(entry => /operations-.*\.js/.test(entry.name)))).toEqual([])
   await page.clock.setFixedTime(new Date('2099-09-07T07:45:03.000Z'))
   let releaseObservation!: () => void
   const observationReady = new Promise<void>((resolve) => {
@@ -262,6 +265,7 @@ test('observed operations stay distinct from the planned timetable', async ({
   }
   await expect(experience).toHaveAttribute('data-operations-mode', 'observed')
   await expect(experience).toHaveAttribute('data-operations-ready', 'true')
+  expect(operationsRequests).toHaveLength(1)
   await expect(experience).toHaveAttribute('data-study-window', 'morning')
   expect(
     await page.evaluate(() => {

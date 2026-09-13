@@ -2,6 +2,8 @@ import { expect, test } from '@playwright/test'
 import { setMobileControls } from './mobile-controls.ts'
 
 test('station board supports keyboard dismissal, preserves selection through reduced-motion layout and opens movement', async ({ page }) => {
+  const requests: string[] = []
+  page.on('request', request => requests.push(request.url()))
   await page.goto('/')
   await expect(page.locator('.scene canvas')).toBeVisible()
   await page.getByRole('button', { name: 'Pause motion', exact: true }).click()
@@ -12,6 +14,7 @@ test('station board supports keyboard dismissal, preserves selection through red
   await search.press('Enter')
   const board = page.getByRole('region', { name: 'Whitechapel timetable', exact: true })
   await expect(board.locator('tbody tr:has(button)')).toHaveCount(4)
+  expect(requests.filter(url => /BusStopHeroCard-.*\.js/.test(url))).toEqual([])
   await board.locator('tbody tr button').first().click()
   const selection = await board.locator('.london-station-board-selection').textContent()
   await expect(board.locator('.ms-dot-matrix-board')).toBeVisible()

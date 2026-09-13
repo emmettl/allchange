@@ -8,6 +8,7 @@ import type { NationalRailSnapshot } from '../data/national-rail.ts'
 import { fixtureJson } from '../test/fixture-fetch.ts'
 import { boardInterchange, boardInterchanges } from '../editions/london-board-interchanges.ts'
 import LondonCombinedStationBoard from './LondonCombinedStationBoard.tsx'
+import { stationBoardCalls } from './station-board.ts'
 import { LondonStationDepartures } from './LondonStationDepartures.tsx'
 
 const tfl = fixtureJson<NetworkSnapshot>('fixtures/tfl/all-change-rail-led-morning.json')
@@ -83,4 +84,19 @@ it('exposes a failed station-board retry and clears rows at the study boundary',
   expect(screen.getByText(/07:45–08:00/)).toBeDefined()
   rerender(<LondonStationDepartures {...value} time={28800} />)
   expect(document.querySelectorAll('tbody tr button')).toHaveLength(0)
+})
+
+
+it('loads the optional bus board and preserves its call selection and movement', async () => {
+  const base = stationBoardCalls(tfl, 'Whitechapel').find(call => call.departure >= 27900 && call.departure < 28800)!
+  const call = { ...base, train: { ...base.train, category: 'bus' as const, route: '25' } }
+  const onSelect = vi.fn(), onSeek = vi.fn()
+  const value = { snapshot: tfl, stationName: 'Whitechapel', time: 27900, windowStart: 21600, windowEnd: 28800, providedCalls: [call], onSelect, onSeek, animate: false }
+  const { rerender } = render(<LondonStationDepartures {...value} />)
+  const button = await screen.findByRole('button', { name: '25' })
+  fireEvent.click(button)
+  expect(onSelect).toHaveBeenCalledWith(call)
+  rerender(<LondonStationDepartures {...value} selectedId={call.train.id} />)
+  fireEvent.click(screen.getByRole('button', { name: 'Show movement' }))
+  expect(onSeek).toHaveBeenCalledWith(call, 'departure')
 })

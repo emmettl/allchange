@@ -1,10 +1,11 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { formatServiceTime, type NetworkSnapshot } from '@motionstudies/core/domain/network'
 import { RailStationHeroCard } from '@motionstudies/web/components/RailStationHeroCard'
-import { BusStopHeroCard } from '@motionstudies/web/components/BusStopHeroCard'
 import { stationBoardCalls, upcomingStationCalls, type StationBoardCall, type StationBoardDirection } from './station-board.ts'
 import '@motionstudies/web/transport-hero-cards.css'
 import './station-board.css'
+
+const BusStopHeroCard = lazy(() => import('@motionstudies/web/components/BusStopHeroCard').then(module => ({ default: module.BusStopHeroCard })))
 
 export function LondonStationDepartures({ snapshot, stationName, time, windowStart, windowEnd, selectedId, onSelect, onSeek, onPulse, loading = false, error, onRetry, note, emptyMessage, maxRows = 4, animate = true, onDirection, providedCalls }: {
   snapshot: NetworkSnapshot; stationName: string; time: number; windowStart: number; windowEnd: number
@@ -14,6 +15,7 @@ export function LondonStationDepartures({ snapshot, stationName, time, windowSta
   providedCalls?: readonly StationBoardCall[]
 }) {
   const [direction, setDirection] = useState<StationBoardDirection>('departure')
+  const departing = direction === 'departure'
   const [route, setRoute] = useState('')
   const [selectedCallId, setSelectedCallId] = useState<string>()
   const calls = useMemo(() => providedCalls ?? stationBoardCalls(snapshot, stationName), [providedCalls, snapshot, stationName])
@@ -24,6 +26,13 @@ export function LondonStationDepartures({ snapshot, stationName, time, windowSta
   const selected = !error && !loading ? calls.find(call => call.id === selectedCallId && call.train.id === selectedId && (direction === 'arrival' ? call.allowsArrival : call.allowsDeparture)) : undefined
   const end = Math.min(windowEnd, time + 3600)
   const outside = time < windowStart || time >= windowEnd
+  const sourceNote = <>Published times · not live{note && <> · {note}</>}</>
+  const selectDeparture = (id: string) => {
+    const call = upcoming.find(value => value.id === id)!
+    setSelectedCallId(id)
+    onSelect(call)
+  }
+  const heroProps = { boardHeight: 300, loading, error, onRetry, selectedDepartureId: selected?.id, onSelectDeparture: selectDeparture, note: sourceNote }
   return <section className="london-station-departures" aria-label={`${stationName} timetable`} data-animate={animate}>
     <div className="london-station-board-tools">
     <div className="london-station-board-tabs" role="group" aria-label="Board direction">
@@ -38,25 +47,23 @@ export function LondonStationDepartures({ snapshot, stationName, time, windowSta
     </div>
     <p className="london-station-board-window">{snapshot.metadata.serviceDate} · {outside ? 'Outside study window' : `${formatServiceTime(time)}–${formatServiceTime(end)}`}</p>
     {error && <p className="london-station-board-message" role="status">{error}{onRetry && <> · <button type="button" onClick={onRetry}>Retry board data</button></>}</p>}
-    {calls.length > 0 && calls.every(call => call.train.category === 'bus') ? <BusStopHeroCard stop={{ name: stationName }}
-      lineCount={maxRows} boardHeight={300} loading={loading} error={error} onRetry={onRetry}
-      labels={{ departures: direction === 'departure' ? 'Bus departures from' : 'Bus arrivals at', due: 'Time', empty: outside ? 'Outside study window.' : emptyMessage ?? 'No calls in this window.' }}
-      departures={error ? [] : upcoming.map(call => ({ id: call.id, route: serviceLabel(call), destination: direction === 'departure' ? call.destination : call.origin, due: formatServiceTime(call[direction]).slice(0, 5) }))}
-      selectedDepartureId={selected?.id} onSelectDeparture={id => { const call = upcoming.find(value => value.id === id)!; setSelectedCallId(id); onSelect(call) }}
-      note={<>Published times · not live{note && <> · {note}</>}</>} /> : <RailStationHeroCard station={{ name: stationName }} presentation="uk-rail"
-      lineCount={maxRows * 2} boardHeight={300} loading={loading} error={error} onRetry={onRetry}
-      labels={{ departures: direction === 'departure' ? 'Departures' : 'Arrivals', destination: direction === 'departure' ? 'To' : 'From', loading: 'Loading station calls…', empty: outside ? 'Outside study window.' : emptyMessage ?? `No ${direction === 'departure' ? 'departures' : 'arrivals'} in this window.` }}
-      departures={error ? [] : upcoming.map(call => ({ id: call.id, time: formatServiceTime(call[direction]).slice(0, 5), destination: direction === 'departure' ? call.destination : call.origin, serviceNote: serviceLabel(call) }))}
-      selectedDepartureId={selected?.id} onSelectDeparture={id => { const call = upcoming.find(value => value.id === id)!; setSelectedCallId(id); onSelect(call) }}
-      clockLabel={formatServiceTime(time)} note={<>Published times · not live{note && <> · {note}</>}</>} />}
+    {calls.length > 0 && calls.every(call => call.train.category === 'bus') ? <Suspense fallback={<p role="status">Loading station calls…</p>}><BusStopHeroCard stop={{ name: stationName }}
+      {...heroProps} lineCount={maxRows}
+      labels={{ departures: departing ? 'Bus departures from' : 'Bus arrivals at', due: 'Time', empty: outside ? 'Outside study window.' : emptyMessage ?? 'No calls in this window.' }}
+      departures={error ? [] : upcoming.map(call => ({ id: call.id, route: serviceLabel(call), destination: departing ? call.destination : call.origin, due: formatServiceTime(call[direction]).slice(0, 5) }))}
+      /></Suspense> : <RailStationHeroCard station={{ name: stationName }} presentation="uk-rail"
+      {...heroProps} lineCount={maxRows * 2}
+      labels={{ departures: departing ? 'Departures' : 'Arrivals', destination: departing ? 'To' : 'From', loading: 'Loading station calls…', empty: outside ? 'Outside study window.' : emptyMessage ?? `No ${departing ? 'departures' : 'arrivals'} in this window.` }}
+      departures={error ? [] : upcoming.map(call => ({ id: call.id, time: formatServiceTime(call[direction]).slice(0, 5), destination: departing ? call.destination : call.origin, serviceNote: serviceLabel(call) }))}
+      clockLabel={formatServiceTime(time)} />}
 
     {selected && onSeek && <div className="london-station-board-selection">
-      <p>{direction === 'departure' ? selected.destination : `From ${selected.origin}`}</p>
+      <p>{departing ? selected.destination : `From ${selected.origin}`}</p>
       <p>{serviceLabel(selected)} · {formatServiceTime(selected[direction])}</p>
       {selected.movementAvailable === false ? <p>Timetable only · London movement unavailable for this service.</p> : <button type="button" onClick={() => onSeek(selected, direction)}>Show movement</button>}
     </div>}
     {onPulse && <button className="london-station-board-pulse" type="button" onClick={onPulse}>Open {stationName} pulse</button>}
-    <p className="london-station-board-note">Published times · not live{note && <> · {note}</>}</p>
+    <p className="london-station-board-note">{sourceNote}</p>
   </section>
 }
 

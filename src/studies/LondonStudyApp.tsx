@@ -50,11 +50,6 @@ import {
   networkSnapshotForDayChunk,
 } from '@motionstudies/core/domain/network-day'
 import { assembleVehicleNetwork, countableVehicleTrains, createActiveTimetableVehicleCounter, vehicleCountStatus } from './vehicle-counts.ts'
-import {
-  operationsAgeSeconds,
-  operationsServiceTime,
-  projectOperationsOntoNetwork,
-} from '@motionstudies/core/domain/operations'
 import { reconstructedNationalVehicleCount } from './road-conditions.ts'
 import { observedRoadSnapshot } from '../data/road-observations.ts'
 import { cachedRailPath, railPosition } from '../data/national-rail-geometry.ts'
@@ -389,15 +384,25 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     time,
     editionDataUrl,
   )
+  const [operationsTools, setOperationsTools] = useState<typeof import('@motionstudies/core/domain/operations')>()
+  const [operationsToolsError, setOperationsToolsError] = useState(false)
+  useEffect(() => {
+    if ((!operationsRequested && operationsMode !== 'observed') || operationsTools) return
+    let active = true
+    import('@motionstudies/core/domain/operations').then(module => {
+      if (active) { setOperationsTools(module); setOperationsToolsError(false) }
+    }).catch(() => { if (active) setOperationsToolsError(true) })
+    return () => { active = false }
+  }, [operationsRequested, operationsMode, operationsTools])
   const observedOperations = useObservedOperations(
     edition.data.operations.latest,
     operationsMode === 'observed' || operationsRequested,
   )
   const observedServiceTime = useMemo(
-    () => observedOperations.snapshot
-      ? operationsServiceTime(observedOperations.snapshot, edition.timezone)
+    () => observedOperations.snapshot && operationsTools
+      ? operationsTools.operationsServiceTime(observedOperations.snapshot, edition.timezone)
       : undefined,
-    [observedOperations.snapshot, edition.timezone],
+    [observedOperations.snapshot, edition.timezone, operationsTools],
   )
   const sceneTime =
     operationsMode === 'observed' && observedServiceTime !== undefined
@@ -465,8 +470,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       ? operationsTransitionNetwork
       : assembledNetwork
   const network = useMemo(() => nightEnabled && activeNetwork ? { ...activeNetwork, metadata: { ...activeNetwork.metadata, windowStart: 0, windowEnd: 18000 } } : activeNetwork, [nightEnabled, activeNetwork])
-  const operationsAge = observedOperations.snapshot
-    ? operationsAgeSeconds(observedOperations.snapshot)
+  const operationsAge = observedOperations.snapshot && operationsTools
+    ? operationsTools.operationsAgeSeconds(observedOperations.snapshot)
     : Number.POSITIVE_INFINITY
   const operationsFresh = operationsAge <= 180
   const operationsProjection = useMemo(
@@ -474,8 +479,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       operationsMode === 'observed' &&
       network &&
       observedOperations.snapshot &&
-      operationsFresh
-        ? projectOperationsOntoNetwork(
+      operationsFresh && operationsTools
+        ? operationsTools.projectOperationsOntoNetwork(
             network,
             observedOperations.snapshot,
             sceneTime,
@@ -485,6 +490,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       network,
       observedOperations.snapshot,
       operationsFresh,
+      operationsTools,
       operationsMode,
       sceneTime,
     ],
@@ -1107,13 +1113,14 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   useEffect(() => {
     if (
       !operationsRequested ||
+      !operationsTools ||
       !observedOperations.snapshot ||
       operationsAge > 180
     ) {
       return
     }
 
-    const observedTime = operationsServiceTime(
+    const observedTime = operationsTools.operationsServiceTime(
       observedOperations.snapshot,
       edition.timezone,
     )
@@ -1128,6 +1135,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     edition.timezone,
     observedOperations.snapshot,
     operationsAge,
+    operationsTools,
     operationsRequested,
   ])
 
@@ -1896,7 +1904,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           </span>
         )}
         {operationsEngaged &&
-          (observedOperations.error || operationsAge > 180) && (
+          (operationsToolsError || observedOperations.error || operationsAge > 180) && (
             <span className="london-operations-status" role="status">
               Observed operations unavailable · plan held
             </span>
