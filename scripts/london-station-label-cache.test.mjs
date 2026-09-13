@@ -59,7 +59,7 @@ it('preserves station sprites across settling, pan, zoom, resize, selection and 
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
   let code = readFileSync(`.${id}`, 'utf8')
   for (const plugin of [londonDiagramRenderer(), londonMotionRenderer(), londonPerformanceRenderer()]) {
-    code = plugin.transform(code, id).code
+    code = plugin.transform(code, id)?.code ?? code
   }
   const source = code.slice(code.indexOf('function StationLabels('), code.indexOf('function createTrainLabelTexture('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
@@ -68,7 +68,7 @@ it('preserves station sprites across settling, pan, zoom, resize, selection and 
   camera.updateMatrixWorld()
   const size = { width: 1280, height: 720 }
   const cached = harness(source, camera, size)
-  const original = harness(source.replace('if (!stationLabelFrame.shouldUpdate(camera, size, canRepopulate, retainedStationNames.current)) return;', ''), camera, size)
+  const original = harness(source.replace(/if \(!stationLabelFrame\.shouldUpdate\(camera, size, canRepopulate, retainedStationNames\.current\)\)\s*return;/, ''), camera, size)
   const stations = Array.from({ length: 80 }, (_, index) => ({
     name: `Station ${index}`, labelRank: index, trainIds: [], routes: [], stopIndexes: [index],
   }))

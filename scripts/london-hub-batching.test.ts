@@ -5,21 +5,19 @@ import { SERVICE_COLORS } from '@motionstudies/core/theme'
 import { batchHubLines } from '../src/studies/batch-hub-lines.ts'
 import { londonNationalRailRenderer } from './london-national-rail-renderer.ts'
 import { pulseFlowAllowed } from '../src/editions/london-pulse.ts'
-import { londonPerformanceRenderer } from './london-performance-renderer.ts'
 
 it('batches installed hub geometry without changing segments, colours or category emphasis', () => {
   const id = '/node_modules/@motionstudies/three/HubPulseScene.js'
   const source = (londonNationalRailRenderer().transform as (source: string, id: string) => { code: string })(readFileSync(`.${id}`, 'utf8'), id).code
-  const transform = londonPerformanceRenderer().transform as (source: string, id: string) => { code: string }
   const calls = Array.from({ length: 80 }, (_, index) => ({
     hubStop: [-0.08, 51.5], previousStop: index % 4 === 0 ? undefined : [-0.2 + index * 0.01, 51.6], nextStop: index % 4 === 1 ? undefined : [-0.1, 51.3 + index * 0.02],
     train: { id: `${index % 2 ? 'train' : 'national-rail'}:${index}`, category: ['intercity', 'regional', 's-bahn'][index % 3] },
   }))
-  const evaluate = (code: string, selectedCategory?: string) => {
+  const evaluate = (code: string, selectedCategory?: string, batch: unknown = batchHubLines) => {
     const clean = code.replace(/^import .*;$/gm, '').replaceAll('export ', '')
     return new Function('THREE', 'SERVICE_COLORS', 'batchHubLines', 'pulseFlowAllowed', 'useMemo', 'useEffect', '_jsx', 'calls', 'selectedCategory',
       `${clean}; return { ticks: TickMarks().object.children, spokes: CorridorSpokes({ calls, selectedCategory }).map(entry => entry.object) };`
-    )(THREE, SERVICE_COLORS, batchHubLines, pulseFlowAllowed, (factory: () => unknown) => factory(), () => {}, (_type: unknown, props: unknown) => props, calls, selectedCategory)
+    )(THREE, SERVICE_COLORS, batch, pulseFlowAllowed, (factory: () => unknown) => factory(), () => {}, (_type: unknown, props: unknown) => props, calls, selectedCategory)
   }
   const segments = (lines: THREE.Line[]) => lines.flatMap(line => {
     const material = line.material as THREE.LineBasicMaterial
@@ -31,8 +29,8 @@ it('batches installed hub geometry without changing segments, colours or categor
     }))
   }).sort()
   for (const selectedCategory of [undefined, 'intercity', 'bus']) {
-    const original = evaluate(source, selectedCategory)
-    const optimized = evaluate(transform(source, id).code, selectedCategory)
+    const original = evaluate(source, selectedCategory, (lines: unknown[]) => [...lines])
+    const optimized = evaluate(source, selectedCategory)
     expect(original.ticks).toHaveLength(60)
     expect(optimized.ticks).toHaveLength(3)
     expect(optimized.spokes.length).toBeLessThan(original.spokes.length)

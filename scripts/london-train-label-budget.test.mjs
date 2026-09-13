@@ -61,8 +61,7 @@ it('bounds train searches while preserving movement, London zoom rules, palette 
   let code = londonDiagramRenderer().transform(readFileSync(`.${id}`, 'utf8'), id).code
   code = londonMotionRenderer().transform(code, id).code
   const extract = code => code.slice(code.indexOf('function TrainLabels('), code.indexOf('function SelectedStationRouteLayer('))
-  const originalSource = extract(code)
-  code = londonPerformanceRenderer().transform(code, id).code
+  const originalSource = extract(code).replace(/const labelWork = labelFrameBudget\.update\([^;]+;/, "const labelWork = 'all';")
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 8, 0); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()
   const size = { width: 1280, height: 720 }
@@ -106,7 +105,7 @@ it('bounds train searches while preserving movement, London zoom rules, palette 
 it('reserves station space at close zoom and releases it while paused without losing focused services', () => {
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
   let code = readFileSync(`.${id}`, 'utf8')
-  for (const plugin of [londonDiagramRenderer(), londonMotionRenderer(), londonPerformanceRenderer(), londonCartographyRenderer()]) code = plugin.transform(code, id).code
+  for (const plugin of [londonDiagramRenderer(), londonMotionRenderer(), londonPerformanceRenderer(), londonCartographyRenderer()]) code = plugin.transform(code, id)?.code ?? code
   const source = code.slice(code.indexOf('function TrainLabels('), code.indexOf('function SelectedStationRouteLayer('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 8, 1); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()

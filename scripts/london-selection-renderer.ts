@@ -10,7 +10,7 @@ export function londonSelectionRenderer(): Plugin {
         for (const [before, after] of [
           ['ref: marker, position: position, renderOrder: 19,', 'ref: marker, position: position, renderOrder: 19, userData: { londonAirport: airport },'],
           ['ref: label, renderOrder: 30,', 'ref: label, renderOrder: 30, userData: { londonAirport: airport },'],
-          ['const aircraftRef = useRef(currentAircraft(snapshot, time, projection));', 'const { scene, camera, gl } = useThree();\n    const aircraftRef = useRef(currentAircraft(snapshot, time, projection));'],
+          ['const aircraftRef = useRef([]);', 'const { scene, camera, gl } = useThree();\n    const aircraftRef = useRef([]);'],
           ['onPointerDown: (event) => {\n                    if (event.instanceId === undefined)', 'onClick: (event) => {\n                    if (event.delta > 5 || pickMapTarget(scene, camera, gl.domElement.getBoundingClientRect(), event.clientX, event.clientY, event.pointerType === "touch", undefined, true)) return;\n                    if (event.instanceId === undefined)'],
         ]) {
           if (code.split(before).length !== 2) throw new Error(`London airport picking hook needs review: ${before}`)

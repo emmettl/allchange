@@ -16,9 +16,6 @@ describe('motion renderer integration', () => {
       code = output.code
     }
     expect(() => parse(code, { sourceType: 'module' })).not.toThrow()
-    expect(code).toContain('indexedPositionForTrain as positionForTrain')
-    expect(code).toContain('attribute.addUpdateRange(0, activeCounts[kind] * 3)')
-    expect(code).toContain('attribute.addUpdateRange(0, segmentCounts[index] * 6)')
   })
   it('fails closed when package hooks change', () => {
     expect(() => londonMotionRenderer().transform('export {}', id)).toThrow('needs review')
