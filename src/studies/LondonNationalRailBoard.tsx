@@ -4,6 +4,7 @@ import { type NationalRailSnapshot } from '../data/national-rail.ts'
 import { LONDON_RAIL_CORRIDORS, type RailBoardStation, type RailBoardStationId } from '../editions/london-national-rail.ts'
 import { LondonStationDepartures } from './LondonStationDepartures.tsx'
 
+const NationalRailVehicleCard = lazy(() => import('./NationalRailVehicleCard.tsx'))
 const LondonNightStudy = lazy(() => import('./LondonNightStudy.tsx'))
 
 export function LondonNationalRailBoard({ night, snapshot, stations, stationId, time, windowStart, windowEnd, selectedId, onStation, onSelect, onSeek, onPulse, partial, animate, passengerContent, dismissed, dismissControl, boardContent }: {
@@ -38,8 +39,8 @@ export function LondonNationalRailBoard({ night, snapshot, stations, stationId, 
         onDirection={setDirection} emptyMessage={station.note}
         onSelect={call => { setBoardSelection({ trainId: call.train.id, index: call.index }); onSelect(call.train.id) }} />}
       {partial && !boardContent && <p role="status">Partial National Rail coverage · some operators are still unavailable.</p>}
+      {selected && <Suspense fallback={null}><NationalRailVehicleCard snapshot={snapshot} train={selected} time={time} /></Suspense>}
       {selected && !boardContent && <div className="london-national-rail-selection">
-        <span>{snapshot.stops[selected.stops[0][0]][2].replace('London ', '')} → {snapshot.stops[selected.stops.at(-1)![0]][2].replace('London ', '')}</span>
         <small>{formatServiceTime(selected.start)}–{formatServiceTime(selected.end)} · {intermediateCalls ? `${intermediateCalls} intermediate calls` : 'Non-stop in the mapped area'}</small>
         <button type="button" onClick={() => { onSeek(selectedCall ? direction === 'departure' ? selectedCall[2] + 60 : selectedCall[1] - 120 : selected.start); setExpanded(false) }}>Show movement</button>
         <button type="button" onClick={() => onSelect(undefined)}>Clear</button>

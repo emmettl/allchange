@@ -537,6 +537,8 @@ const morningFlowKey = 'src/studies/LondonMorningFlow.tsx'
 const nightStudyKey = 'src/studies/LondonNightStudy.tsx'
 const eurostarKey = 'src/data/eurostar.ts'
 const combinedBoardKey = 'src/studies/LondonCombinedStationBoard.tsx'
+const railVehicleCardKey = 'src/studies/NationalRailVehicleCard.tsx'
+const vehicleCardKey = 'src/studies/VehicleJourneyCard.tsx'
 const airportCardKey = 'src/studies/AirportCard.tsx'
 const railLayerKey = 'src/studies/LondonNationalRailLayer.tsx'
 const quietMapKey = 'src/studies/LondonQuietMap.tsx'
@@ -550,7 +552,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // Selected cards and alternate studies load only after interaction. Budget
   // them separately; retain their shared static dependencies in the opening.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![quietMapKey, morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![railVehicleCardKey, vehicleCardKey, quietMapKey, morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -588,11 +590,17 @@ async function optionalCardSize(key, parentKey) {
     files.add(chunk.file)
     for (const file of chunk.css ?? []) if (!loadedStyles.has(file)) css.add(file)
     for (const dependency of chunk.imports ?? []) collect(dependency)
-    if (chunk.dynamicImports?.some(dependency => !((id === cycleStudyKey && dependency === cycleComparisonKey) || ([railBoardKey, combinedBoardKey].includes(id) && dependency === nightStudyKey)))) throw new Error(`Unbudgeted optional dynamic dependencies in ${id}`)
+    if (chunk.dynamicImports?.some(dependency => !((id === railBoardKey && dependency === railVehicleCardKey) || (id === cycleStudyKey && dependency === cycleComparisonKey) || ([railBoardKey, combinedBoardKey].includes(id) && dependency === nightStudyKey)))) throw new Error(`Unbudgeted optional dynamic dependencies in ${id}`)
   }
   collect(key)
   return { javaScript: await totalGzipSize(files), css: await totalGzipSize(css) }
 }
+const railVehicleCard = await optionalCardSize(railVehicleCardKey, railBoardKey)
+console.log(`All Change optional rail vehicle card: ${kibibytes(railVehicleCard.javaScript)} JS / 4 KiB; ${kibibytes(railVehicleCard.css)} CSS / 2.5 KiB`)
+if (railVehicleCard.javaScript > 4 * 1024 || railVehicleCard.css > 2.5 * 1024) throw new Error('Rail vehicle card transfer budget exceeded')
+const vehicleCard = await optionalCardSize(vehicleCardKey)
+console.log(`All Change optional vehicle card: ${kibibytes(vehicleCard.javaScript)} JavaScript / 4.0 KiB; ${kibibytes(vehicleCard.css)} CSS / 2.5 KiB`)
+if (vehicleCard.javaScript > 4 * 1024 || vehicleCard.css > 2.5 * 1024) throw new Error('Vehicle card transfer budget exceeded')
 const { javaScript: airportCardScript, css: airportCardStyles } = await optionalCardSize(airportCardKey)
 console.log(`All Change optional airport card: ${kibibytes(airportCardScript)} JavaScript / 4.0 KiB; ${kibibytes(airportCardStyles)} CSS / 3.0 KiB`)
 if (airportCardScript > 4 * 1024 || airportCardStyles > 3 * 1024) throw new Error('Airport card transfer budget exceeded')

@@ -109,6 +109,7 @@ import { useObservedOperations } from '@motionstudies/web/use-observed-operation
 import { useNationalRail, useRailCatalogue } from '../data/use-national-rail.ts'
 import { LONDON_RAIL_CORRIDORS, type RailBoardStation, type RailBoardStationId } from '../editions/london-national-rail.ts'
 import { boardInterchange, boardInterchanges } from '../editions/london-board-interchanges.ts'
+const VehicleJourneyCard = lazy(() => import('./VehicleJourneyCard.tsx'))
 const AirportHeroCard = lazy(() => import('./AirportCard.tsx'))
 
 const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
@@ -2109,7 +2110,8 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         <button type="button" aria-label="Train services pulse" aria-pressed={!isPassengerPulse} onClick={() => { setPulseView('services'); setDismissedHero(false) }}>Trains</button>
         <button type="button" aria-label="Passenger flow pulse" aria-pressed={isPassengerPulse} onClick={() => { setPulseView('passengers'); setDismissedHero(true) }}>People</button>
       </nav>}
-      {selectedAirport ? (
+      {selectedTrain && !selectedStation && !pulseHub && sceneNetwork ? <div className="edition-vehicle-hero"><HeroCardDismiss name={selectedTrain.route} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />{!dismissedHero && <Suspense fallback={null}><VehicleJourneyCard snapshot={sceneNetwork} train={selectedTrain} time={sceneTime} presentation={selectedTrain.category === 'bus' ? 'uk-bus' : 'uk-rail'}
+        note={operationsMode === 'observed' ? 'Recorded predictions · loaded calls only; not a live arrival board.' : 'Published timetable · loaded calls only; not live.'} /></Suspense>}</div> : selectedAirport ? (
         <Suspense fallback={null}><AirportHeroCard key={selectedAirport.id} className="edition-airport-card"
           dismissControl={<HeroCardDismiss name={selectedAirport.iata} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />} dismissed={dismissedHero}
           airport={selectedAirport} aircraft={searchableAircraft}

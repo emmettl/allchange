@@ -16,6 +16,9 @@ test('rail loads on demand, opens movement and finds a hidden-layer service acro
   if (info.project.name === 'iphone-webkit') await board.locator(':scope > details > summary').click()
   await board.getByRole('combobox', { name: 'Paddington board line' }).selectOption('GWR')
   await board.locator('tbody tr button').first().click()
+  await expect(board.locator('.ms-vehicle-hero')).toBeVisible()
+  await expect(board.locator('.ms-vehicle-hero')).toContainText('passing times omitted')
+  expect(await board.locator('.ms-vehicle-hero').evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
   await board.getByRole('button', { name: 'Show movement', exact: true }).click()
   await expect(page.getByRole('button', { name: 'Resume motion', exact: true })).toBeVisible()
   const bounds = (await board.boundingBox())!

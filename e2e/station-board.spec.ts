@@ -59,4 +59,8 @@ test('station board supports keyboard dismissal, preserves selection through red
   await board.getByRole('button', { name: 'Show movement', exact: true }).click()
   await expect(board).not.toBeVisible()
   await expect(page.getByRole('button', { name: 'Resume motion', exact: true })).toBeVisible()
+  const vehicle = page.locator('.ms-vehicle-hero')
+  await expect(vehicle).toBeVisible()
+  expect(await vehicle.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true)
+  await vehicle.screenshot({ path: 'test-results/vehicle-hero.png' })
 })
