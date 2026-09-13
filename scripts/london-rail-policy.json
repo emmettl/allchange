@@ -1,0 +1,95 @@
+{
+  "OPERATORS": {
+    "GW": [
+      "paddington",
+      "GWR"
+    ],
+    "HX": [
+      "paddington",
+      "Heathrow Express"
+    ],
+    "SW": [
+      "waterloo",
+      "South Western Railway"
+    ],
+    "GN": [
+      "kings-cross",
+      "Great Northern"
+    ],
+    "GR": [
+      "kings-cross",
+      "LNER"
+    ],
+    "LD": [
+      "kings-cross",
+      "Lumo"
+    ],
+    "GC": [
+      "kings-cross",
+      "Grand Central"
+    ],
+    "HT": [
+      "kings-cross",
+      "Hull Trains"
+    ],
+    "TL": [
+      "thameslink",
+      "Thameslink"
+    ],
+    "SN": [
+      "southern",
+      "Southern"
+    ],
+    "GX": [
+      "southern",
+      "Gatwick Express"
+    ],
+    "SE": [
+      "southeastern",
+      "Southeastern"
+    ],
+    "LE": [
+      "liverpool-street",
+      "Greater Anglia"
+    ],
+    "VT": [
+      "euston",
+      "Avanti West Coast"
+    ],
+    "LM": [
+      "euston",
+      "London Northwestern Railway"
+    ],
+    "CS": [
+      "euston",
+      "Caledonian Sleeper"
+    ],
+    "CH": [
+      "marylebone",
+      "Chiltern Railways"
+    ],
+    "CC": [
+      "fenchurch-street",
+      "c2c"
+    ],
+    "EM": [
+      "st-pancras",
+      "East Midlands Railway"
+    ]
+  },
+  "ALIASES": {
+    "ASHFORD (MIDDLESEX)": "AFS",
+    "GREENHITHE FOR BLUEWATER": "GNH",
+    "HAYES (KENT)": "HYS",
+    "QUEENS RD PECKHAM": "QRP",
+    "QUEENSTOWN RD.(BATTERSEA)": "QRB",
+    "SUTTON (SURREY)": "SUO",
+    "WEST HAM HIGH LEVEL": "WEH",
+    "SEER GREEN": "SRG",
+    "HEATHROW TERMINALS 2 & 3": "HXX",
+    "WIMBLEDON L.U.L.": "WIM",
+    "LOUGHBOROUGH JN": "LGJ",
+    "LONDON VICTORIA (E)": "VIC",
+    "EBBSFLEET W JN": "EBSFWJN"
+  }
+}

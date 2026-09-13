@@ -20,7 +20,7 @@ Connected OpenStreetMap railway geometry follows the published sequence of timin
 
 ## Rebuilding
 
-Run `npm run data:london:national-rail`. It downloads public sources into `/tmp/allchange-rail-complete`, reuses cached inputs, extracts weekday/Saturday XLSX grids with standard-library Python, extracts the public PDFs with Poppler’s `pdftotext`, reconciles the timetable, routes the journeys and writes the fixtures. Set `RAIL_CACHE` to use another cache directory. Node, Python 3 and `pdftotext` are required; no credentials are needed.
+Run `npm run data:london:national-rail`. It downloads public sources into `/tmp/allchange-rail-complete`, reuses cached inputs, extracts weekday/Saturday XLSX grids through the typed shared Node reader, extracts the public PDFs with Poppler’s `pdftotext`, reconciles the timetable, routes the journeys and writes the fixtures. Set `RAIL_CACHE` to use another cache directory. Node 24+, `unzip` and `pdftotext` are required; no credentials are needed.
 
 `scripts/london-rail-sources.json` contains the exact archive members, public PDF URLs and Overpass queries. Source failures stop compilation. Rebuilding from the same cached inputs produces identical output hashes. `npm run data:london:national-rail:compile` reruns compilation with prepared inputs. `npm run build` stages the optional catalogue and family files into `public/data`.
 
@@ -37,3 +37,11 @@ The original Paddington, Waterloo and King’s Cross proof fixtures and their fo
 ## Later: Darwin
 
 The next phase is live data, using the user’s Rail Data Marketplace account. The existing CRS identities, source UID and originating date provide the matching keys for a server-side adapter. Preserve the timetable separately from estimates, actuals, cancellation/platform information and freshness status; apply live changes to both map movements and station pulses. Credentials belong on the server. Product access, API entitlement and the chosen Darwin feed can be handled when that phase starts.
+
+## Shared reader migration
+
+The prepared migration uses `@motionstudies/data/rail-wtt`, `rail-journeys`, `rail-public-calls`, `rail-routing` and `rail-geometry`. Regional aliases, operator scope, public-table calendar/closure review and boundary policy live in `scripts/london-rail-network.mjs` and its policy JSON. Existing Python readers remain validation oracles; the national-rail runtime no longer invokes them. Other Python data pipelines are unchanged.
+
+Validation compares all 31 WTT workbook grids and 3,138 public records exactly against Python. On identical composed geometry/station inputs, 8,681 joined journeys, 1,051 added public calls, 474 connected paths/way IDs and 588 unavailable-path reasons compare exactly. The full historical OSM cache was unavailable; three fresh regional extracts were supplemented with station identities from retained edition snapshots for parity only. This does not reproduce the complete historical publication. No production fixtures are replaced. Shared source hashes and detailed limits are recorded in Motion Studies `docs/evidence/rail-reader-parity.json`.
+
+280 tests, lint and build pass against the private packed candidate. Its alpha.12 manifest is a development base, not the registry alpha.12 release: the coordinated release task must publish and pin the new package version before merging this consumer migration.

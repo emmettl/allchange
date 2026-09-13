@@ -2,6 +2,7 @@
 /** Public, credential-free inputs. Cached files are reused; generated fixtures carry their hashes. */
 import { mkdir, readFile, writeFile, access, rename } from 'node:fs/promises'
 import { execFileSync } from 'node:child_process'
+import { readRailArchiveEntry, readWtt } from '@motionstudies/data/rail-wtt'
 import { resolve } from 'node:path'
 const cache = resolve(process.env.RAIL_CACHE ?? '/tmp/allchange-rail-complete')
 const sources = JSON.parse(await readFile(new URL('./london-rail-sources.json', import.meta.url)))
@@ -19,15 +20,10 @@ async function download(url, path, query) {
 }
 await download(sources.archiveUrl, `${cache}/wtt.zip`)
 await writeFile(`${cache}/wtt-manifest.json`, JSON.stringify(sources.tables))
-execFileSync('python3', ['-c', `import json,sys,zipfile,pathlib
-root=pathlib.Path(sys.argv[1])
-with zipfile.ZipFile(root/'wtt.zip') as archive:
- for table in json.loads((root/'wtt-manifest.json').read_text()):
-  (root/'wtt'/(table['table']+'.xlsx')).write_bytes(archive.read(table['member']))
-`, cache], { stdio: 'inherit' })
-for (const { table } of sources.tables) {
-  const cells = execFileSync('python3', ['scripts/read-rail-wtt.py', `${cache}/wtt/${table}.xlsx`, '--all-days'], { maxBuffer: 100 * 1024 * 1024 })
-  await writeFile(`${cache}/wtt/${table}.json`, cells)
+for (const { table, member } of sources.tables) {
+  const bytes = await readRailArchiveEntry(`${cache}/wtt.zip`, member)
+  await writeFile(`${cache}/wtt/${table}.xlsx`, bytes)
+  await writeFile(`${cache}/wtt/${table}.json`, JSON.stringify(await readWtt(bytes, { weekends: true })))
 }
 await writeFile(`${cache}/enrt-sources.json`, JSON.stringify(sources.passengerTables))
 for (const [table, url] of Object.entries(sources.passengerTables)) {

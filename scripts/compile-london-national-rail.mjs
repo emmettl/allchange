@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFile, writeFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
-import { execFileSync } from 'node:child_process'
+import { compileLondonRail } from './london-rail-network.mjs'
 import { assembleRailCorridor } from './national-rail-corridor.mjs'
 
 const cache = process.env.RAIL_CACHE ?? '/tmp/allchange-rail-complete'
@@ -14,7 +14,7 @@ const operatorNames = { GW: 'GWR', HX: 'Heathrow Express', SW: 'South Western Ra
 const displayName = name => name.toLowerCase().replace(/\b\w/g, letter => letter.toUpperCase()).replace(' (E)', '').replace('Kings Lynn', 'King’s Lynn')
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex')
 
-if (!process.argv.includes('--reuse-normalized')) execFileSync('python3', ['scripts/london-rail-network.py'], { stdio: 'inherit' })
+if (!process.argv.includes('--reuse-normalized')) await compileLondonRail(cache)
 const routed = JSON.parse(await readFile(`${cache}/routed.json`))
 if (routed.conflicts.length || Object.keys(routed.geometryFailures).length || routed.excludedGeometry.length) throw new Error('Resolve rail coverage audit before publishing snapshots')
 const reference = JSON.parse(await readFile('fixtures/tfl/all-change-rail-led-morning.json'))

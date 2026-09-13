@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { readWtt } from '@motionstudies/data/rail-wtt'
 import { execFileSync } from 'node:child_process'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
@@ -119,7 +120,7 @@ export async function compileKingsCross(cache = '/tmp/allchange-kings-cross') {
     bytes = execFileSync('unzip', ['-p', archive, KINGS_CROSS_SOURCE.member], { maxBuffer: 8 * 1024 * 1024 })
     await writeFile(path, bytes)
   }
-  const sheets = JSON.parse(execFileSync('python3', ['scripts/read-rail-wtt.py', path], { encoding: 'utf8', maxBuffer: 8 * 1024 * 1024 }))
+  const sheets = await readWtt(path)
   const { journeys, excluded } = parseKingsCrossWtt(sheets)
   const geometryBytes = await readFile('fixtures/national-rail/kings-cross-geometry.json'), geometry = JSON.parse(geometryBytes)
   const reference = JSON.parse(await readFile('fixtures/tfl/all-change-rail-led-morning.json'))
