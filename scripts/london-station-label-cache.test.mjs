@@ -5,7 +5,8 @@ import * as THREE from 'three'
 import * as labelFunctions from '../node_modules/@motionstudies/three/station-labels.js'
 import { StationLabelFrame } from '../src/studies/station-label-frame.ts'
 import { londonStationLabelRankLimit } from '../src/editions/london-station-labels.ts'
-import { londonDiagramRenderer } from './london-diagram-renderer.ts'
+import { londonMapStyle } from '../src/studies/london-renderer-policy.ts'
+import { setScenePickMetadata } from '@motionstudies/three/scene-picking'
 
 // Exercise the installed layout algorithm and real Three sprites. Only React's
 // lifecycle and canvas text rasterization are stubbed; compare visible output
@@ -21,7 +22,7 @@ function harness(source, camera, size) {
     return slots[index].value
   }
   const bindings = {
-    stationLabelBoxes, emptyLabelBoxes, ...labelFunctions, THREE, StationLabelFrame, londonStationLabelRankLimit,
+    useMapStyle: () => londonMapStyle, setScenePickMetadata, stationLabelBoxes, emptyLabelBoxes, ...labelFunctions, THREE, StationLabelFrame, londonStationLabelRankLimit,
     _Fragment: 'fragment', STATION_SURFACE_Y: 0.08, MAP_LAYER: { stationLabel: 19 },
     useThree: () => ({ camera, size }),
     useMemo: memo,
@@ -56,10 +57,7 @@ function harness(source, camera, size) {
 
 it('preserves station sprites across settling, pan, zoom, resize, selection and layout changes', () => {
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
-  let code = readFileSync(`.${id}`, 'utf8')
-  for (const plugin of [londonDiagramRenderer()]) {
-    code = plugin.transform(code, id)?.code ?? code
-  }
+  const code = readFileSync(`.${id}`, 'utf8')
   const source = code.slice(code.indexOf('function StationLabels('), code.indexOf('function createTrainLabelTexture('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 18, 1)

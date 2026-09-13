@@ -1,23 +1,20 @@
-import { FLAT_NETWORK_MAP_STYLE, type NetworkMapStyle } from '@motionstudies/three/scene-style'
-import { lazy, Suspense, type ComponentType } from 'react'
+import { londonMapStyle, londonRendererExtensions } from './london-renderer-policy.ts'
+import { lazy, Suspense } from 'react'
 import { NationalNetworkScene, type NationalNetworkSceneProps } from '@motionstudies/three/NationalNetworkScene'
 import { useNetworkScene, type NetworkSceneExtensions } from '@motionstudies/three/scene-extensions'
 import { cachedBusPosition } from '../data/bus-motion.ts'
 import { nationalRoadConditionsAtTime } from './road-conditions.ts'
 import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
 import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
-import type { MapSelectionSceneExtension } from './LondonMapSelection.tsx'
+import { LondonMapSelection, type MapSelectionSceneExtension } from './LondonMapSelection.tsx'
 
 const LondonQuietMap = lazy(() => import('./LondonQuietMap.tsx').then(module => ({ default: module.LondonQuietMap })))
 const LondonNationalRailLayer = lazy(() => import('./LondonNationalRailLayer.tsx').then(module => ({ default: module.LondonNationalRailLayer })))
-const mapStyle: NetworkMapStyle = { ...FLAT_NETWORK_MAP_STYLE,
-  trainLabels: { ...FLAT_NETWORK_MAP_STYLE.trainLabels, routeTextCategories: ['metro'] } }
 const extensions: NetworkSceneExtensions = {
+  ...londonRendererExtensions,
   trainPosition: (train, time, stops, paths) => train.category === 'bus' ? cachedBusPosition(train, time, stops, paths) : undefined,
   roadConditions: nationalRoadConditionsAtTime,
 }
-// Picking metadata remains in the existing edition adapter until its visual policy migrates.
-const Scene = NationalNetworkScene as ComponentType<NationalNetworkSceneProps & MapSelectionSceneExtension>
 type Props = NationalNetworkSceneProps & NationalRailSceneExtension & QuietMapSceneExtension & MapSelectionSceneExtension
 
 function LondonLayers({ quietMap, quietDiagramSnapshot, nationalRailSnapshot, nationalRailSelectedId }: NationalRailSceneExtension & QuietMapSceneExtension) {
@@ -35,9 +32,12 @@ function LondonLayers({ quietMap, quietDiagramSnapshot, nationalRailSnapshot, na
 }
 
 export function LondonNetworkScene({ quietMap, quietDiagramSnapshot, nationalRailSnapshot, nationalRailSelectedId, children, ...props }: Props) {
-  return <Scene {...props} extensions={extensions} mapStyle={mapStyle}>
+  return <NationalNetworkScene {...props} infrastructureSnapshot={props.referenceSnapshot} extensions={extensions} mapStyle={londonMapStyle}>
     <LondonLayers quietMap={quietMap} quietDiagramSnapshot={quietDiagramSnapshot}
       nationalRailSnapshot={nationalRailSnapshot} nationalRailSelectedId={nationalRailSelectedId} />
+    <LondonMapSelection stations={props.stations} onSelectStation={props.onSelectStation}
+      onSelectTrain={props.onSelectTrain} onSelectNationalRail={props.onSelectNationalRail}
+      onSelectAirport={props.onSelectAirport} disabled={quietMap || props.airCategorySelected || props.roadCategorySelected} />
     {children}
-  </Scene>
+  </NationalNetworkScene>
 }

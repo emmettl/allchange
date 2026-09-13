@@ -1,3 +1,4 @@
+import { setScenePickMetadata, setScenePickTrain } from '@motionstudies/three/scene-picking'
 import { describe, expect, it } from 'vitest'
 import * as THREE from 'three'
 import type { NetworkTrain, StationIndexEntry } from '@motionstudies/core/domain/network'
@@ -12,7 +13,7 @@ const stations = new Map([[0, station]])
 it('keeps airport click and touch targets generous across zoom and pan', () => {
   const { scene, camera, screen } = setup()
   const airport = LONDON_AIRPORTS[0], marker = new THREE.Group()
-  marker.userData.londonAirport = airport
+  setScenePickMetadata(marker, { target: { kind: 'airport', value: airport } })
   scene.add(marker); scene.updateMatrixWorld()
   for (const height of [30, 10, 2]) {
     camera.position.set(1, height, height * 0.6); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()
@@ -28,7 +29,7 @@ it('keeps airport click and touch targets generous across zoom and pan', () => {
 it('makes the full visible airport label clickable and ignores hidden labels', () => {
   const { scene, camera, screen } = setup(), airport = LONDON_AIRPORTS[0]
   const label = new THREE.Sprite(new THREE.SpriteMaterial())
-  label.userData.londonAirport = airport
+  setScenePickMetadata(label, { target: { kind: 'airport', value: airport } })
   label.position.set(3, 1, 0); label.scale.set(5, 1, 1)
   scene.add(label); scene.updateMatrixWorld()
   const [x, y] = screen(4.5, 1, 0)
@@ -45,7 +46,7 @@ function setup() {
   camera.updateMatrixWorld()
   const geometry = new THREE.BufferGeometry()
   geometry.setAttribute('position', new THREE.Float32BufferAttribute([0, 0.085, 0, 8, 0, 0], 3))
-  geometry.userData.londonTrains = [train, { ...train, id: 'stale' }]
+  setScenePickMetadata(geometry, { trains: [train, { ...train, id: 'stale' }] })
   geometry.setDrawRange(0, 1)
   const points = new THREE.Points(geometry, new THREE.PointsMaterial({ sizeAttenuation: false }))
   scene.add(points)
@@ -88,7 +89,7 @@ describe('rendered map picking', () => {
   it('raycasts the actual offset label and ignores culled and transparent labels', () => {
     const { scene, screen, pick } = setup()
     const label = new THREE.Sprite(new THREE.SpriteMaterial({ opacity: 1 }))
-    label.userData.londonTarget = { kind: 'station', value: station }
+    setScenePickMetadata(label, { target: { kind: 'station', value: station } })
     label.position.set(4, 0.035, 0)
     label.scale.set(2, 0.5, 1)
     label.center.set(0, 0.5)
@@ -106,8 +107,8 @@ describe('rendered map picking', () => {
 
   it('selects unlabelled station markers at their transformed positions', () => {
     const { scene, points, geometry, screen, pick } = setup()
-    delete geometry.userData.londonTrains
-    geometry.userData.londonStops = [0]
+    setScenePickMetadata(geometry, undefined)
+    setScenePickMetadata(geometry, { stopIndexes: [0] })
     points.position.x = -2
     scene.updateMatrixWorld()
     expect(pick(...screen(-2, 0.085, 0))).toEqual({ kind: 'station', value: station })
@@ -116,7 +117,7 @@ describe('rendered map picking', () => {
   it('selects the visible label instead of an unrelated marker directly underneath', () => {
     const { scene, screen, pick } = setup()
     const label = new THREE.Sprite(new THREE.SpriteMaterial())
-    label.userData.londonTarget = { kind: 'station', value: station }
+    setScenePickMetadata(label, { target: { kind: 'station', value: station } })
     label.position.set(0, 0.085, 0)
     label.scale.set(2, 0.5, 1)
     label.renderOrder = 20
@@ -130,10 +131,10 @@ describe('rendered map picking', () => {
   it('selects National Rail and prefers a train drawn over a station marker', () => {
     const { scene, geometry, points, screen, pick } = setup()
     geometry.userData.londonRailIds = ['rail-123']
-    delete geometry.userData.londonTrains
+    setScenePickMetadata(geometry, undefined)
     points.renderOrder = 12
     const stationGeometry = geometry.clone()
-    stationGeometry.userData = { londonStops: [0] }
+    setScenePickMetadata(stationGeometry, { stopIndexes: [0] })
     scene.add(new THREE.Points(stationGeometry, new THREE.PointsMaterial()))
     scene.updateMatrixWorld()
     expect(pick(...screen(0, 0.085, 0))).toEqual({ kind: 'national-rail', value: 'rail-123' })
@@ -143,7 +144,7 @@ describe('rendered map picking', () => {
     const { scene, screen, pick } = setup()
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute([3, 0.14, -1, 5, 0.14, -1, 4, 0.14, 2], 3))
-    geometry.userData.londonStops = [0, 0, 0]
+    setScenePickMetadata(geometry, { stopIndexes: [0, 0, 0] })
     scene.add(new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ side: THREE.DoubleSide })))
     scene.updateMatrixWorld()
     expect(pick(...screen(4, 0.14, 0))).toEqual({ kind: 'station', value: station })
@@ -151,9 +152,9 @@ describe('rendered map picking', () => {
 
   it('ignores filtered trains and points outside the camera clipping range', () => {
     const { geometry, screen, pick } = setup()
-    geometry.userData.londonTrains[0] = undefined
+    setScenePickTrain(geometry, 0, undefined)
     expect(pick(...screen(0, 0.085, 0))).toBeUndefined()
-    geometry.userData.londonTrains[0] = train
+    setScenePickTrain(geometry, 0, train)
     geometry.getAttribute('position').setXYZ(0, 0, 40, 30)
     expect(pick(...screen(0, 40, 30))).toBeUndefined()
   })

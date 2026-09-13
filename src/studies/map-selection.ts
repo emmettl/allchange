@@ -1,3 +1,4 @@
+import { scenePickMetadata } from '@motionstudies/three/scene-picking'
 import * as THREE from 'three'
 import type { NetworkTrain, StationIndexEntry } from '@motionstudies/core/domain/network'
 import type { StudyAirport } from '@motionstudies/core/domain/airport'
@@ -31,7 +32,8 @@ export function pickMapTarget(scene: THREE.Scene, camera: THREE.Camera,
   let label: { target: MapSelection; order: number } | undefined
   let airportMarker: StudyAirport | undefined, nearestAirport = touch ? 28 : 22
   scene.traverseVisible(object => {
-    const airport = object.userData.londonAirport as StudyAirport | undefined
+    const metadata = scenePickMetadata(object)
+    const airport = metadata?.target?.kind === 'airport' ? metadata.target.value : undefined
     if (airportsOnly && !airport) return
     if (airport && !(object instanceof THREE.Sprite)) {
       object.getWorldPosition(point).project(camera)
@@ -41,7 +43,7 @@ export function pickMapTarget(scene: THREE.Scene, camera: THREE.Camera,
       return
     }
     if (object instanceof THREE.Sprite) {
-      const target: MapSelection | undefined = airport ? { kind: 'airport', value: airport } : object.userData.londonTarget
+      const target: MapSelection | undefined = airport ? { kind: 'airport', value: airport } : metadata?.target
       if (!target || !object.material.visible || object.material.opacity < 0.1) return
       if (ray.intersectObject(object, false).length && (!label || object.renderOrder > label.order)) {
         label = { target, order: object.renderOrder }
@@ -50,7 +52,8 @@ export function pickMapTarget(scene: THREE.Scene, camera: THREE.Camera,
     }
     if (!(object instanceof THREE.Points || object instanceof THREE.Mesh)) return
     const geometry = object.geometry
-    const { londonTrains, londonRailIds, londonStops } = geometry.userData
+    const { trains: londonTrains, stopIndexes: londonStops } = scenePickMetadata(geometry) ?? {}
+    const { londonRailIds } = geometry.userData
     if (!londonTrains && !londonRailIds && !londonStops) return
     const material = object.material
     if (Array.isArray(material) || !material.visible || material.opacity < 0.01) return
@@ -68,7 +71,8 @@ export function pickMapTarget(scene: THREE.Scene, camera: THREE.Camera,
     for (let index = geometry.drawRange.start; index < end; index++) {
       const train = londonTrains?.[index] as NetworkTrain | undefined
       const railId = londonRailIds?.[index] as string | undefined
-      const station = stations?.get(londonStops?.[index])
+      const stopIndex = londonStops?.[index]
+      const station = stopIndex === undefined ? undefined : stations?.get(stopIndex)
       if (!train && !railId && !station) continue
       point.fromBufferAttribute(positions, index).applyMatrix4(object.matrixWorld).project(camera)
       if (!Number.isFinite(point.x + point.y + point.z) || point.z < -1 || point.z > 1) continue

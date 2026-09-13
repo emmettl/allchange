@@ -1,3 +1,4 @@
+import { setScenePickMetadata } from '@motionstudies/three/scene-picking'
 import { useEffect, useMemo } from 'react'
 import type {} from '@react-three/fiber'
 import * as THREE from 'three'
@@ -38,10 +39,10 @@ export function LondonDiagramStations({ snapshot, projectedStops, projectedPaths
     const ticks = new THREE.BufferGeometry()
     ticks.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
     ticks.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
-    ticks.userData.londonStops = tickStops
+    setScenePickMetadata(ticks, { stopIndexes: tickStops })
     const interchanges = new THREE.BufferGeometry()
     interchanges.setAttribute('position', new THREE.Float32BufferAttribute(rings, 3))
-    interchanges.userData.londonStops = ringStops
+    setScenePickMetadata(interchanges, { stopIndexes: ringStops })
     return { ticks, interchanges }
   }, [projectedPaths, projectedStops, routeColors, snapshot])
   const ring = useMemo(() => {
