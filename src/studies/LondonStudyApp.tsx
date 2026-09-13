@@ -2003,10 +2003,10 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       )}
 
       {!pulseHub && <aside className="london-map-tools" aria-label="Map controls">
-        <button type="button" aria-label="Zoom in" onClick={() => moveCamera('zoom-in')}>+</button>
-        <button type="button" aria-label="Zoom out" onClick={() => moveCamera('zoom-out')}>−</button>
-        <button type="button" aria-label="Reset map" onClick={() => moveCamera('reset')}>↺</button>
-        <button
+        <button className="ms-control" type="button" aria-label="Zoom in" onClick={() => moveCamera('zoom-in')}>+</button>
+        <button className="ms-control" type="button" aria-label="Zoom out" onClick={() => moveCamera('zoom-out')}>−</button>
+        <button className="ms-control" type="button" aria-label="Reset map" onClick={() => moveCamera('reset')}>↺</button>
+        <button className="ms-control"
           type="button"
               data-tooltip={trainLabelMode === 'auto' ? 'Show vehicle labels (Tube and DLR at close zoom) (L)' : trainLabelMode === 'on' ? 'Hide vehicle labels (L)' : 'Show vehicle labels automatically at useful zoom levels (L)'} aria-label={`Vehicle labels ${trainLabelMode}`}
           onClick={() => setTrainLabelMode((value) => LABEL_MODES[value])}
@@ -2311,7 +2311,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
             />
           </label>
           <div className="london-playback-actions">
-            <button
+            <button className="ms-control"
               type="button"
               aria-label={isPlaying ? 'Pause motion' : 'Resume motion'}
               disabled={operationsEngaged}
@@ -2319,7 +2319,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
             >
               {isPlaying ? 'Ⅱ' : '▶'}
             </button>
-            <select
+            <select className="ms-control"
               aria-label="Playback speed"
               disabled={operationsEngaged}
               value={playbackRate}
@@ -2329,8 +2329,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
                 <option key={rate.value} value={rate.value}>{rate.label}</option>
               ))}
             </select>
-            <button
-              className="london-cinema-toggle"
+            <button className="ms-control london-cinema-toggle"
               type="button"
               aria-label={limitedChrome ? 'Exit limited chrome' : 'Enter limited chrome'}
               aria-pressed={limitedChrome}
@@ -2346,7 +2345,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
               </span>
             </button>
             {(nationalRailSelectedId || selectedStation || selectedRoute || selectedTrain || selectedAirTrackId || selectedAirport || selectedRoad || selectedCategory || airCategorySelected || roadCategorySelected) && (
-              <button type="button" data-tooltip="Clear the selection and stop following it to explore the map freely" onClick={clearSelection}>Release</button>
+              <button className="ms-control" type="button" data-tooltip="Clear the selection and stop following it to explore the map freely" onClick={clearSelection}>Release</button>
             )}
           </div>
         </section>

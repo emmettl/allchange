@@ -536,15 +536,14 @@
   transform: translateY(-50%);
 }
 
-.london-map-tools button,
-.london-playback-actions button,
-.london-playback-actions select {
-  min-width: 42px;
-  min-height: 42px;
+.london-map-tools, .london-playback-actions {
+  --ms-control-size: 42px;
+  --ms-control-border: rgba(210, 200, 232, 0.25);
+  --ms-control-surface: rgba(7, 6, 19, 0.78);
+  --ms-control-ink: var(--cyan);
+}
+.london-map-tools .ms-control, .london-playback-actions .ms-control {
   justify-content: center;
-  border: 1px solid rgba(210, 200, 232, 0.25);
-  background: rgba(7, 6, 19, 0.78);
-  color: var(--cyan);
   font: 500 0.68rem/1 'DM Mono', ui-monospace, monospace;
   backdrop-filter: blur(14px);
 }
@@ -1066,3 +1065,5 @@
 }
 
 @media (min-width: 701px) { .london-layout-switch { max-inline-size: calc(100% - var(--london-gutter) * 2); } }
+
+@media (pointer: coarse) { .london-map-tools, .london-playback-actions { --ms-control-size: 44px; } }

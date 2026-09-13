@@ -58,7 +58,7 @@ function harness(source, camera, size) {
 it('preserves station sprites across settling, pan, zoom, resize, selection and layout changes', () => {
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
   const code = readFileSync(`.${id}`, 'utf8')
-  const source = code.slice(code.indexOf('function StationLabels('), code.indexOf('function createTrainLabelTexture('))
+  const source = code.slice(code.indexOf('function StationLabels('), code.indexOf('function trainLabelText('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 18, 1)
   camera.lookAt(0, 0, 0)
