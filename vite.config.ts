@@ -1,13 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { londonDiagramRenderer } from './scripts/london-diagram-renderer.ts'
-import { londonNationalRailRenderer } from './scripts/london-national-rail-renderer.ts'
-import { londonMotionRenderer } from './scripts/london-motion-renderer.ts'
 import { londonSelectionRenderer } from './scripts/london-selection-renderer.ts'
-import { londonPerformanceRenderer } from './scripts/london-performance-renderer.ts'
 import { londonCartographyRenderer } from './scripts/london-cartography-renderer.ts'
 export default defineConfig({
-  plugins: [londonDiagramRenderer(), londonNationalRailRenderer(), londonMotionRenderer(), londonSelectionRenderer(), londonPerformanceRenderer(), londonCartographyRenderer(), react()],
+  plugins: [londonDiagramRenderer(), londonSelectionRenderer(), londonCartographyRenderer(), react()],
   optimizeDeps: {
     exclude: ['@motionstudies/three'],
     include: ['@react-three/fiber', 'three'],

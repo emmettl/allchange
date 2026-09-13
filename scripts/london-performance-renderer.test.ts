@@ -2,14 +2,11 @@ import { readFileSync } from 'node:fs'
 import { expect, it } from 'vitest'
 import { parse } from '@babel/parser'
 import { londonDiagramRenderer } from './london-diagram-renderer.ts'
-import { londonNationalRailRenderer } from './london-national-rail-renderer.ts'
-import { londonMotionRenderer } from './london-motion-renderer.ts'
 import { londonSelectionRenderer } from './london-selection-renderer.ts'
-import { londonPerformanceRenderer } from './london-performance-renderer.ts'
 import { londonCartographyRenderer } from './london-cartography-renderer.ts'
 
 it('composes edition adapters with the shared optimized renderer', () => {
-  const plugins = [londonDiagramRenderer(), londonNationalRailRenderer(), londonMotionRenderer(), londonSelectionRenderer(), londonPerformanceRenderer(), londonCartographyRenderer()]
+  const plugins = [londonDiagramRenderer(), londonSelectionRenderer(), londonCartographyRenderer()]
   for (const module of ['NationalNetworkScene', 'HubPulseScene', 'AirTrafficLayer', 'RoadTrafficLayer', 'air-labels', 'train-labels', 'network-paths']) {
     const id = `/node_modules/@motionstudies/three/${module}.js`
     let code = readFileSync(`.${id}`, 'utf8')

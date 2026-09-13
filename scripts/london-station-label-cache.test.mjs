@@ -5,8 +5,6 @@ import * as labelFunctions from '../node_modules/@motionstudies/three/station-la
 import { StationLabelFrame } from '../src/studies/station-label-frame.ts'
 import { londonStationLabelRankLimit } from '../src/editions/london-station-labels.ts'
 import { londonDiagramRenderer } from './london-diagram-renderer.ts'
-import { londonMotionRenderer } from './london-motion-renderer.ts'
-import { londonPerformanceRenderer } from './london-performance-renderer.ts'
 
 // Exercise the installed layout algorithm and real Three sprites. Only React's
 // lifecycle and canvas text rasterization are stubbed; compare visible output
@@ -58,7 +56,7 @@ function harness(source, camera, size) {
 it('preserves station sprites across settling, pan, zoom, resize, selection and layout changes', () => {
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
   let code = readFileSync(`.${id}`, 'utf8')
-  for (const plugin of [londonDiagramRenderer(), londonMotionRenderer(), londonPerformanceRenderer()]) {
+  for (const plugin of [londonDiagramRenderer()]) {
     code = plugin.transform(code, id)?.code ?? code
   }
   const source = code.slice(code.indexOf('function StationLabels('), code.indexOf('function createTrainLabelTexture('))

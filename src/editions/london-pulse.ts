@@ -43,3 +43,5 @@ export function nationalRailPulseVisible(call: HubCall, time: number, horizon: n
 export function londonPulseCallsNearTime(calls: readonly HubCall[], time: number) {
   return callsNearTime(calls, time).filter(call => nationalRailPulseVisible(call, time, 15 * 60))
 }
+
+export const londonHubFlowPolicy = { flowAllowed: pulseFlowAllowed, cycleOffset: pulseCycleOffset, visible: nationalRailPulseVisible }

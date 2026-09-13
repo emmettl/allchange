@@ -3,12 +3,11 @@ import { expect, it } from 'vitest'
 import * as THREE from 'three'
 import { SERVICE_COLORS } from '@motionstudies/core/theme'
 import { batchHubLines } from '../src/studies/batch-hub-lines.ts'
-import { londonNationalRailRenderer } from './london-national-rail-renderer.ts'
 import { pulseFlowAllowed } from '../src/editions/london-pulse.ts'
 
 it('batches installed hub geometry without changing segments, colours or category emphasis', () => {
   const id = '/node_modules/@motionstudies/three/HubPulseScene.js'
-  const source = (londonNationalRailRenderer().transform as (source: string, id: string) => { code: string })(readFileSync(`.${id}`, 'utf8'), id).code
+  const source = readFileSync(`.${id}`, 'utf8')
   const calls = Array.from({ length: 80 }, (_, index) => ({
     hubStop: [-0.08, 51.5], previousStop: index % 4 === 0 ? undefined : [-0.2 + index * 0.01, 51.6], nextStop: index % 4 === 1 ? undefined : [-0.1, 51.3 + index * 0.02],
     train: { id: `${index % 2 ? 'train' : 'national-rail'}:${index}`, category: ['intercity', 'regional', 's-bahn'][index % 3] },
@@ -16,7 +15,7 @@ it('batches installed hub geometry without changing segments, colours or categor
   const evaluate = (code: string, selectedCategory?: string, batch: unknown = batchHubLines) => {
     const clean = code.replace(/^import .*;$/gm, '').replaceAll('export ', '')
     return new Function('THREE', 'SERVICE_COLORS', 'batchHubLines', 'pulseFlowAllowed', 'useMemo', 'useEffect', '_jsx', 'calls', 'selectedCategory',
-      `${clean}; return { ticks: TickMarks().object.children, spokes: CorridorSpokes({ calls, selectedCategory }).map(entry => entry.object) };`
+      `${clean}; return { ticks: TickMarks().object.children, spokes: CorridorSpokes({ calls, selectedCategory, flowPolicy: { flowAllowed: pulseFlowAllowed } }).map(entry => entry.object) };`
     )(THREE, SERVICE_COLORS, batch, pulseFlowAllowed, (factory: () => unknown) => factory(), () => {}, (_type: unknown, props: unknown) => props, calls, selectedCategory)
   }
   const segments = (lines: THREE.Line[]) => lines.flatMap(line => {

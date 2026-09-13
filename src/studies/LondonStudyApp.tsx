@@ -7,7 +7,6 @@ import {
   useRef,
   useState,
   type CSSProperties,
-  type ComponentType,
   type KeyboardEvent,
 } from 'react'
 import {
@@ -75,7 +74,7 @@ import {
   ALL_CHANGE_ROUTE_COLORS,
   type LondonEdition,
 } from '../editions/london.ts'
-import { isNationalRailCall, londonPulseCalls, londonPulseCallsNearTime } from '../editions/london-pulse.ts'
+import { isNationalRailCall, londonHubFlowPolicy, londonPulseCalls, londonPulseCallsNearTime } from '../editions/london-pulse.ts'
 import { LONDON_AIRPORTS } from '../editions/london-airports.ts'
 import { londonInfrastructureSnapshot } from '../editions/london-infrastructure.ts'
 import { londonStationLabels } from '../editions/london-station-labels.ts'
@@ -95,7 +94,6 @@ import {
   searchRoadCorridors,
 } from '@motionstudies/core/road-search'
 import type {
-  NationalNetworkSceneProps,
   MapCameraAction,
   MapCameraCommand,
 } from '@motionstudies/three/NationalNetworkScene'
@@ -114,7 +112,6 @@ import { boardInterchange, boardInterchanges } from '../editions/london-board-in
 const AirportHeroCard = lazy(() => import('./AirportCard.tsx'))
 
 const LondonRoadObservations = lazy(() => import('./LondonRoadObservations.tsx').then(module => ({ default: module.LondonRoadObservations })))
-import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
 const LondonNationalRailBoard = lazy(() => import('./LondonNationalRailBoard.tsx').then(module => ({ default: module.LondonNationalRailBoard })))
 import { HeroCardDismiss } from './HeroCardDismiss.tsx'
 const LondonPassengerPulse = lazy(() => import('./LondonPassengerPulse.tsx'))
@@ -124,15 +121,9 @@ const LondonStationDepartures = lazy(() => import('./LondonStationDepartures.tsx
 const LondonMorningFlow = lazy(() => import('./LondonMorningFlow.tsx'))
 const LondonNightStudy = lazy(() => import('./LondonNightStudy.tsx'))
 const LondonCombinedStationBoard = lazy(() => import('./LondonCombinedStationBoard.tsx'))
-import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
-import type { MapSelectionSceneExtension } from './LondonMapSelection.tsx'
 import '../styles/london-quiet-map.css'
 
-const NationalNetworkScene = lazy(() =>
-  import('@motionstudies/three/NationalNetworkScene').then(
-    ({ NationalNetworkScene: Scene }) => ({ default: Scene as ComponentType<NationalNetworkSceneProps & NationalRailSceneExtension & QuietMapSceneExtension & MapSelectionSceneExtension> }),
-  ),
-)
+const NationalNetworkScene = lazy(() => import('./LondonNetworkScene.tsx').then(({ LondonNetworkScene }) => ({ default: LondonNetworkScene })))
 
 const HubPulseScene = lazy(() =>
   import('@motionstudies/three/HubPulseScene').then(({ HubPulseScene: Scene }) => ({
@@ -1589,6 +1580,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
             </section>
           ) : network && pulseHub ? (
             <HubPulseScene
+              flowPolicy={londonHubFlowPolicy}
               timeline={network.metadata}
               hub={pulseHub}
               calls={pulseCalls}
