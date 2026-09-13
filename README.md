@@ -42,6 +42,8 @@ Elizabeth line corridors carry a route name so timetable links that skip stops f
 
 `LondonDiagramStations` supplies perpendicular line-coloured ticks for ordinary stops and rings for interchanges and branches. Shared-track Tube stops retain ticks; changes between transport modes use rings. `london-renderer-policy.ts` supplies public renderer extensions for these markers, consistent parallel lanes, track width and London label density. It also configures road strokes and overlays, independent airport infrastructure, and click selection. The shared renderer publishes picking metadata for visible glyphs and accepts a complete infrastructure reference so sparse service windows retain the diagram. London owns its Beck geometry, marker design and selection priorities; Vite no longer rewrites compiled package code. Invisible geographic boundaries, water, traffic and station geometry stop submitting draws while keeping their resources mounted for the return transition.
 
+Road labels and speed colouring load only when road topology is present, inside a local loading boundary that keeps the map mounted. The compact bus decoder loads when a bus chunk needs decoding. Both have separate transfer budgets; the 345 KiB opening JavaScript limit includes their shared initial dependencies. Browser checks verify that neither optional chunk loads at startup.
+
 ## Data and hosting
 
 `fixtures/tfl/` retains the authored TfL timetable, transport catalogues and map layout; `public/data/` contains the committed air and road observations. Existing `data:london:*` commands retain their explicit source dates and provenance. Use them deliberately to refresh data; CI builds the reviewed fixtures. PDF timetable ingestion requires `pdftotext` on the host.

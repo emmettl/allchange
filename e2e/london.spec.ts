@@ -32,6 +32,8 @@ test('boots as a separate edition without loading optional studies or Swiss data
   expect(resources.some((url) => url.includes('all-change-air-'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-road-'))).toBe(false)
   expect(resources.some((url) => url.includes('LondonRoadObservations'))).toBe(false)
+  expect(resources.some((url) => url.includes('LondonRoadOverlay'))).toBe(false)
+  expect(resources.some((url) => url.includes('network-patterns'))).toBe(false)
   expect(resources.some((url) => url.includes('HubPulseScene'))).toBe(false)
   expect(resources.some((url) => url.includes('LondonQuietMap'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-surface-'))).toBe(false)
@@ -89,7 +91,9 @@ test('London buses load progressively with route search and time scrubbing', asy
   const chunkResponse = page.waitForResponse((response) =>
     response.url().includes('all-change-bus-day-chunks/06-08.json'),
   )
+  const codecResponse = page.waitForResponse(response => response.url().includes('network-patterns'))
   await page.getByRole('button', { name: 'Show London buses' }).click()
+  expect((await codecResponse).ok()).toBe(true)
   const busManifestResponse = await manifestResponse
   expect(busManifestResponse.ok()).toBe(true)
   const busManifest = await busManifestResponse.json()
@@ -508,7 +512,10 @@ test('motorway search loads observed flow lazily and enters ROAD isolation', asy
   const morningResponse = page.waitForResponse((response) =>
     response.url().includes('all-change-road-day/06-12.json'),
   )
+  const overlayResponse = page.waitForResponse(response => response.url().includes('LondonRoadOverlay'))
   await search.press('Enter')
+  expect((await overlayResponse).ok()).toBe(true)
+  await expect(page.locator('.scene canvas')).toBeVisible()
   expect((await topologyResponse).ok()).toBe(true)
   expect((await manifestResponse).ok()).toBe(true)
   expect((await morningResponse).ok()).toBe(true)

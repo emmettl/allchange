@@ -3,7 +3,7 @@ import type { NetworkSceneExtensions } from '@motionstudies/three/scene-extensio
 import { londonDiagramOrderedPoints, londonDiagramSegmentKey } from '../editions/london-diagram-markers.ts'
 import { londonStationLabelRankLimit } from '../editions/london-station-labels.ts'
 import { LondonDiagramStations } from './LondonDiagramStations.tsx'
-import { LondonRoadOverlay } from './LondonRoadOverlay.tsx'
+import { LondonLazyRoadOverlay } from './LondonLazyRoadOverlay.tsx'
 import { pickMapTarget } from './map-selection.ts'
 
 export const londonMapStyle: NetworkMapStyle = {
@@ -26,7 +26,7 @@ export const londonRendererExtensions: NetworkSceneExtensions = {
   DiagramStations: LondonDiagramStations,
   diagramSegmentKey: londonDiagramSegmentKey,
   diagramOrderedPoints: londonDiagramOrderedPoints,
-  RoadOverlay: LondonRoadOverlay,
+  RoadOverlay: LondonLazyRoadOverlay,
   aircraftPicking: {
     event: 'click',
     accepts: event => event.dragDistance <= 5 && !pickMapTarget(event.scene, event.camera,

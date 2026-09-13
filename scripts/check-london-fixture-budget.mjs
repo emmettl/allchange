@@ -525,6 +525,8 @@ if (!londonEntry) throw new Error('Vite manifest has no London entry')
 const scripts = new Set()
 const styles = new Set()
 const visited = new Set()
+const busCodecKey = 'node_modules/@motionstudies/core/domain/network-patterns.js'
+const roadOverlayKey = 'src/studies/LondonRoadOverlay.tsx'
 const roadDetailKey = 'src/studies/LondonRoadObservations.tsx'
 const railBoardKey = 'src/studies/LondonNationalRailBoard.tsx'
 const passengerPulseKey = 'src/studies/LondonPassengerPulse.tsx'
@@ -552,7 +554,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // Selected cards and alternate studies load only after interaction. Budget
   // them separately; retain their shared static dependencies in the opening.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![railVehicleCardKey, vehicleCardKey, quietMapKey, morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![railVehicleCardKey, vehicleCardKey, quietMapKey, morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, roadOverlayKey, busCodecKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -612,6 +614,12 @@ const roadDetailJavaScript = await totalGzipSize([roadDetail.file])
 const roadDetailCss = await totalGzipSize(roadDetail.css ?? [])
 console.log(`All Change optional road detail: ${kibibytes(roadDetailJavaScript)} JavaScript / 2.0 KiB; ${kibibytes(roadDetailCss)} CSS / 2.0 KiB`)
 if (roadDetailJavaScript > 2 * 1024 || roadDetailCss > 2 * 1024) throw new Error('Road detail transfer budget exceeded')
+const busCodec = await optionalCardSize(busCodecKey)
+console.log(`All Change optional bus codec: ${kibibytes(busCodec.javaScript)} JavaScript / 1 KiB; ${kibibytes(busCodec.css)} CSS / 0 KiB`)
+if (busCodec.javaScript > 1024 || busCodec.css > 0) throw new Error('Bus codec transfer budget exceeded')
+const roadOverlay = await optionalCardSize(roadOverlayKey)
+console.log(`All Change optional road overlay: ${kibibytes(roadOverlay.javaScript)} JavaScript / 3 KiB; ${kibibytes(roadOverlay.css)} CSS / 1 KiB`)
+if (roadOverlay.javaScript > 3 * 1024 || roadOverlay.css > 1024) throw new Error('Road overlay transfer budget exceeded')
 const railLayer = manifest[railLayerKey]
 if (!railLayer?.isDynamicEntry || railLayer.imports?.some(key => !visited.has(key))) throw new Error('The optional rail renderer must stay lazy with budgeted dependencies')
 const railLayerSize = await totalGzipSize([railLayer.file])
