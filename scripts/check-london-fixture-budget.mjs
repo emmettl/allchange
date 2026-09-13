@@ -539,6 +539,7 @@ const eurostarKey = 'src/data/eurostar.ts'
 const combinedBoardKey = 'src/studies/LondonCombinedStationBoard.tsx'
 const airportCardKey = 'src/studies/AirportCard.tsx'
 const railLayerKey = 'src/studies/LondonNationalRailLayer.tsx'
+const quietMapKey = 'src/studies/LondonQuietMap.tsx'
 const visit = (key) => {
   if (visited.has(key)) return
   visited.add(key)
@@ -549,7 +550,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // Selected cards and alternate studies load only after interaction. Budget
   // them separately; retain their shared static dependencies in the opening.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![quietMapKey, morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, railBoardKey, stationBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -608,6 +609,9 @@ if (!railLayer?.isDynamicEntry || railLayer.imports?.some(key => !visited.has(ke
 const railLayerSize = await totalGzipSize([railLayer.file])
 console.log(`All Change optional rail renderer: ${kibibytes(railLayerSize)} / 6.0 KiB`)
 if (railLayerSize > 6 * 1024) throw new Error('Rail renderer transfer budget exceeded')
+const quietMap = await optionalCardSize(quietMapKey)
+console.log(`All Change optional quiet map: ${kibibytes(quietMap.javaScript)} JavaScript / 3 KiB; ${kibibytes(quietMap.css)} CSS / 1 KiB`)
+if (quietMap.javaScript > 3 * 1024 || quietMap.css > 1024) throw new Error('Quiet map transfer budget exceeded')
 const passengerCard = await optionalCardSize(passengerCardKey)
 const hubPulse = await optionalCardSize(hubPulseKey)
 console.log(`All Change optional interchange pulse: ${kibibytes(hubPulse.javaScript)} JavaScript / 5 KiB; ${kibibytes(hubPulse.css)} CSS / 2 KiB`)

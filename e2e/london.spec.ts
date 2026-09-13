@@ -33,6 +33,7 @@ test('boots as a separate edition without loading optional studies or Swiss data
   expect(resources.some((url) => url.includes('all-change-road-'))).toBe(false)
   expect(resources.some((url) => url.includes('LondonRoadObservations'))).toBe(false)
   expect(resources.some((url) => url.includes('HubPulseScene'))).toBe(false)
+  expect(resources.some((url) => url.includes('LondonQuietMap'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-surface-'))).toBe(false)
   expect(resources.some((url) => url.includes('all-change-bus-'))).toBe(false)
   expect(resources.some((url) => url.includes('swiss-rail-morning.json'))).toBe(false)
@@ -185,6 +186,7 @@ test('vehicle count follows enabled air and road layers without a legend selecti
   await expect.poll(readCount).not.toBe(roadCount)
   await page.getByRole('button', { name: 'Hide reconstructed motorway traffic' }).click()
   await expect(status).toContainText('All quiet.')
+  await expect.poll(() => page.evaluate(() => performance.getEntriesByType('resource').some(entry => entry.name.includes('LondonQuietMap')))).toBe(true)
 })
 
 test('observed operations stay distinct from the planned timetable', async ({

@@ -3,10 +3,11 @@ import { NationalNetworkScene, type NationalNetworkSceneProps } from '@motionstu
 import { useNetworkScene, type NetworkSceneExtensions } from '@motionstudies/three/scene-extensions'
 import { cachedBusPosition } from '../data/bus-motion.ts'
 import { nationalRoadConditionsAtTime } from './road-conditions.ts'
-import { LondonQuietMap, type QuietMapSceneExtension } from './LondonQuietMap.tsx'
+import type { QuietMapSceneExtension } from './LondonQuietMap.tsx'
 import type { NationalRailSceneExtension } from './LondonNationalRailLayer.tsx'
 import type { MapSelectionSceneExtension } from './LondonMapSelection.tsx'
 
+const LondonQuietMap = lazy(() => import('./LondonQuietMap.tsx').then(module => ({ default: module.LondonQuietMap })))
 const LondonNationalRailLayer = lazy(() => import('./LondonNationalRailLayer.tsx').then(module => ({ default: module.LondonNationalRailLayer })))
 const extensions: NetworkSceneExtensions = {
   trainPosition: (train, time, stops, paths) => train.category === 'bus' ? cachedBusPosition(train, time, stops, paths) : undefined,
@@ -19,8 +20,8 @@ type Props = NationalNetworkSceneProps & NationalRailSceneExtension & QuietMapSc
 function LondonLayers({ quietMap, quietDiagramSnapshot, nationalRailSnapshot, nationalRailSelectedId }: NationalRailSceneExtension & QuietMapSceneExtension) {
   const { props, projection } = useNetworkScene()
   return <>
-    {quietMap && <LondonQuietMap projection={projection} isPlaying={props.isPlaying}
-      diagramSnapshot={quietDiagramSnapshot} spatialLayout={props.spatialLayout} spatialLayoutMix={props.spatialLayoutMix} />}
+    {quietMap && <Suspense fallback={null}><LondonQuietMap projection={projection} isPlaying={props.isPlaying}
+      diagramSnapshot={quietDiagramSnapshot} spatialLayout={props.spatialLayout} spatialLayoutMix={props.spatialLayoutMix} /></Suspense>}
     {nationalRailSnapshot && props.boundary && (props.spatialLayoutMix ?? 0) === 0 && <Suspense fallback={null}>
       <LondonNationalRailLayer snapshot={nationalRailSnapshot} boundary={props.boundary} projection={projection}
         time={props.time} isPlaying={props.isPlaying} playbackRate={props.playbackRate}
