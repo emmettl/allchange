@@ -68,9 +68,12 @@ test('the rail entry offers the same Stratford board and sends a TfL service to 
   await board.locator('tbody tr button').first().click()
   const service = await page.locator('.london-experience').getAttribute('data-selected-tfl-service')
   expect(service).toMatch(/^central:/)
+  // Preview stays in the board until the user explicitly opens its movement.
+  await expect(page.locator('.edition-vehicle-hero')).toHaveCount(0)
   await expect(board.locator('.ms-dot-matrix-board td button').first()).toHaveCSS('animation-name', 'none')
   await board.getByRole('button', { name: 'Show movement', exact: true }).click()
   await expect(page.locator('.london-experience')).toHaveAttribute('data-selected-tfl-service', service!)
   await expect(card).toHaveAttribute('data-hero-dismissed', 'true')
+  await expect(page.locator('.edition-vehicle-hero .ms-vehicle-hero')).toBeVisible()
   await expect(page.locator('.has-station-board')).toHaveCount(0)
 })
