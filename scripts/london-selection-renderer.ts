@@ -32,8 +32,8 @@ export function londonSelectionRenderer(): Plugin {
         '_jsx(LondonMapSelection, { stations: props.stations, onSelectStation: props.onSelectStation, onSelectTrain: props.onSelectTrain, onSelectNationalRail: props.onSelectNationalRail, onSelectAirport: props.onSelectAirport, disabled: props.quietMap || props.airCategorySelected || props.roadCategorySelected })')
       replace('sprite.position.copy(label.position);',
         "sprite.position.copy(label.position);\n            sprite.userData.londonTarget = { kind: 'station', value: label.station };")
-      replace('sprite.position.set(candidate.position[0], 0.76 + comparisonOffset, candidate.position[2]);',
-        "sprite.position.set(candidate.position[0], 0.76 + comparisonOffset, candidate.position[2]);\n            sprite.userData.londonTarget = { kind: 'train', value: candidate.train };")
+      replace('sprite.position.set(candidate.position[0], elevation + comparisonOffset, candidate.position[2]);',
+        "sprite.position.set(candidate.position[0], elevation + comparisonOffset, candidate.position[2]);\n            sprite.userData.londonTarget = { kind: 'train', value: candidate.train };")
       replace('const offset = activeCounts[markerKind] * 3;',
         'const offset = activeCounts[markerKind] * 3;\n            (mutableGeometry.userData.londonTrains ??= [])[activeCounts[markerKind]] = train;')
       replace('mutableColors[offset] = color.r * intensity;',

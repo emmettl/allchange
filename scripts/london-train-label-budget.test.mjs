@@ -1,3 +1,5 @@
+import { FLAT_NETWORK_MAP_STYLE, trainLabelCollisionBox } from '@motionstudies/three/scene-style'
+const mapStyle = { ...FLAT_NETWORK_MAP_STYLE, trainLabels: { ...FLAT_NETWORK_MAP_STYLE.trainLabels, routeTextCategories: ['metro'] } }
 import { readFileSync } from 'node:fs'
 import { expect, it } from 'vitest'
 import * as THREE from 'three'
@@ -6,7 +8,6 @@ import * as lod from '../node_modules/@motionstudies/three/regional-lod.js'
 import { stationLabelWorldHeight } from '../node_modules/@motionstudies/three/station-labels.js'
 import { LabelFrameBudget } from '../src/studies/label-frame-budget.ts'
 import { londonDiagramRenderer } from './london-diagram-renderer.ts'
-import { londonCartographyRenderer } from './london-cartography-renderer.ts'
 import { stationLabelBoxes, emptyLabelBoxes } from '../src/studies/map-cartography.ts'
 
 // Run the installed TrainLabels callback after both London transforms. Use real
@@ -27,6 +28,7 @@ function harness(source, camera, size) {
     useEffect: (effect, deps) => memo(() => { effects.push(effect) }, deps),
     useFrame: callback => { frame = callback },
     trainsNearTime: index => { searches++; return index },
+    useMapStyle: () => mapStyle, trainLabelCollisionBox,
     useProjectedTrainPosition: () => bindings.projectedTrainPosition,
     projectedTrainPosition: (train, time, stops) => {
       samples++
@@ -38,7 +40,7 @@ function harness(source, camera, size) {
       const texture = new THREE.Texture(); texture.name = `${text}:${color}`
       return { texture, aspect: 2 }
     },
-    _Fragment: 'fragment', MAP_LAYER: { trainLabel: 20 },
+    _Fragment: 'fragment', MAP_LAYER: { trainLabel: 16, stationLabel: 20 },
     _jsx: (type, props, key) => {
       if (type === 'sprite') {
         const sprite = sprites[key] ??= new THREE.Sprite(new THREE.SpriteMaterial())
@@ -103,7 +105,7 @@ it('bounds train searches while preserving movement, London zoom rules, palette 
 it('reserves station space at close zoom and releases it while paused without losing focused services', () => {
   const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
   let code = readFileSync(`.${id}`, 'utf8')
-  for (const plugin of [londonDiagramRenderer(), londonCartographyRenderer()]) code = plugin.transform(code, id)?.code ?? code
+  for (const plugin of [londonDiagramRenderer()]) code = plugin.transform(code, id)?.code ?? code
   const source = code.slice(code.indexOf('function TrainLabels('), code.indexOf('function SelectedStationRouteLayer('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
   camera.position.set(0, 8, 1); camera.lookAt(0, 0, 0); camera.updateMatrixWorld()

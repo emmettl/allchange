@@ -1,3 +1,4 @@
+import { FLAT_NETWORK_MAP_STYLE, type NetworkMapStyle } from '@motionstudies/three/scene-style'
 import { lazy, Suspense, type ComponentType } from 'react'
 import { NationalNetworkScene, type NationalNetworkSceneProps } from '@motionstudies/three/NationalNetworkScene'
 import { useNetworkScene, type NetworkSceneExtensions } from '@motionstudies/three/scene-extensions'
@@ -9,6 +10,8 @@ import type { MapSelectionSceneExtension } from './LondonMapSelection.tsx'
 
 const LondonQuietMap = lazy(() => import('./LondonQuietMap.tsx').then(module => ({ default: module.LondonQuietMap })))
 const LondonNationalRailLayer = lazy(() => import('./LondonNationalRailLayer.tsx').then(module => ({ default: module.LondonNationalRailLayer })))
+const mapStyle: NetworkMapStyle = { ...FLAT_NETWORK_MAP_STYLE,
+  trainLabels: { ...FLAT_NETWORK_MAP_STYLE.trainLabels, routeTextCategories: ['metro'] } }
 const extensions: NetworkSceneExtensions = {
   trainPosition: (train, time, stops, paths) => train.category === 'bus' ? cachedBusPosition(train, time, stops, paths) : undefined,
   roadConditions: nationalRoadConditionsAtTime,
@@ -32,7 +35,7 @@ function LondonLayers({ quietMap, quietDiagramSnapshot, nationalRailSnapshot, na
 }
 
 export function LondonNetworkScene({ quietMap, quietDiagramSnapshot, nationalRailSnapshot, nationalRailSelectedId, children, ...props }: Props) {
-  return <Scene {...props} extensions={extensions}>
+  return <Scene {...props} extensions={extensions} mapStyle={mapStyle}>
     <LondonLayers quietMap={quietMap} quietDiagramSnapshot={quietDiagramSnapshot}
       nationalRailSnapshot={nationalRailSnapshot} nationalRailSelectedId={nationalRailSelectedId} />
     {children}
