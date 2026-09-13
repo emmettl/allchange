@@ -68,7 +68,7 @@ test('the rail entry offers the same Stratford board and sends a TfL service to 
   await board.locator('tbody tr button').first().click()
   const service = await page.locator('.london-experience').getAttribute('data-selected-tfl-service')
   expect(service).toMatch(/^central:/)
-  await expect(board.locator('.ms-flap__face').first()).toHaveCSS('animation-name', 'none')
+  await expect(board.locator('.ms-dot-matrix-board td button').first()).toHaveCSS('animation-name', 'none')
   await board.getByRole('button', { name: 'Show movement', exact: true }).click()
   await expect(page.locator('.london-experience')).toHaveAttribute('data-selected-tfl-service', service!)
   await expect(card).toHaveAttribute('data-hero-dismissed', 'true')

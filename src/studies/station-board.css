@@ -43,3 +43,7 @@
 .london-eurostar-source summary { min-height: 44px; display: list-item; align-content: center; cursor: pointer; }
 .london-eurostar-source p, .london-status-card .london-eurostar-source p { display: block; margin: 8px 0; font: inherit; }
 .london-combined-board a { color: #ffe3b8; text-decoration: underline; }
+
+.london-station-departures .ms-dot-matrix-board td button { border:0; padding:0; min-height:0; font:inherit; }
+.london-station-departures .ms-rail-station-hero, .london-station-departures .ms-bus-stop-hero { padding:10px; }
+.london-status-card.has-station-board { width:min(560px,calc(100vw - 84px)); }

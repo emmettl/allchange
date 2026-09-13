@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react'
 import { formatServiceTime, type NetworkSnapshot } from '@motionstudies/core/domain/network'
-import { SplitFlapBoard } from '@motionstudies/web/components/SplitFlapBoard'
+import { RailStationHeroCard } from '@motionstudies/web/components/RailStationHeroCard'
+import { BusStopHeroCard } from '@motionstudies/web/components/BusStopHeroCard'
 import { stationBoardCalls, upcomingStationCalls, type StationBoardCall, type StationBoardDirection } from './station-board.ts'
-import '@motionstudies/web/split-flap-board.css'
+import '@motionstudies/web/transport-hero-cards.css'
 import './station-board.css'
 
 export function LondonStationDepartures({ snapshot, stationName, time, windowStart, windowEnd, selectedId, onSelect, onSeek, onPulse, loading = false, error, onRetry, note, emptyMessage, maxRows = 4, animate = true, onDirection, providedCalls }: {
@@ -37,15 +38,18 @@ export function LondonStationDepartures({ snapshot, stationName, time, windowSta
     </div>
     <p className="london-station-board-window">{snapshot.metadata.serviceDate} · {outside ? 'Outside study window' : `${formatServiceTime(time)}–${formatServiceTime(end)}`}</p>
     {error && <p className="london-station-board-message" role="status">{error}{onRetry && <> · <button type="button" onClick={onRetry}>Retry board data</button></>}</p>}
-    <SplitFlapBoard label={`${stationName} ${direction === 'departure' ? 'departures' : 'arrivals'}`} columns={[
-      { key: 'time', label: 'Time', characters: 5 },
-      { key: 'place', label: direction === 'departure' ? 'To' : 'From', characters: 18 },
-      { key: 'line', label: 'Line / service', characters: routes.includes('Eurostar') ? 13 : 12 },
-    ]} rows={error ? [] : upcoming.map(call => ({ id: call.id, cells: { time: formatServiceTime(call[direction]), place: direction === 'departure' ? call.destination : call.origin, line: serviceLabel(call) } }))}
-      loading={loading} loadingRows={maxRows} loadingMessage="Loading station calls…"
-      emptyMessage={error ? 'Timetable unavailable.' : outside ? 'Outside study window.' : emptyMessage ?? `No ${direction === 'departure' ? 'departures' : 'arrivals'} in this window.`}
-      selectionColumn="place" selectedRowId={selected?.id}
-      onSelectRow={id => { const call = upcoming.find(value => value.id === id)!; setSelectedCallId(id); onSelect(call) }} />
+    {calls.length > 0 && calls.every(call => call.train.category === 'bus') ? <BusStopHeroCard stop={{ name: stationName }}
+      lineCount={maxRows} boardHeight={300} loading={loading} error={error} onRetry={onRetry}
+      labels={{ departures: direction === 'departure' ? 'Bus departures from' : 'Bus arrivals at', due: 'Time', empty: outside ? 'Outside study window.' : emptyMessage ?? 'No calls in this window.' }}
+      departures={error ? [] : upcoming.map(call => ({ id: call.id, route: serviceLabel(call), destination: direction === 'departure' ? call.destination : call.origin, due: formatServiceTime(call[direction]).slice(0, 5) }))}
+      selectedDepartureId={selected?.id} onSelectDeparture={id => { const call = upcoming.find(value => value.id === id)!; setSelectedCallId(id); onSelect(call) }}
+      note={<>Published times · not live{note && <> · {note}</>}</>} /> : <RailStationHeroCard station={{ name: stationName }} presentation="uk-rail"
+      lineCount={maxRows * 2} boardHeight={300} loading={loading} error={error} onRetry={onRetry}
+      labels={{ departures: direction === 'departure' ? 'Departures' : 'Arrivals', destination: direction === 'departure' ? 'To' : 'From', loading: 'Loading station calls…', empty: outside ? 'Outside study window.' : emptyMessage ?? `No ${direction === 'departure' ? 'departures' : 'arrivals'} in this window.` }}
+      departures={error ? [] : upcoming.map(call => ({ id: call.id, time: formatServiceTime(call[direction]).slice(0, 5), destination: direction === 'departure' ? call.destination : call.origin, serviceNote: serviceLabel(call) }))}
+      selectedDepartureId={selected?.id} onSelectDeparture={id => { const call = upcoming.find(value => value.id === id)!; setSelectedCallId(id); onSelect(call) }}
+      clockLabel={formatServiceTime(time)} note={<>Published times · not live{note && <> · {note}</>}</>} />}
+
     {selected && onSeek && <div className="london-station-board-selection">
       <p>{direction === 'departure' ? selected.destination : `From ${selected.origin}`}</p>
       <p>{serviceLabel(selected)} · {formatServiceTime(selected[direction])}</p>

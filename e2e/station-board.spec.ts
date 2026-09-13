@@ -14,7 +14,7 @@ test('station board supports keyboard dismissal, preserves selection through red
   await expect(board.locator('tbody tr:has(button)')).toHaveCount(4)
   await board.locator('tbody tr button').first().click()
   const selection = await board.locator('.london-station-board-selection').textContent()
-  await expect(board.locator('.ms-flap__drum').first()).toHaveCSS('visibility', 'hidden')
+  await expect(board.locator('.ms-dot-matrix-board')).toBeVisible()
   const bounds = (await page.locator('.has-station-board').boundingBox())!
   expect(bounds.x).toBeGreaterThanOrEqual(0)
   expect(bounds.x + bounds.width).toBeLessThanOrEqual(page.viewportSize()!.width)
@@ -35,7 +35,7 @@ test('station board supports keyboard dismissal, preserves selection through red
   await expect(board.locator('.london-station-board-selection')).toHaveText(selection!)
 
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await expect(board.locator('.ms-flap__face').first()).toHaveCSS('animation-name', 'none')
+  await expect(board.locator('.ms-dot-matrix-board td button').first()).toHaveCSS('animation-name', 'none')
   await page.evaluate(() => {
     const root = document.querySelector('.london-experience')!
     const values: string[] = []
