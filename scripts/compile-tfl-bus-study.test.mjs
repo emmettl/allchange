@@ -104,6 +104,6 @@ describe('compact bus time chunks', () => {
   })
   it('rejects an invalid pattern reference', () => {
     const packed = encodeBusChunk({ windowStart: 0, windowEnd: 7200, trains: [train] })
-    expect(() => decodeBusChunk({ ...packed, journeys: [['bad', 0, 12]] })).toThrow('Invalid bus journey pattern')
+    expect(() => decodeBusChunk({ ...packed, journeys: [['bad', 0, 12]] })).toThrow('Invalid pattern journey')
   })
 })

@@ -1,4 +1,5 @@
-import { createHash } from 'node:crypto'
+import { compileObservationWindows, jsonArtifact } from '@motionstudies/data/observation-windows'
+import { studyDay } from '@motionstudies/data/uk-service-day'
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -32,109 +33,44 @@ export function londonDateAndTime(isoTimestamp) {
   }
 }
 
-function sha256(value) {
-  return createHash('sha256').update(value).digest('hex')
-}
-
 export function compileOperationsDay(
   snapshots,
-  {
-    serviceDate,
-    minimumSamples = 1_200,
-    chunkHours = 2,
-    chunkPathPrefix = 'all-change-operations-day-chunks',
-  } = {},
+  { serviceDate, minimumSamples = 1_200, chunkHours = 2, chunkPathPrefix = 'all-change-operations-day-chunks' } = {},
 ) {
-  if (!serviceDate || !/^\d{4}-\d{2}-\d{2}$/.test(serviceDate)) {
-    throw new Error('A valid --date=YYYY-MM-DD is required')
-  }
-  const byMinute = new Map()
-  for (const snapshot of snapshots) {
-    if (snapshot?.metadata?.kind !== 'observed-operations') continue
-    const local = londonDateAndTime(snapshot.metadata.scheduledAt)
-    if (local.date !== serviceDate) continue
-    byMinute.set(snapshot.metadata.scheduledAt, { snapshot, local })
-  }
-  const records = [...byMinute.values()].sort((left, right) =>
-    left.snapshot.metadata.scheduledAt.localeCompare(
-      right.snapshot.metadata.scheduledAt,
-    ),
-  )
-  if (records.length < minimumSamples) {
-    throw new Error(
-      `London operations day has ${records.length} unique minutes; ${minimumSamples} required`,
-    )
-  }
-
-  let longestGapSeconds = 0
-  for (let index = 1; index < records.length; index += 1) {
-    longestGapSeconds = Math.max(
-      longestGapSeconds,
-      Math.round(
-        (Date.parse(records[index].snapshot.metadata.scheduledAt) -
-          Date.parse(records[index - 1].snapshot.metadata.scheduledAt)) /
-          1_000,
-      ),
-    )
-  }
-  const lineIds = [
-    ...new Set(
-      records.flatMap(({ snapshot }) => snapshot.metadata.lineIds ?? []),
-    ),
-  ].sort()
-  const chunkSeconds = chunkHours * 3_600
-  const chunks = []
-  for (let windowStart = 0; windowStart < 86_400; windowStart += chunkSeconds) {
-    const windowEnd = Math.min(86_400, windowStart + chunkSeconds)
-    const frames = records
-      .filter(({ local }) => local.seconds >= windowStart && local.seconds < windowEnd)
-      .map(({ snapshot, local }) => ({
-        time: local.seconds,
-        observedAt: snapshot.metadata.collectedAt,
-        vehicles: snapshot.vehicles,
-        lineStatuses: snapshot.lineStatuses,
-      }))
-    if (!frames.length) continue
-    const id = `${String(windowStart / 3_600).padStart(2, '0')}-${String(windowEnd / 3_600).padStart(2, '0')}`
-    const artifact = { windowStart, windowEnd, frames }
-    const json = `${JSON.stringify(artifact)}\n`
-    chunks.push({
-      descriptor: {
-        id,
-        windowStart,
-        windowEnd,
-        path: `${chunkPathPrefix}/${id}.json`,
-        frameCount: frames.length,
-        bytes: Buffer.byteLength(json),
-        sha256: sha256(json),
-      },
-      artifact,
-      json,
-    })
-  }
-
-  const first = records[0].snapshot
-  return {
-    manifest: {
-      metadata: {
-        kind: 'observed-operations-day',
-        publisher: first.metadata.publisher,
-        serviceDate,
-        timezone: 'Europe/London',
-        sourceUrl: first.metadata.sourceUrl,
-        model:
-          'Recorded TfL arrival predictions projected between matched stops on static route geometry',
-        note:
-          'Prediction-derived historical replay; positions are interpolated between predicted stop calls and are not GPS.',
-        sampleIntervalSeconds: 60,
-        completeMinutes: records.length,
-        longestGapSeconds,
-        lineIds,
-      },
-      chunks: chunks.map(({ descriptor }) => descriptor),
-    },
-    chunks,
-  }
+  const day = studyDay(serviceDate)
+  // The shared archive handles 23/25-hour days. The existing London playback
+  // clock is wall-seconds, so reject those days until that UI has an explicit policy.
+  if (day.durationSeconds !== 86400) throw new Error('London replay does not yet support DST transition days')
+  const eligible = snapshots.filter(snapshot => snapshot?.metadata?.kind === 'observed-operations')
+  const result = compileObservationWindows(eligible.map(snapshot => ({
+    id: snapshot.metadata.scheduledAt, timeUtc: snapshot.metadata.scheduledAt,
+    receivedAt: snapshot.metadata.collectedAt, value: snapshot,
+  })), { ...day, sourceId: 'tfl-arrival-predictions', evidenceKind: 'arrival-prediction', timeBasis: 'capture-schedule',
+    minimumRecords: minimumSamples, windowSeconds: chunkHours * 3600, cadenceSeconds: 60,
+    duplicatePolicy: 'last', pathPrefix: chunkPathPrefix })
+  const frames = result.chunks.flatMap(chunk => chunk.artifact.frames)
+  if (!frames.length) throw new Error('No London observation frames in the selected day')
+  const lineIds = [...new Set(frames.flatMap(frame => frame.value.metadata.lineIds ?? []))].sort()
+  const chunks = result.chunks.map(({ artifact: source }) => {
+    const { windowStart, windowEnd } = source
+    const id = `${String(windowStart / 3600).padStart(2, '0')}-${String(windowEnd / 3600).padStart(2, '0')}`
+    const artifact = { windowStart, windowEnd, frames: source.frames.map(frame => ({
+      time: frame.time, observedAt: frame.receivedAt, vehicles: frame.value.vehicles, lineStatuses: frame.value.lineStatuses,
+    })) }
+    const { json, bytes, sha256 } = jsonArtifact(artifact)
+    return { descriptor: { id, windowStart, windowEnd, path: `${chunkPathPrefix}/${id}.json`, frameCount: artifact.frames.length, bytes, sha256 }, artifact, json }
+  })
+  const first = frames[0].value
+  return { manifest: { metadata: {
+    kind: 'observed-operations-day', publisher: first.metadata.publisher, serviceDate, timezone: day.timezone,
+    sourceUrl: first.metadata.sourceUrl,
+    model: 'Recorded TfL arrival predictions projected between matched stops on static route geometry',
+    note: 'Prediction-derived historical replay; positions are interpolated between predicted stop calls and are not GPS.',
+    sampleIntervalSeconds: 60, completeMinutes: result.manifest.coverage.retainedRecords,
+    longestGapSeconds: result.manifest.coverage.longestGapSeconds, lineIds,
+    captureCoverage: result.manifest.coverage, timeBasis: result.manifest.timeBasis,
+    duplicatePolicy: result.manifest.duplicatePolicy,
+  }, chunks: chunks.map(({ descriptor }) => descriptor) }, chunks }
 }
 
 async function main() {

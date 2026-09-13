@@ -36,6 +36,10 @@ describe('London operations day compiler', () => {
     })
   })
 
+  it('does not silently compile a DST day against the existing wall-clock replay UI', () => {
+    expect(() => compileOperationsDay([], { serviceDate: '2026-10-25', minimumSamples: 0 })).toThrow('DST')
+  })
+
   it('deduplicates minutes and emits progressive integrity descriptors', () => {
     const result = compileOperationsDay(
       [
