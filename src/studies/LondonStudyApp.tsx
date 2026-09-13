@@ -301,6 +301,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   const [selectedCategory, setSelectedCategory] = useState<ServiceCategory>()
   const [dismissedHero, setDismissedHero] = useState(false)
   const [dismissedRail, setDismissedRail] = useState(false)
+  const [previewingBoardCall, setPreviewingBoardCall] = useState(false)
   const [selectedStation, setSelectedStation] = useState<StationIndexEntry>()
   const [selectedRoute, setSelectedRoute] = useState<NetworkRouteIndexEntry>()
   const [selectedTrain, setSelectedTrain] = useState<NetworkTrain>()
@@ -1003,6 +1004,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
   ])
 
   const clearSelection = useCallback(() => {
+    setPreviewingBoardCall(false)
     setMorningFlowEnabled(false)
     setNightRailSelected(false)
     setBoardAreaId(undefined)
@@ -1177,6 +1179,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   const activateChoice = useCallback(
     (choice: SearchChoice) => {
+      setPreviewingBoardCall(false)
       setDismissedHero(false)
       setDismissedRail(false)
       setPulseHubId(undefined)
@@ -1526,6 +1529,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     onTflRetry={() => { setDayError(false); setDayAttempt(value => value + 1) }} onRailRetry={railFeed.retry}
     selectedId={nationalRailSelectedId ?? selectedTrain?.id} animate={!isPlaying || playbackRate <= 30}
     onSelect={call => {
+      setPreviewingBoardCall(true)
       setNationalRailSelectedId(call.source === 'national-rail' ? call.train.id : undefined)
       setSelectedTrain(call.source === 'tfl' ? network.trains.find(train => train.id === call.train.id) ?? call.train : undefined)
     }}
@@ -2118,7 +2122,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
         <button type="button" aria-label="Train services pulse" aria-pressed={!isPassengerPulse} onClick={() => { setPulseView('services'); setDismissedHero(false) }}>Trains</button>
         <button type="button" aria-label="Passenger flow pulse" aria-pressed={isPassengerPulse} onClick={() => { setPulseView('passengers'); setDismissedHero(true) }}>People</button>
       </nav>}
-      {selectedTrain && !selectedStation && !pulseHub && sceneNetwork ? <div className="edition-vehicle-hero"><HeroCardDismiss name={selectedTrain.route} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />{!dismissedHero && <Suspense fallback={null}><VehicleJourneyCard snapshot={sceneNetwork} train={selectedTrain} time={sceneTime} presentation={selectedTrain.category === 'bus' ? 'uk-bus' : 'uk-rail'}
+      {selectedTrain && (!previewingBoardCall || dismissedRail) && !selectedStation && !pulseHub && sceneNetwork ? <div className="edition-vehicle-hero"><HeroCardDismiss name={selectedTrain.route} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />{!dismissedHero && <Suspense fallback={null}><VehicleJourneyCard snapshot={sceneNetwork} train={selectedTrain} time={sceneTime} presentation={selectedTrain.category === 'bus' ? 'uk-bus' : 'uk-rail'}
         note={operationsMode === 'observed' ? 'Recorded predictions · loaded calls only; not a live arrival board.' : 'Published timetable · loaded calls only; not live.'} /></Suspense>}</div> : selectedAirport ? (
         <Suspense fallback={null}><AirportHeroCard key={selectedAirport.id} className="edition-airport-card"
           dismissControl={<HeroCardDismiss name={selectedAirport.iata} dismissed={dismissedHero} onToggle={() => setDismissedHero(value => !value)} />} dismissed={dismissedHero}
