@@ -13,8 +13,23 @@ import { stationLabelBoxes, emptyLabelBoxes } from '../src/studies/map-cartograp
 // Run the installed TrainLabels callback after both London transforms. Use real
 // sprites/projection/collisions; stub React lifecycle and text rasterization.
 function harness(source, camera, size) {
-  let cursor = 0, effects = [], frame, searches = 0, samples = 0
+  let cursor = 0, effects = [], frame, searches = 0
   const slots = [], sprites = []
+  // The shared motion layer places journeys once per sampling pass; labels
+  // read that table. Mirror its clock and fill the table before each frame.
+  let motion, clock = 0, props = {}
+  const place = () => {
+    const trains = props.trainTimeIndex
+    if (!motion || motion.trains !== trains) {
+      motion = { trains, index: new Map(trains.map((train, i) => [train, i])), positions: new Float32Array(trains.length * 3),
+        stamps: new Uint8Array(trains.length), placed(i) { return this.stamps[i] === 1 } }
+    }
+    trains.forEach((train, i) => {
+      const point = bindings.projectedTrainPosition(train, Math.min(clock, train.end), props.projectedStops)
+      motion.stamps[i] = point ? 1 : 0
+      if (point) motion.positions.set(point, i * 3)
+    })
+  }
   const memo = (factory, deps) => {
     const i = cursor++
     if (!slots[i] || deps.some((dep, index) => dep !== slots[i].deps[index])) slots[i] = { value: factory(), deps }
@@ -31,7 +46,6 @@ function harness(source, camera, size) {
     useMapStyle: () => mapStyle, trainLabelCollisionBox, setScenePickMetadata,
     useProjectedTrainPosition: () => bindings.projectedTrainPosition,
     projectedTrainPosition: (train, time, stops) => {
-      samples++
       return time < train.start || time > train.end ? undefined : [stops[0][0] + train.x + time * 0.001, 0.085, train.z]
     },
     trainLabelText: train => train.id,
@@ -50,9 +64,13 @@ function harness(source, camera, size) {
   }
   const component = new Function(...Object.keys(bindings), `${source}; return TrainLabels;`)(...Object.values(bindings))
   return {
-    render(props) { cursor = 0; effects = []; component(props); effects.forEach(effect => effect()) },
-    frame() { frame({}, 1 / 60) },
-    get searches() { return searches }, get samples() { return samples },
+    render(next) {
+      if (next.time !== props.time) clock = next.time
+      props = next; place()
+      cursor = 0; effects = []; component({ ...props, motion }); effects.forEach(effect => effect())
+    },
+    frame() { if (props.isPlaying) clock += props.playbackRate / 60; place(); frame({}, 1 / 60) },
+    get searches() { return searches },
     output: () => sprites.filter(s => s.visible).map(s => ({ text: s.material.map.name, position: s.position.toArray(), scale: s.scale.toArray(), opacity: s.material.opacity, order: s.renderOrder, center: s.center.toArray() })),
   }
 }
@@ -78,14 +96,12 @@ it('bounds train searches while preserving movement, London zoom rules, palette 
   expect(current.output()).not.toEqual(first)
   expect(current.searches).toBeLessThanOrEqual(11)
   expect(original.searches).toBe(61)
-  expect(current.samples).toBeLessThan(original.samples / 4)
   render({ isPlaying: false }); frame()
-  const pausedSamples = current.samples, pausedSearches = current.searches
+  const pausedSearches = current.searches
   for (let i = 0; i < 20; i++) { render(); frame() }
-  expect(current.samples).toBe(pausedSamples)
   expect(current.searches).toBe(pausedSearches)
   render({ time: 150 }); frame()
-  expect(current.samples).toBeGreaterThan(pausedSamples)
+  expect(current.searches).toBeGreaterThan(pausedSearches)
   camera.position.y = 18; camera.updateMatrixWorld(); frame()
   expect(current.output()).toHaveLength(0) // London Tube labels require close zoom.
   camera.position.y = 8; camera.updateMatrixWorld(); frame()

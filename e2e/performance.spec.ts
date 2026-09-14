@@ -27,7 +27,8 @@ test('paused TfL and buses retain buffers through idle frames and redraw seeks a
     for (let i = 0; i < 4; i++) await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
     return probe.vehicleUploads - before
   })
-  expect(await sample()).toBeGreaterThan(0)
+  // Playing scenes upload once per sampling pass, not every frame; poll for one.
+  await expect.poll(sample).toBeGreaterThan(0)
   await page.getByRole('button', { name: 'Pause motion', exact: true }).click()
   await expect.poll(sample).toBe(0)
   await reset()
