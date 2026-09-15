@@ -533,6 +533,7 @@ const passengerPulseKey = 'src/studies/LondonPassengerPulse.tsx'
 const cycleStudyKey = 'src/studies/LondonCycleStudy.tsx'
 const cycleComparisonKey = 'src/studies/LondonCycleComparison.tsx'
 const hubPulseKey = 'node_modules/@motionstudies/three/HubPulseScene.js'
+const buttonTooltipsKey = 'node_modules/@motionstudies/web/components/ButtonTooltips.js'
 const passengerCardKey = 'src/studies/LondonPassengerDemand.tsx'
 const stationBoardKey = 'src/studies/LondonStationDepartures.tsx'
 const busBoardKey = 'node_modules/@motionstudies/web/components/BusStopHeroCard.js'
@@ -556,7 +557,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // Selected cards and alternate studies load only after interaction. Budget
   // them separately; retain their shared static dependencies in the opening.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![operationsKey, railVehicleCardKey, vehicleCardKey, quietMapKey, morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, roadOverlayKey, busCodecKey, railBoardKey, stationBoardKey, busBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![operationsKey, railVehicleCardKey, vehicleCardKey, quietMapKey, morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, roadOverlayKey, busCodecKey, railBoardKey, stationBoardKey, busBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey, buttonTooltipsKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -637,6 +638,10 @@ const passengerCard = await optionalCardSize(passengerCardKey)
 const hubPulse = await optionalCardSize(hubPulseKey)
 console.log(`All Change optional interchange pulse: ${kibibytes(hubPulse.javaScript)} JavaScript / 5 KiB; ${kibibytes(hubPulse.css)} CSS / 2 KiB`)
 if (hubPulse.javaScript > 5 * 1024 || hubPulse.css > 2 * 1024) throw new Error('Interchange pulse transfer budget exceeded')
+// Shared desktop button help loads after the first view (Motion Studies alpha.18).
+const buttonTooltips = await optionalCardSize(buttonTooltipsKey)
+console.log(`All Change optional button help: ${kibibytes(buttonTooltips.javaScript)} JavaScript / 3 KiB; ${kibibytes(buttonTooltips.css)} CSS / 0 KiB`)
+if (buttonTooltips.javaScript > 3 * 1024 || buttonTooltips.css) throw new Error('Button help transfer budget exceeded')
 const cycleStudy = await optionalCardSize(cycleStudyKey)
 const cycleComparison = await optionalCardSize(cycleComparisonKey, cycleStudyKey)
 let cycleProfileLargest = 0, cycleProfileTotal = 0
