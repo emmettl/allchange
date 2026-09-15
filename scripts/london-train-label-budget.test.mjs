@@ -15,14 +15,19 @@ import { stationLabelBoxes, emptyLabelBoxes } from '../src/studies/map-cartograp
 function harness(source, camera, size) {
   let cursor = 0, effects = [], frame, searches = 0
   const slots = [], sprites = []
-  // The shared motion layer places journeys once per sampling pass; labels
-  // read that table. Mirror its clock and fill the table before each frame.
+  // The shared motion layer schedules journeys on a frame budget; labels
+  // read the position it draws from that table. Mirror its clock and fill the table before each frame.
   let motion, clock = 0, props = {}
   const place = () => {
     const trains = props.trainTimeIndex
     if (!motion || motion.trains !== trains) {
       motion = { trains, index: new Map(trains.map((train, i) => [train, i])), positions: new Float32Array(trains.length * 3),
-        stamps: new Uint8Array(trains.length), placed(i) { return this.stamps[i] === 1 } }
+        stamps: new Uint8Array(trains.length),
+        displayed(i, _time, _stale, out) {
+          if (this.stamps[i] !== 1) return false
+          out[0] = this.positions[i * 3]; out[1] = this.positions[i * 3 + 1]; out[2] = this.positions[i * 3 + 2]
+          return true
+        } }
     }
     trains.forEach((train, i) => {
       const point = bindings.projectedTrainPosition(train, Math.min(clock, train.end), props.projectedStops)
@@ -43,6 +48,8 @@ function harness(source, camera, size) {
     useEffect: (effect, deps) => memo(() => { effects.push(effect) }, deps),
     useFrame: callback => { frame = callback },
     trainsNearTime: index => { searches++; return index },
+    // Labels ask the motion layer how stale a drawn position may be; the stand-in table ignores it.
+    motionStaleSeconds: () => 0,
     useMapStyle: () => mapStyle, trainLabelCollisionBox, setScenePickMetadata,
     useProjectedTrainPosition: () => bindings.projectedTrainPosition,
     projectedTrainPosition: (train, time, stops) => {
