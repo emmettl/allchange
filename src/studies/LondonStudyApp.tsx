@@ -1,3 +1,5 @@
+import { TimelineScrubber } from '@motionstudies/web/components/TimelineScrubber'
+import '@motionstudies/web/timeline-scrubber.css'
 import {
   lazy,
   Suspense,
@@ -2300,15 +2302,9 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
           </div>
           <label>
             <span className="sr-only">Time of day</span>
-            <input
-              type="range"
-              min={sceneNetwork.metadata.windowStart}
-              max={sceneNetwork.metadata.windowEnd}
-              step="10"
-              value={sceneTime}
-              disabled={operationsEngaged}
-              onChange={(event) => setTime(Number(event.target.value))}
-            />
+            <TimelineScrubber ariaLabel="Time of day" ariaValueText={formatServiceTime(sceneTime)}
+              windowStart={sceneNetwork.metadata.windowStart} windowEnd={sceneNetwork.metadata.windowEnd}
+              step={10} time={sceneTime} disabled={operationsEngaged} onSeek={setTime}/>
           </label>
           <div className="london-playback-actions">
             <button className="ms-control"

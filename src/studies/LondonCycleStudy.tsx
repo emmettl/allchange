@@ -1,3 +1,5 @@
+import { TimelineScrubber } from '@motionstudies/web/components/TimelineScrubber'
+import '@motionstudies/web/timeline-scrubber.css'
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import type { LondonGeographySnapshot } from '../editions/london-geography.ts'
 import type { NetworkSnapshot } from '@motionstudies/core/domain/network'
@@ -211,6 +213,6 @@ export default function LondonCycleStudy({ time, onTime, isPlaying, onPlaying, r
         {dock && comparisonOpen && <button className="cycle-comparison-toggle" aria-expanded={true} onClick={() => setComparisonOpen(false)}>Back to selected day</button>}
       </aside>
     </div>}
-    <footer className="cycle-footer"><p>Recorded endpoints and times · straight connections, not street routes{reduced ? ' · motion reduced' : ''}</p><div className="cycle-time"><span>00:00</span><strong>{clock(time)}</strong><span>24:00</span></div><input type="range" aria-label="Cycle time of day" min="0" max="86400" step="60" value={time} disabled={!day} onChange={event => seek(Number(event.target.value))} /><div className="cycle-playback"><button aria-label={isPlaying ? 'Pause cycle motion' : 'Resume cycle motion'} disabled={!day} onClick={() => onPlaying(!isPlaying)}>{isPlaying ? 'Ⅱ' : '▶'}</button><select aria-label="Cycle playback speed" value={rate} onChange={event => onRate(Number(event.target.value))}>{[30, 120, 480, 1920].map(value => <option key={value} value={value}>{value / 30}×</option>)}</select><span>1× = 30 study seconds / second</span></div><small>Powered by TfL Open Data · Thames © GLA, OGL v3.0 · cycle date differs from rail</small></footer>
+    <footer className="cycle-footer"><p>Recorded endpoints and times · straight connections, not street routes{reduced ? ' · motion reduced' : ''}</p><div className="cycle-time"><span>00:00</span><strong>{clock(time)}</strong><span>24:00</span></div><TimelineScrubber ariaLabel="Cycle time of day" ariaValueText={clock(time)} windowStart={0} windowEnd={86400} step={60} time={time} disabled={!day} onSeek={seek} /><div className="cycle-playback"><button aria-label={isPlaying ? 'Pause cycle motion' : 'Resume cycle motion'} disabled={!day} onClick={() => onPlaying(!isPlaying)}>{isPlaying ? 'Ⅱ' : '▶'}</button><select aria-label="Cycle playback speed" value={rate} onChange={event => onRate(Number(event.target.value))}>{[30, 120, 480, 1920].map(value => <option key={value} value={value}>{value / 30}×</option>)}</select><span>1× = 30 study seconds / second</span></div><small>Powered by TfL Open Data · Thames © GLA, OGL v3.0 · cycle date differs from rail</small></footer>
   </main>
 }

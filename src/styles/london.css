@@ -588,12 +588,6 @@
   display: block;
 }
 
-.london-transport input[type='range'] {
-  width: 100%;
-  height: 20px;
-  margin: 0;
-  accent-color: var(--pink);
-}
 
 .london-playback-actions {
   display: flex;
@@ -980,9 +974,6 @@
     font-size: 0.55rem;
   }
 
-  .london-transport input[type='range'] {
-    height: 18px;
-  }
 
   .london-playback-actions {
     justify-content: flex-end;
@@ -1067,3 +1058,5 @@
 @media (min-width: 701px) { .london-layout-switch { max-inline-size: calc(100% - var(--london-gutter) * 2); } }
 
 @media (pointer: coarse) { .london-map-tools, .london-playback-actions { --ms-control-size: 44px; } }
+
+.london-transport .ms-timeline-scrubber { --ms-timeline-accent: var(--pink); }

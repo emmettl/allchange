@@ -53,7 +53,7 @@
 .cycle-footer > p { color: #c6c0d1; font-size: 10px; margin: 0 0 8px; }
 .cycle-time { display: flex; justify-content: space-between; align-items: baseline; }
 .cycle-time strong { font-size: 16px; color: #7ce8ee; }
-.cycle-footer input[type='range'] { width: 100%; accent-color: #f65dce; min-height: 28px; margin: 0; }
+
 .cycle-playback { display: flex; justify-content: center; align-items: center; gap: 8px; }
 .cycle-playback button { min-width: 44px; }
 .cycle-playback span, .cycle-footer small { font-size: 9px; color: #aaa2b8; }
@@ -83,3 +83,5 @@
   .cycle-playback span { font-size: 8px; }
   .cycle-footer small { font-size: 7px; }
 }
+
+.cycle-footer .ms-timeline-scrubber { --ms-timeline-accent: #f65dce; }
