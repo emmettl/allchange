@@ -1,3 +1,4 @@
+import { observeLayout } from '@motionstudies/web/observe-layout'
 import { TimelineScrubber } from '@motionstudies/web/components/TimelineScrubber'
 import '@motionstudies/web/timeline-scrubber.css'
 import {
@@ -1556,11 +1557,11 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       const clearance = root.getBoundingClientRect().bottom - playback.getBoundingClientRect().top + 12
       root.style.setProperty('--london-playback-clearance', `${clearance}px`)
     }
-    const observer = new ResizeObserver(measure)
-    observer.observe(root)
-    observer.observe(playback)
-    measure()
-    return () => observer.disconnect()
+    const dispose = observeLayout([root, playback], measure)
+    return () => {
+      dispose()
+      root.style.removeProperty('--london-playback-clearance')
+    }
   }, [cycleEnabled, network])
 
   if (cycleEnabled) return <Suspense fallback={<main className="cycle-opening" role="status">Loading cycle study… <button onClick={() => setCycleEnabled(false)}>Back to rail</button></main>}>
