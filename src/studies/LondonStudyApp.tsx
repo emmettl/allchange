@@ -277,6 +277,8 @@ function searchNetworkChoices(
 }
 
 export function LondonStudyApp({ edition }: { readonly edition: LondonEdition }) {
+  const layoutRoot = useRef<HTMLElement>(null)
+  const playbackPanel = useRef<HTMLElement>(null)
   const [morningNetwork, setMorningNetwork] = useState<NetworkSnapshot>()
   const [morningFlowEnabled, setMorningFlowEnabled] = useState(false)
   const morningFlowActive = useRef(false)
@@ -1545,6 +1547,22 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
     }}
     onPulse={() => { clearSelection(); setPulseLens('all'); setPulseHubId(activeBoard.id) }} />
 
+  // Playback wraps as controls and viewport size change; reserve its actual footprint.
+  useEffect(() => {
+    const root = layoutRoot.current
+    const playback = playbackPanel.current
+    if (!root || !playback) return
+    const measure = () => {
+      const clearance = root.getBoundingClientRect().bottom - playback.getBoundingClientRect().top + 12
+      root.style.setProperty('--london-playback-clearance', `${clearance}px`)
+    }
+    const observer = new ResizeObserver(measure)
+    observer.observe(root)
+    observer.observe(playback)
+    measure()
+    return () => observer.disconnect()
+  }, [cycleEnabled, network])
+
   if (cycleEnabled) return <Suspense fallback={<main className="cycle-opening" role="status">Loading cycle study… <button onClick={() => setCycleEnabled(false)}>Back to rail</button></main>}>
     <LondonCycleStudy time={time} onTime={setMapTime} isPlaying={isPlaying} onPlaying={setIsPlaying} rate={playbackRate} onRate={setPlaybackRate} geography={geography} railStops={morningNetwork?.stops}
       onClose={() => { setCycleEnabled(false); if (network && (time < network.metadata.windowStart || time > network.metadata.windowEnd)) setStudyWindow('day') }} />
@@ -1552,6 +1570,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
 
   return (
     <main
+      ref={layoutRoot}
       data-ms-chrome={limitedChrome ? 'hidden' : undefined}
       className={`experience view-${pulseHub ? 'hub' : 'network'} london-experience ms-study-layout${pulseHub ? ' is-pulse-study' : ''}${pulseHub && pulseNightMix > 0.5 ? ' is-pulse-night' : ''}${limitedChrome ? ' is-limited-chrome' : ''}${airEnabled ? ' has-air-layer' : ''}${airCategorySelected ? ' has-air-category' : ''}${selectedAirport ? ' has-airport-selection' : ''}${roadEnabled ? ' has-road-layer' : ''}${roadCategorySelected ? ' has-road-category' : ''}${surfaceEnabled ? ' has-surface-layer' : ''}${busEnabled ? ' has-bus-layer' : ''}${selectedStation || selectedRoute || selectedTrain || selectedAirTrackId || selectedAirport || selectedRoad || selectedCategory || airCategorySelected || roadCategorySelected ? ' has-selection' : ''}`}
       data-limited-chrome={limitedChrome}
@@ -2290,7 +2309,7 @@ export function LondonStudyApp({ edition }: { readonly edition: LondonEdition })
       )}
 
       {sceneNetwork && (
-        <section className="london-transport" aria-label="Playback controls">
+        <section ref={playbackPanel} className="london-transport" aria-label="Playback controls">
           <div className="london-time-copy">
             <span>{formatServiceTime(sceneNetwork.metadata.windowStart)}</span>
             <strong>{formatServiceTime(sceneTime)}</strong>

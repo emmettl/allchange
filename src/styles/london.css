@@ -517,7 +517,7 @@
 }
 
 .london-service-legend.service-legend {
-  bottom: 154px;
+  bottom: var(--london-playback-clearance, 194px);
   font-size: 0.65rem;
 }
 
@@ -1060,3 +1060,8 @@
 @media (pointer: coarse) { .london-map-tools, .london-playback-actions { --ms-control-size: 44px; } }
 
 .london-transport .ms-timeline-scrubber { --ms-timeline-accent: var(--pink); }
+
+/* Reserve measured playback space even when controls wrap on short screens. */
+.london-experience.ms-study-layout { --ms-layout-bottom: var(--london-playback-clearance, 194px); }
+
+.london-experience.ms-study-layout .ms-study-panel { max-block-size: max(0px, calc(100% - var(--ms-panel-top) - var(--ms-panel-bottom))); }

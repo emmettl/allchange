@@ -13,7 +13,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm install --global npm@11.21.0 --ignore-scripts
+      - run: npm install --global npm@11.21.1 --ignore-scripts
       - run: npm ci
       - run: npm run check:boundary && npm run typecheck && npm run lint && npm test
       - run: npm run worker:check && npm run worker:build
@@ -46,7 +46,7 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-      - run: npm install --global npm@11.21.0 --ignore-scripts
+      - run: npm install --global npm@11.21.1 --ignore-scripts
       - run: npm ci
       - uses: actions/download-artifact@v8
         with:
