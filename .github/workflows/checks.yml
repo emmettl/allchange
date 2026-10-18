@@ -7,6 +7,7 @@ permissions:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -28,15 +29,17 @@ jobs:
   e2e:
     needs: check
     name: Browser tests (${{ matrix.project }}, ${{ matrix.shard }}/${{ matrix.shards }})
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
         include:
           # Split Chromium tests across machines, keeping one WebGL worker each.
-          - { project: desktop-chromium, browser: chromium, shard: 1, shards: 2 }
-          - { project: desktop-chromium, browser: chromium, shard: 2, shards: 2 }
-          - { project: iphone-webkit, browser: webkit, shard: 1, shards: 1 }
+          # Native WebKit handles the GPU-rendered phone and cadence checks.
+          - { project: desktop-chromium, browser: chromium, runner: ubuntu-latest, shard: 1, shards: 2 }
+          - { project: desktop-chromium, browser: chromium, runner: ubuntu-latest, shard: 2, shards: 2 }
+          - { project: iphone-webkit, browser: webkit, runner: macos-26, shard: 1, shards: 1 }
     env:
       E2E_PREBUILT: '1'
       E2E_PROJECT: ${{ matrix.project }}
@@ -55,11 +58,13 @@ jobs:
           path: dist
       - run: npx playwright install --with-deps ${{ matrix.browser }}
       - name: E2E tests
+        timeout-minutes: 12
         id: e2e
         env:
           E2E_SUITE: functional
         run: npx playwright test --grep-invert @frame-cadence --project="$E2E_PROJECT" --shard="$E2E_SHARD" --workers=1
       - name: E2E frame cadence
+        timeout-minutes: 3
         if: ${{ !cancelled() && matrix.browser == 'webkit' && (steps.e2e.outcome == 'success' || steps.e2e.outcome == 'failure') }}
         env:
           E2E_SUITE: frame-cadence

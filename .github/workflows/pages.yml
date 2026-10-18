@@ -7,13 +7,14 @@ permissions:
   contents: read
 concurrency:
   group: pages
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   check:
     uses: ./.github/workflows/checks.yml
   deploy:
     needs: check
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     permissions:
       pages: write
       id-token: write
