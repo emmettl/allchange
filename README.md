@@ -1,6 +1,6 @@
 # All Change
 
-**[Open All Change](https://emmettl.github.io/allchange/)** · [Motion Studies catalogue](https://emmettl.github.io/motionstudies/)
+**[Open All Change](https://motionstudies.app/allchange/)** · [Motion Studies catalogue](https://motionstudies.app/)
 
 [Study brief](https://github.com/emmettl/motionstudies/blob/main/docs/LONDON.md) · [Project goals](https://github.com/emmettl/motionstudies/blob/main/docs/VISION.md) · [Roadmap](https://github.com/emmettl/motionstudies/blob/main/ROADMAP.md)
 
@@ -10,15 +10,15 @@ This is the independent London edition. It owns the London application, styles, 
 
 ## Run and check
 
-Use Node 24 LTS (`nvm use`) and npm 11.19.0, then `npm ci` and `npm run dev`. The app is served at the root. `npm run build` stages only London artifacts and builds a single entry point.
+Use Node 24 LTS (`nvm use`) and npm 11.21.1, then `npm ci` and `npm run dev`. The app is served at the root. `npm run build` stages only London artifacts and builds a single entry point.
 
 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run check:boundary`, `npm run build` and `npm run check:bundle`. Install browser engines with `npx playwright install chromium webkit`, then run `npm run test:e2e:ci`. `npm run worker:check` and `npm run worker:build` validate the existing London observation adapter without deploying it.
 
-Run transfer checks on Node 24 as CI does: gzip measurements can differ between Node releases. The opening JavaScript budget is 348 KiB, including direct airport marker/label picking with 44-pixel mouse and 56-pixel touch targets and the shared renderer's budgeted vehicle scheduler from `@motionstudies/three` alpha.17. The interchange pulse loads after interaction and has a separate 5 KiB JavaScript / 2 KiB CSS budget; shared dependencies remain counted in the opening. Browser checks verify that its renderer is absent at startup and fetched when the pulse opens.
+Run transfer checks on Node 24 as CI does: gzip measurements can differ between Node releases. The opening JavaScript budget is 366 KiB, including direct airport marker/label picking with 44-pixel mouse and 56-pixel touch targets and the shared renderer's budgeted vehicle scheduler from `@motionstudies/three`. The interchange pulse loads after interaction and has a separate 5 KiB JavaScript / 2 KiB CSS budget; shared dependencies remain counted in the opening. Browser checks verify that its renderer is absent at startup and fetched when the pulse opens.
 
-CI builds once and tests that artifact on three parallel runners: two Chromium shards and one iPhone WebKit job, each with one worker to avoid software WebGL contention. Chromium shards divide individual tests, including those within large spec files. Frame cadence runs once on the WebKit runner after its functional tests. Deployment waits for all three runners. Each runner uploads its own `e2e-report-<project>-<shard>` artifact and lists wall time and the slowest tests in the Actions summary.
+CI builds once and tests that artifact on three parallel runners: two Ubuntu Chromium shards and one native macOS iPhone WebKit job, each with one worker to avoid software WebGL contention. Chromium shards divide individual tests, including those within large spec files. Frame cadence runs once on the WebKit runner after its functional tests. Browser jobs have a 20-minute limit; a newer main push cancels the superseded Pages run. Deployment waits for all three runners. Each runner uploads its own `e2e-report-<project>-<shard>` artifact and lists wall time and the slowest tests in the Actions summary.
 
-Vitest owns fixture audits, station/operator permutations, time boundaries, loader caching, independent retries and stale responses. DOM tests mount the real app, hooks and cards with only the GPU scene boundary replaced; they read committed fixtures directly and require no build. The browser suite retains 30 cases for production lazy loading, representative scene journeys, real animation/rendering, map picking and responsive keyboard/touch behavior. See [the E2E migration and coverage map](docs/E2E-REVIEW.md).
+Vitest owns fixture audits, station/operator permutations, time boundaries, loader caching, independent retries and stale responses. DOM tests mount the real app, hooks and cards with only the GPU scene boundary replaced; they read committed fixtures directly and require no build. The browser suite covers production lazy loading, representative scene journeys, real animation/rendering, map picking and responsive keyboard/touch behavior. See [the E2E migration and coverage map](docs/E2E-REVIEW.md).
 
 All 64 enabled-layer combinations and category/station filtering run in `src/studies/vehicle-counts.test.ts`, with DOM selection/release coverage in `src/studies/app-state.test.tsx`. The remaining real air/road adapter smoke can be run with `npx playwright test --grep 'vehicle count follows' --workers=1`.
 
@@ -32,7 +32,7 @@ Use `--buses` to measure the opening map, all London buses, and selected route 2
 
 ## Package boundary
 
-The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-alpha.4`. The committed lockfile records registry URLs and integrity hashes. There are no shared source directories, workspace links, vendored packages, or sibling-repository imports here. `check:boundary` verifies the installed release versions and registry lock entries, rejects source links, and checks that imports use declared public exports.
+The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-alpha.31`. The committed lockfile records registry URLs and integrity hashes. There are no shared source directories, workspace links, vendored packages, or sibling-repository imports here. `check:boundary` verifies the installed release versions and registry lock entries, rejects source links, and checks that imports use declared public exports.
 
 ## Diagram layout
 
@@ -42,7 +42,7 @@ Elizabeth line corridors carry a route name so timetable links that skip stops f
 
 `LondonDiagramStations` supplies perpendicular line-coloured ticks for ordinary stops and rings for interchanges and branches. Shared-track Tube stops retain ticks; changes between transport modes use rings. `london-renderer-policy.ts` supplies public renderer extensions for these markers, consistent parallel lanes, track width and London label density. It also configures road strokes and overlays, independent airport infrastructure, and click selection. The shared renderer publishes picking metadata for visible glyphs and accepts a complete infrastructure reference so sparse service windows retain the diagram. London owns its Beck geometry, marker design and selection priorities; Vite no longer rewrites compiled package code. Invisible geographic boundaries, water, traffic and station geometry stop submitting draws while keeping their resources mounted for the return transition.
 
-Road labels and speed colouring load only when road topology is present, inside a local loading boundary that keeps the map mounted. The compact bus decoder loads when a bus chunk needs decoding. Both have separate transfer budgets; the 348 KiB opening JavaScript limit includes their shared initial dependencies. Browser checks verify that neither optional chunk loads at startup.
+Road labels and speed colouring load only when road topology is present, inside a local loading boundary that keeps the map mounted. The compact bus decoder loads when a bus chunk needs decoding. Both have separate transfer budgets; the 366 KiB opening JavaScript limit includes their shared initial dependencies. Browser checks verify that neither optional chunk loads at startup.
 
 ## Data and hosting
 
@@ -84,11 +84,11 @@ Unit and browser checks cover bus timetable/day selection, platform aliases, alt
 
 ## Standard selection labels
 
-The shared `@motionstudies/three` alpha.4 renderer gives the selected station first label priority, then the selected route’s terminals (including branch endpoints), then intermediate stops. Selecting a service uses its own endpoints. Clearing selection restores normal station ranking. The rule applies to map clicks and search/picker selection in both geographic and diagram layouts. See the [Motion Studies edition contract](https://github.com/emmettl/motionstudies/blob/main/docs/EDITIONS.md#selection-and-station-labels).
+The shared `@motionstudies/three` alpha.31 renderer gives the selected station first label priority, then the selected route’s terminals (including branch endpoints), then intermediate stops. Selecting a service uses its own endpoints. Clearing selection restores normal station ranking. The rule applies to map clicks and search/picker selection in both geographic and diagram layouts. See the [Motion Studies edition contract](https://github.com/emmettl/motionstudies/blob/main/docs/EDITIONS.md#selection-and-station-labels).
 
 ### Airport movement boards
 
-Airport selections use the shared `AirportHeroCard` from `@motionstudies/web` 0.1.0-alpha.5. Departures/arrivals follow the study clock, looking 10 minutes behind and 60 minutes ahead within the active study window. Loading and empty messages use the split-flap columns; new rows settle in 675 ms with staggered characters.
+Airport selections use the shared `AirportHeroCard` from `@motionstudies/web` 0.1.0-alpha.31. Departures/arrivals follow the study clock, looking 10 minutes behind and 60 minutes ahead within the active study window. Loading and empty messages use the split-flap columns; new rows settle in 675 ms with staggered characters.
 
 The 4 September 2026 air fixtures include optional origin/destination evidence from cached global ADSB.lol heatmaps and the public-domain [OurAirports reference](https://ourairports.com/data/). These are inferred observed movements, not schedules or confirmed flight plans. Unknown routes remain blank. Full-day manifest entries and playback chunks carry the same evidence; metadata records the input hashes, reference source, and local UTC offset (1 hours for this service date).
 
