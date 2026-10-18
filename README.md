@@ -46,6 +46,8 @@ Road labels and speed colouring load only when road topology is present, inside 
 
 ## Data and hosting
 
+The public study is served at [motionstudies.app/allchange](https://motionstudies.app/allchange/), with [GitHub Pages](https://emmettl.github.io/allchange/) retained as a mirror. A separate Cloudflare workflow publishes the exact artifact from a successful main Pages workflow; failed checks do not publish. See [series hosting](https://github.com/emmettl/motionstudies/blob/main/docs/HOSTING.md) for the shared publication and rollback contract.
+
 `fixtures/tfl/` retains the authored TfL timetable, transport catalogues and map layout; `public/data/` contains the committed air and road observations. Existing `data:london:*` commands retain their explicit source dates and provenance. Use them deliberately to refresh data; CI builds the reviewed fixtures. PDF timetable ingestion requires `pdftotext` on the host.
 
 The historical Road layer uses measured 15-minute WebTRIS intervals from 5 September 2025. Blank fields remain missing; genuine recorded zeroes remain valid. Vehicles appear only on original neighbouring sections with both endpoints reporting in the displayed interval, without interpolating through missing periods or joining across missing detectors. Speed colours indicate below 30, 30–50 and at least 50 mph; uncoloured stretches lack paired speed readings. Selecting a motorway shows its observation date, flow-weighted mean speed, mean hourly flow per reporting detector, and detector/section coverage. Detector flow is not a count of unique vehicles across the motorway. The corrected fixture contains 232 reporting sites from 304 candidates and excludes 7,470 incomplete rows. The detail card loads on demand; the existing progressive road chunks are retained.
@@ -56,7 +58,7 @@ The default study remains Friday 4 September 2026 to match the rail layers. It s
 
 A full refresh can take a while under TfL's public request limit. Raw responses are cached under `/tmp/allchange-tfl-bus-YYYY-MM-DD`; use `--cache <directory>` to resume a particular download or a new directory for a fresh source capture. Optional `TFL_API_KEY` stays on the compiler host. `--service-date`, `--retrieved-at` and `--non-school-days` make alternate studies explicit; keep the service date aligned with the other layers when replacing the app fixture. CI uses the checked-in manifest and chunks and makes no TfL requests.
 
-Pull requests run the edition checks and upload a preview artifact. Every push to `main` runs `Deploy Pages`, which calls the same checks and publishes their build to https://emmettl.github.io/allchange/ only after they pass. Manual deployment remains available through `workflow_dispatch`. GitHub Pages uses Actions. The existing observation worker and R2 bucket are referenced for compatibility; no worker is deployed by this repository's workflows.
+Pull requests run the edition checks and upload a preview artifact. Every push to `main` runs `Deploy Pages`, which calls the same checks and publishes their build to https://emmettl.github.io/allchange/ only after they pass. Manual deployment remains available through `workflow_dispatch`. GitHub Pages uses Actions. The existing observation worker and R2 bucket are separate from static-site publication; the site workflows do not deploy the observation adapter.
 
 The [London Worker guide](docs/CLOUDFLARE.md) covers configuration, deployment and recorded-day export.
 
