@@ -1,3 +1,4 @@
+import { mapLabelBoxesOverlap } from '@motionstudies/core/map-labels'
 import { stationLabelBoxes, emptyLabelBoxes } from '@motionstudies/three/render-performance'
 import { readFileSync } from 'node:fs'
 import { expect, it } from 'vitest'
@@ -22,6 +23,7 @@ function harness(source, camera, size) {
     return slots[index].value
   }
   const bindings = {
+    mapLabelBoxesOverlap,
     useMapStyle: () => londonMapStyle, setScenePickMetadata, stationLabelBoxes, emptyLabelBoxes, ...labelFunctions, THREE, StationLabelFrame, londonStationLabelRankLimit,
     _Fragment: 'fragment', STATION_SURFACE_Y: 0.08, MAP_LAYER: { stationLabel: 19 },
     useThree: () => ({ camera, size }),
