@@ -32,7 +32,7 @@ Use `--buses` to measure the opening map, all London buses, and selected route 2
 
 ## Package boundary
 
-The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-alpha.34`. The committed lockfile records registry URLs and integrity hashes. There are no shared source directories, workspace links, vendored packages, or sibling-repository imports here. `check:boundary` verifies the installed release versions and registry lock entries, rejects source links, and checks that imports use declared public exports.
+The four `@motionstudies` dependencies pin the coordinated npm release `0.1.0-alpha.42`. The committed lockfile records registry URLs and integrity hashes. There are no shared source directories, workspace links, vendored packages, or sibling-repository imports here. `check:boundary` verifies the installed release versions and registry lock entries, rejects source links, and checks that imports use declared public exports.
 
 ## Diagram layout
 
@@ -86,11 +86,11 @@ Unit and browser checks cover bus timetable/day selection, platform aliases, alt
 
 ## Standard selection labels
 
-The shared `@motionstudies/three` alpha.34 renderer gives the selected station first label priority, then the selected route’s terminals (including branch endpoints), then intermediate stops. Selecting a service uses its own endpoints. Clearing selection restores normal station ranking. The rule applies to map clicks and search/picker selection in both geographic and diagram layouts. See the [Motion Studies edition contract](https://github.com/emmettl/motionstudies/blob/main/docs/EDITIONS.md#selection-and-station-labels).
+The shared `@motionstudies/three` alpha.42 renderer gives the selected station first label priority, then the selected route’s terminals (including branch endpoints), then intermediate stops. Selecting a service uses its own endpoints. Clearing selection restores normal station ranking. The rule applies to map clicks and search/picker selection in both geographic and diagram layouts. See the [Motion Studies edition contract](https://github.com/emmettl/motionstudies/blob/main/docs/EDITIONS.md#selection-and-station-labels).
 
 ### Airport movement boards
 
-Airport selections use the shared `AirportHeroCard` from `@motionstudies/web` 0.1.0-alpha.34. Departures/arrivals follow the study clock, looking 10 minutes behind and 60 minutes ahead within the active study window. Loading and empty messages use the split-flap columns; new rows settle in 675 ms with staggered characters.
+Airport selections use the shared `AirportHeroCard` from `@motionstudies/web` 0.1.0-alpha.42. Departures/arrivals follow the study clock, looking 10 minutes behind and 60 minutes ahead within the active study window. Loading and empty messages use the split-flap columns; new rows settle in 675 ms with staggered characters.
 
 The 4 September 2026 air fixtures include optional origin/destination evidence from cached global ADSB.lol heatmaps and the public-domain [OurAirports reference](https://ourairports.com/data/). These are inferred observed movements, not schedules or confirmed flight plans. Unknown routes remain blank. Full-day manifest entries and playback chunks carry the same evidence; metadata records the input hashes, reference source, and local UTC offset (1 hours for this service date).
 
