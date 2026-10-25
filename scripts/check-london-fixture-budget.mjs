@@ -522,6 +522,7 @@ const londonEntry = Object.entries(manifest).find(
 )
 if (!londonEntry) throw new Error('Vite manifest has no London entry')
 
+const sharedRoadKey = 'node_modules/@motionstudies/three/RoadTrafficLayer.js'
 const scripts = new Set()
 const styles = new Set()
 const visited = new Set()
@@ -557,7 +558,7 @@ const visit = (key) => {
   for (const importedKey of chunk.imports ?? []) visit(importedKey)
   // Selected cards and alternate studies load only after interaction. Budget
   // them separately; retain their shared static dependencies in the opening.
-  for (const importedKey of chunk.dynamicImports ?? []) if (![operationsKey, railVehicleCardKey, vehicleCardKey, quietMapKey, morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, roadOverlayKey, busCodecKey, railBoardKey, stationBoardKey, busBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey, buttonTooltipsKey].includes(importedKey)) visit(importedKey)
+  for (const importedKey of chunk.dynamicImports ?? []) if (![operationsKey, railVehicleCardKey, vehicleCardKey, quietMapKey, morningFlowKey, nightStudyKey, eurostarKey, airportCardKey, roadDetailKey, roadOverlayKey, busCodecKey, railBoardKey, stationBoardKey, busBoardKey, combinedBoardKey, railLayerKey, passengerCardKey, passengerPulseKey, cycleStudyKey, hubPulseKey, buttonTooltipsKey, sharedRoadKey].includes(importedKey)) visit(importedKey)
 }
 visit(londonEntry[0])
 
@@ -569,6 +570,23 @@ async function totalGzipSize(files) {
   return total
 }
 
+// The shared road renderer loads only after road mode supplies data. Count its
+// complete static closure separately; fail if it becomes an opening dependency.
+const sharedRoad = manifest[sharedRoadKey]
+if (!sharedRoad?.isDynamicEntry || visited.has(sharedRoadKey)) throw new Error('Shared road renderer must remain optional')
+const roadFiles = new Set(), roadVisited = new Set()
+function visitSharedRoad(key) {
+  if (visited.has(key) || roadVisited.has(key)) return
+  roadVisited.add(key)
+  const chunk = manifest[key]
+  if (!chunk || chunk.dynamicImports?.length) throw new Error('Unbudgeted shared road dependency')
+  roadFiles.add(chunk.file)
+  for (const dependency of chunk.imports ?? []) visitSharedRoad(dependency)
+}
+visitSharedRoad(sharedRoadKey)
+const roadBytes = await totalGzipSize(roadFiles)
+if (roadBytes > 5 * 1024) throw new Error(`Shared road renderer exceeds 5 KiB gzip: ${roadBytes}`)
+console.log(`Optional shared road renderer: ${roadBytes} bytes gzip / 5 KiB`)
 const javaScript = await totalGzipSize(scripts)
 
 // Optional cards can share the split-flap widget. Include their full static

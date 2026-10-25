@@ -1,3 +1,4 @@
+import { mapSurfaceY } from '../node_modules/@motionstudies/three/scene-surface.js'
 import { mapLabelBoxesOverlap } from '@motionstudies/core/map-labels'
 import { stationLabelBoxes, emptyLabelBoxes } from '@motionstudies/three/render-performance'
 import { readFileSync } from 'node:fs'
@@ -23,7 +24,7 @@ function harness(source, camera, size) {
     return slots[index].value
   }
   const bindings = {
-    mapLabelBoxesOverlap,
+    mapSurfaceY, mapLabelBoxesOverlap,
     useMapStyle: () => londonMapStyle, setScenePickMetadata, stationLabelBoxes, emptyLabelBoxes, ...labelFunctions, THREE, StationLabelFrame, londonStationLabelRankLimit,
     _Fragment: 'fragment', STATION_SURFACE_Y: 0.08, MAP_LAYER: { stationLabel: 19 },
     useThree: () => ({ camera, size }),
@@ -58,7 +59,7 @@ function harness(source, camera, size) {
 }
 
 it('preserves station sprites across settling, pan, zoom, resize, selection and layout changes', () => {
-  const id = '/node_modules/@motionstudies/three/NationalNetworkScene.js'
+  const id = '/node_modules/@motionstudies/three/scene-labels.js'
   const code = readFileSync(`.${id}`, 'utf8')
   const source = code.slice(code.indexOf('function StationLabels('), code.indexOf('function trainLabelText('))
   const camera = new THREE.PerspectiveCamera(44, 16 / 9, 0.1, 100)
