@@ -1,0 +1,31 @@
+{
+  "transfer": {
+    "javaScript": 374632,
+    "css": 8701,
+    "total": 592533
+  },
+  "limits": {
+    "raw": 1638400,
+    "gzip": 266240,
+    "javaScript": 374784,
+    "css": 14336,
+    "total": 665600,
+    "layoutRaw": 92160,
+    "layoutGzip": 16384,
+    "dayManifestGzip": 40960,
+    "dayChunkGzip": 194560,
+    "dayTotalGzip": 1638400,
+    "airMorningGzip": 225280,
+    "airManifestGzip": 138240,
+    "airChunkGzip": 148480,
+    "airDayTotalGzip": 2355200,
+    "roadTopologyGzip": 66560,
+    "roadManifestGzip": 8192,
+    "roadChunkGzip": 51200,
+    "roadDayTotalGzip": 256000,
+    "surfaceGzip": 32768,
+    "busManifestGzip": 2355200,
+    "busChunkGzip": 563200,
+    "busDayTotalGzip": 8192000
+  }
+}

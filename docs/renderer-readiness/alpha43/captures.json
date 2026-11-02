@@ -1,0 +1,78 @@
+{
+  "capturedAt": "2026-11-02T18:56:44.157Z",
+  "edition": "allchange",
+  "version": "0.1.0-alpha.43",
+  "sourceCommit": "9d0607ba567f28701d7188717bb538204467aa13",
+  "browserVersion": "156.0.8078.4",
+  "scope": "Paused production-build captures, Chromium headless DPR1. First-canvas timings include navigation and are single observations, not performance acceptance. No physical-device or author approval.",
+  "captures": [
+    {
+      "file": "desktop-geography.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "scene": "geography",
+      "firstCanvasVisibleMs": 1248,
+      "renderer": {
+        "api": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+        "width": 1440,
+        "height": 1000
+      },
+      "sha256": "7adefbaf1e437ae277e9355b1bea7e98740848fd136ab0b4ceef3d2e3321e700",
+      "pageErrors": []
+    },
+    {
+      "file": "desktop-diagram.png",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "scene": "diagram",
+      "firstCanvasVisibleMs": 1248,
+      "renderer": {
+        "api": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+        "width": 1440,
+        "height": 1000
+      },
+      "sha256": "eca61e8c98a7be8097a54a88ba279f6ada761a6e9ca3f074906092fe82d0ad87",
+      "pageErrors": []
+    },
+    {
+      "file": "phone-geography.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scene": "geography",
+      "firstCanvasVisibleMs": 1132,
+      "renderer": {
+        "api": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "2117e10546d9d66bdd85c39221e60a5b62cb9d2c8e5f909c676ea2147c5f4673",
+      "pageErrors": []
+    },
+    {
+      "file": "phone-diagram.png",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "scene": "diagram",
+      "firstCanvasVisibleMs": 1132,
+      "renderer": {
+        "api": "WebGL 2.0 (OpenGL ES 3.0 Chromium)",
+        "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+        "width": 390,
+        "height": 844
+      },
+      "sha256": "5f2299c9595a86304e791cd4a4da0f6dcd934b2b5cfbb2058730a60a859e679f",
+      "pageErrors": []
+    }
+  ]
+}

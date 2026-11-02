@@ -1,0 +1,27 @@
+{
+  "version": "0.1.0-alpha.43",
+  "unitTestsPassed": 277,
+  "staticChecks": [
+    "boundary",
+    "typecheck",
+    "lint",
+    "unit",
+    "build",
+    "bundle",
+    "worker:check",
+    "worker:build (dry-run)"
+  ],
+  "focusedBrowser": {
+    "stats": {
+      "startTime": "2026-11-02T18:53:47.543Z",
+      "duration": 72353.923,
+      "expected": 14,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "reportSha256": "cda9ace720b4d791aec24bca11df2dd1ffb13d7b139818e2917ea7acf1d80c5a",
+    "failures": []
+  },
+  "scope": "Baseline before dependency/source changes. Chromium desktop and phone WebKit against the production build; no retry."
+}
