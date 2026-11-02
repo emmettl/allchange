@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useRequireWebGL, useWebGLStudyFrame } from '@motionstudies/three/webgl-study'
+import { frameElapsed } from '@motionstudies/three/frame-state'
 import * as THREE from 'three'
 import type { MapBoundary } from '@motionstudies/core/domain/boundary'
 import type { NetworkProjection } from '@motionstudies/three/NationalNetworkScene'
@@ -23,6 +24,7 @@ export function LondonNationalRailLayer({ snapshot, boundary, projection, time, 
   time: number; isPlaying: boolean; playbackRate: number; windowStart: number; windowEnd: number
   selectedId?: string; subdued?: boolean
 }) {
+  useRequireWebGL('LondonNationalRailLayer')
   const localTime = useRef(time)
   const resources = useMemo(() => {
     const prepare = (path: NonNullable<NationalRailSnapshot['paths']>[number]) =>
@@ -66,7 +68,8 @@ export function LondonNationalRailLayer({ snapshot, boundary, projection, time, 
   useEffect(() => () => {
     resources.tracks.dispose(); resources.vehicles.dispose(); resources.trails.dispose(); resources.glow.dispose()
   }, [resources])
-  useFrame(({ clock }, delta) => {
+  useWebGLStudyFrame((state, delta) => {
+    const elapsed = frameElapsed(state)
     if (isPlaying) {
       localTime.current += delta * playbackRate
       if (localTime.current > windowEnd) localTime.current = windowStart
@@ -75,13 +78,13 @@ export function LondonNationalRailLayer({ snapshot, boundary, projection, time, 
     const frame = frameState.current
     const changed = frame.resources !== resources || frame.selectedId !== selectedId || frame.subdued !== subdued
     if (!isPlaying && !changed && localTime.current === frame.time) return
-    const refreshTrails = trailBudget.shouldUpdateTrail(delta, clock.elapsedTime - frame.lastTrail,
+    const refreshTrails = trailBudget.shouldUpdateTrail(delta, elapsed - frame.lastTrail,
       changed || !isPlaying || localTime.current < frame.time)
     frame.time = localTime.current
     frame.resources = resources
     frame.selectedId = selectedId
     frame.subdued = subdued
-    if (refreshTrails) frame.lastTrail = clock.elapsedTime
+    if (refreshTrails) frame.lastTrail = elapsed
     const { vehicles, trails, paths, project, color } = resources
     const positions = vehicles.getAttribute('position'), colors = vehicles.getAttribute('color')
     const trailPositions = trails.getAttribute('position'), trailColors = trails.getAttribute('color')

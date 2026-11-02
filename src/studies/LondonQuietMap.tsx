@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useRequireWebGL, useWebGLStudyFrame } from '@motionstudies/three/webgl-study'
 import * as THREE from 'three'
 import type { NetworkProjection } from '@motionstudies/three/NationalNetworkScene'
 import type { NetworkSnapshot } from '@motionstudies/core/domain/network'
@@ -35,6 +35,7 @@ export function LondonQuietMap({ projection, isPlaying, diagramSnapshot, spatial
   readonly spatialLayout?: SpatialLayoutSnapshot
   readonly spatialLayoutMix?: number
 }) {
+  useRequireWebGL('LondonQuietMap')
   const elapsed = useRef(0)
   const arrival = useRef(0)
   const reducedMotion = useRef(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
@@ -82,7 +83,7 @@ export function LondonQuietMap({ projection, isPlaying, diagramSnapshot, spatial
     resources.scraps.forEach(scrap => scrap.materials.forEach(material => material.dispose()))
   }, [resources])
 
-  useFrame((_, delta) => {
+  useWebGLStudyFrame((_, delta) => {
     const step = Math.min(delta, 0.1)
     arrival.current += step
     if (isPlaying && !reducedMotion.current) elapsed.current += step

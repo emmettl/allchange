@@ -1,6 +1,6 @@
 import { setScenePickMetadata } from '@motionstudies/three/scene-picking'
 import { useEffect, useMemo } from 'react'
-import type {} from '@react-three/fiber'
+import type {} from '@motionstudies/three/webgl-study'
 import * as THREE from 'three'
 import type { NetworkSnapshot } from '@motionstudies/core/domain/network'
 import { londonDiagramMarkers, type DiagramPoint } from '../editions/london-diagram-markers.ts'

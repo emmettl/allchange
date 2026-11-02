@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useRequireWebGL, useWebGLStudyFrame } from '@motionstudies/three/webgl-study'
 import * as THREE from 'three'
 import type { RoadTopologySnapshot } from '@motionstudies/core/domain/road'
 import type { NetworkProjection } from '@motionstudies/three/NationalNetworkScene'
@@ -38,6 +38,7 @@ export function LondonRoadLabels({ topology, projection, selectedRoadId, subdued
   selectedRoadId?: string
   subdued?: boolean
 }) {
+  useRequireWebGL('LondonRoadLabels')
   const lastView = useRef({ matrix: new THREE.Matrix4(), nextMatrix: new THREE.Matrix4(), width: 0, height: 0, resources: undefined as object | undefined })
   const resources = useMemo(() => {
     const group = new THREE.Group()
@@ -81,7 +82,7 @@ export function LondonRoadLabels({ topology, projection, selectedRoadId, subdued
     }
   }, [resources])
 
-  useFrame(({ camera, size }) => {
+  useWebGLStudyFrame(({ camera, size }) => {
     const view = lastView.current
     const matrix = view.nextMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse)
     if (view.resources === resources && matrix.equals(view.matrix) && size.width === view.width && size.height === view.height) return

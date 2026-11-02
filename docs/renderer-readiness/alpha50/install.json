@@ -1,0 +1,44 @@
+{
+  "verifiedAt": "2026-11-02T19:13:55.588Z",
+  "packageLockSha256": "f80d09b8743212d337dc09c17575b9fd6c5685109721f947452453c5729e6b56",
+  "packages": [
+    {
+      "name": "@motionstudies/core",
+      "version": "0.1.0-alpha.50",
+      "resolved": "https://registry.npmjs.org/@motionstudies/core/-/core-0.1.0-alpha.50.tgz",
+      "integrity": "sha512-+sIHC4W2dnY0ghxax+fChpbX3DClS5LS/n3NW4WuS/Z+9lgVvDF/JTMZxMv/nLPv6No8Jn2eqD/PHAM9n8L1GA==",
+      "installedMatches": true,
+      "registryMatches": true
+    },
+    {
+      "name": "@motionstudies/data",
+      "version": "0.1.0-alpha.50",
+      "resolved": "https://registry.npmjs.org/@motionstudies/data/-/data-0.1.0-alpha.50.tgz",
+      "integrity": "sha512-DS3YwVKus1a06Uv2fg3+Qr7IWjjnjGE/TPTgt2tAfiJQvGmiCQltvsQsEr6MquSFsTVpamq4RbxbK4bTyznRpA==",
+      "installedMatches": true,
+      "registryMatches": true
+    },
+    {
+      "name": "@motionstudies/three",
+      "version": "0.1.0-alpha.50",
+      "resolved": "https://registry.npmjs.org/@motionstudies/three/-/three-0.1.0-alpha.50.tgz",
+      "integrity": "sha512-dRXuZHmknmNgumA17yUM7Ds2nQrG+O95sAC04z6ec22w8NZ0CyE/cf1S0ThKZku+MzlmMJosEn3OGN5NByGMFQ==",
+      "installedMatches": true,
+      "registryMatches": true
+    },
+    {
+      "name": "@motionstudies/web",
+      "version": "0.1.0-alpha.50",
+      "resolved": "https://registry.npmjs.org/@motionstudies/web/-/web-0.1.0-alpha.50.tgz",
+      "integrity": "sha512-G3XeUKErzOk7MuO2kEL/99cT2pvjhLPDLOKJrb9F/cGHmdrAIAnGhSRFCC8A8PpRYtadtUz7drzaYoemT4lV0w==",
+      "installedMatches": true,
+      "registryMatches": true
+    }
+  ],
+  "fixtureTree": "8b9256578cc1c5cc30838b39a3b4c95dfa918382",
+  "stagedDataFiles": 1742,
+  "stagedDataUnchanged": true,
+  "retainedFiber": "9.8.2",
+  "retainedThree": "0.186.1",
+  "retainedReact": "19.3.1"
+}
