@@ -46,8 +46,16 @@ bundle gates passed. All 14 focused Chromium/WebKit production checks passed for
 picking, listener lifetime, rail pause/seek/resume and idle buffer uploads.
 
 Alpha.50 passes all 277 unit tests, typechecking, lint, boundary checks, worker
-checks/dry-run builds and the final build/budget gates. Production browser
-validation is in progress before this PR is considered ready.
+checks/dry-run builds and the final build/budget gates. Focused production browser validation covers picks, diagram/camera changes,
+listener lifetime, pause/seek/resume, inactive uploads, lazy road loading and the
+strict local WebKit cadence gate. The initial run passed 20 cases with one
+existing desktop-only skip and one airport readiness failure. Its first click
+ran while AIR still displayed loading and no airport targets were rendered. The
+test now waits for the ready button state and three label/camera frames, with
+all coordinates, assertions and timeout limits retained. Six repeated airport
+cases then pass across Chromium and WebKit; the other original cases and strict
+phone cadence check passed unchanged. The [validation report](renderer-readiness/alpha50/validation.json)
+preserves both outcomes. Hosted PR CI independently exercises the complete suite.
 
 [Installation evidence](renderer-readiness/alpha50/install.json) verifies all four
 registry versions/integrities, the unchanged fixture tree and all **1,742** staged
@@ -57,3 +65,15 @@ readiness coupling; production code uses public package exports.
 
 Physical-phone memory/thermal, leak/recovery and author visual acceptance remain
 open. This source branch does not claim a deployed revision or WebGPU support.
+
+[Candidate captures](renderer-readiness/alpha50/captures.json) retain the same
+paused 07:45 geography/diagram views at 1440×1000 and 390×844, DPR 1.
+[Image diagnostics](renderer-readiness/comparison.json) record cross-session
+differences (up to 3.47% of pixels, with a maximum channel difference of 20 in
+the phone diagram). Inspection found the same composition and material language;
+pixel identity or author approval is not claimed.
+
+The [candidate frame diagnostic](renderer-readiness/alpha50/performance.json)
+uses the same profiler/settings as its baseline, without an overlapping local
+GPU run initiated here. Software-rendered National Rail samples are slow in both
+reports. Single short runs do not establish a causal performance conclusion.
