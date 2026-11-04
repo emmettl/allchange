@@ -1,0 +1,192 @@
+{
+  "sourceCommit": "9d0607ba567f28701d7188717bb538204467aa13",
+  "fixtureTree": "8b9256578cc1c5cc30838b39a3b4c95dfa918382",
+  "packageLockSha256": "82b820e8b28b1b6ff46093d90aa55b8196ce2dff3b47675c90d6f16f4923bef2",
+  "assets": [
+    {
+      "key": "_SplitFlapBoard-D20_njEv.js",
+      "file": "assets/SplitFlapBoard-D20_njEv.js",
+      "gzipBytes": 1296
+    },
+    {
+      "key": "_glow-point-texture-C8Fbot8Y.js",
+      "file": "assets/glow-point-texture-C8Fbot8Y.js",
+      "gzipBytes": 239360
+    },
+    {
+      "key": "_jsx-runtime-NdI66nBG.js",
+      "file": "assets/jsx-runtime-NdI66nBG.js",
+      "gzipBytes": 296
+    },
+    {
+      "key": "_network-Jl-cE3Rm.js",
+      "file": "assets/network-Jl-cE3Rm.js",
+      "gzipBytes": 1032
+    },
+    {
+      "key": "_passenger-demand-OgLBjmHL.js",
+      "file": "assets/passenger-demand-OgLBjmHL.js",
+      "gzipBytes": 1122
+    },
+    {
+      "key": "_passenger-pulse-BT1RAWtY.js",
+      "file": "assets/passenger-pulse-BT1RAWtY.js",
+      "gzipBytes": 375
+    },
+    {
+      "key": "_react-COMFa4n5.js",
+      "file": "assets/react-COMFa4n5.js",
+      "gzipBytes": 3282
+    },
+    {
+      "key": "_road-BIMILCAL.js",
+      "file": "assets/road-BIMILCAL.js",
+      "gzipBytes": 507
+    },
+    {
+      "key": "_use-passenger-demand-Dr80rfy2.js",
+      "file": "assets/use-passenger-demand-Dr80rfy2.js",
+      "gzipBytes": 368
+    },
+    {
+      "key": "_vehicle-hero-card-Cj9n8TR2.css",
+      "file": "assets/vehicle-hero-card-Cj9n8TR2.css",
+      "gzipBytes": 1555
+    },
+    {
+      "key": "_vehicle-hero-card-L0yS52d6.js",
+      "file": "assets/vehicle-hero-card-L0yS52d6.js",
+      "gzipBytes": 1054
+    },
+    {
+      "key": "index.html",
+      "file": "assets/index-Bxf_AqTg.js",
+      "gzipBytes": 94386
+    },
+    {
+      "key": "node_modules/@motionstudies/core/domain/network-patterns.js",
+      "file": "assets/network-patterns-zVhuGo2r.js",
+      "gzipBytes": 695
+    },
+    {
+      "key": "node_modules/@motionstudies/core/domain/operations.js",
+      "file": "assets/operations-DtI9Zoqx.js",
+      "gzipBytes": 1518
+    },
+    {
+      "key": "node_modules/@motionstudies/three/AirTrafficLayer.js",
+      "file": "assets/AirTrafficLayer-K1y4tRWm.js",
+      "gzipBytes": 4319
+    },
+    {
+      "key": "node_modules/@motionstudies/three/HubPulseScene.js",
+      "file": "assets/HubPulseScene-Dldqfoia.js",
+      "gzipBytes": 4061
+    },
+    {
+      "key": "node_modules/@motionstudies/three/RoadTrafficLayer.js",
+      "file": "assets/RoadTrafficLayer-DINuV4KH.js",
+      "gzipBytes": 3180
+    },
+    {
+      "key": "node_modules/@motionstudies/web/components/BusStopHeroCard.js",
+      "file": "assets/BusStopHeroCard-Biht_9uV.js",
+      "gzipBytes": 997
+    },
+    {
+      "key": "node_modules/@motionstudies/web/components/ButtonTooltips.js",
+      "file": "assets/ButtonTooltips-XI6vCloG.js",
+      "gzipBytes": 1543
+    },
+    {
+      "key": "src/data/eurostar.ts",
+      "file": "assets/eurostar-DDRTmWqK.js",
+      "gzipBytes": 505
+    },
+    {
+      "key": "src/studies/AirportCard.tsx",
+      "file": "assets/AirportCard-DqkMDUUg.js",
+      "gzipBytes": 2116
+    },
+    {
+      "key": "src/studies/LondonCombinedStationBoard.tsx",
+      "file": "assets/LondonCombinedStationBoard-CNma5Q-O.js",
+      "gzipBytes": 1910
+    },
+    {
+      "key": "src/studies/LondonCycleComparison.tsx",
+      "file": "assets/LondonCycleComparison-BaP2kRSG.js",
+      "gzipBytes": 1721
+    },
+    {
+      "key": "src/studies/LondonCycleStudy.tsx",
+      "file": "assets/LondonCycleStudy-CIN3yBxw.js",
+      "gzipBytes": 7240
+    },
+    {
+      "key": "src/studies/LondonMorningFlow.tsx",
+      "file": "assets/LondonMorningFlow-NOcLZDik.js",
+      "gzipBytes": 3813
+    },
+    {
+      "key": "src/studies/LondonNationalRailBoard.tsx",
+      "file": "assets/LondonNationalRailBoard-BBDkMjgC.js",
+      "gzipBytes": 1754
+    },
+    {
+      "key": "src/studies/LondonNationalRailLayer.tsx",
+      "file": "assets/LondonNationalRailLayer-CkX3zwbN.js",
+      "gzipBytes": 1691
+    },
+    {
+      "key": "src/studies/LondonNetworkScene.tsx",
+      "file": "assets/LondonNetworkScene-D0fgByDl.js",
+      "gzipBytes": 31450
+    },
+    {
+      "key": "src/studies/LondonNightStudy.tsx",
+      "file": "assets/LondonNightStudy-BaSVKPH-.js",
+      "gzipBytes": 2594
+    },
+    {
+      "key": "src/studies/LondonPassengerDemand.tsx",
+      "file": "assets/LondonPassengerDemand-2Ljjem9y.js",
+      "gzipBytes": 2422
+    },
+    {
+      "key": "src/studies/LondonPassengerPulse.tsx",
+      "file": "assets/LondonPassengerPulse-CQ3SsH0-.js",
+      "gzipBytes": 1727
+    },
+    {
+      "key": "src/studies/LondonQuietMap.tsx",
+      "file": "assets/LondonQuietMap-BFvlYdeA.js",
+      "gzipBytes": 1850
+    },
+    {
+      "key": "src/studies/LondonRoadObservations.tsx",
+      "file": "assets/LondonRoadObservations-CIWNmtXt.js",
+      "gzipBytes": 1047
+    },
+    {
+      "key": "src/studies/LondonRoadOverlay.tsx",
+      "file": "assets/LondonRoadOverlay-CjMzAB02.js",
+      "gzipBytes": 2120
+    },
+    {
+      "key": "src/studies/LondonStationDepartures.tsx",
+      "file": "assets/LondonStationDepartures-DAz3UP4W.js",
+      "gzipBytes": 6789
+    },
+    {
+      "key": "src/studies/NationalRailVehicleCard.tsx",
+      "file": "assets/NationalRailVehicleCard-rDLP_PNa.js",
+      "gzipBytes": 559
+    },
+    {
+      "key": "src/studies/VehicleJourneyCard.tsx",
+      "file": "assets/VehicleJourneyCard-gtMOJyLb.js",
+      "gzipBytes": 642
+    }
+  ]
+}

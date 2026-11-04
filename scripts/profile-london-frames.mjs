@@ -54,6 +54,9 @@ try {
   await page.goto(values.url)
   await page.locator('.london-status-card').filter({ hasText: 'trains in motion' }).waitFor()
   await page.locator('.scene canvas').waitFor()
+  // Mobile layer actions live inside the collapsed controls drawer.
+  const controlsToggle = page.locator('#london-controls-toggle')
+  if (await controlsToggle.isVisible() && await controlsToggle.getAttribute('aria-expanded') !== 'true') await controlsToggle.click()
   const cdp = await page.context().newCDPSession(page)
   await cdp.send('Performance.enable')
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: numeric['cpu-throttle'] })

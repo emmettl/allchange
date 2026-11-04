@@ -1,0 +1,94 @@
+{
+  "capturedAt": "2026-11-02T19:05:17.420Z",
+  "platform": "darwin",
+  "browserVersion": "156.0.8078.4",
+  "settings": {
+    "width": 390,
+    "height": 844,
+    "dpr": 3,
+    "duration": 5000,
+    "fps": 60,
+    "cpu-throttle": 1,
+    "settle": 2500,
+    "channel": "chromium",
+    "headless": true,
+    "studyTime": "27900",
+    "playbackRate": "30",
+    "profiling": false,
+    "angle": "default",
+    "buses": false,
+    "rail": true,
+    "airRoads": false
+  },
+  "environment": {
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.8078.4 Safari/537.36",
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "canvas": {
+      "width": 643,
+      "height": 1392
+    }
+  },
+  "errors": [],
+  "scenarios": [
+    {
+      "name": "opening",
+      "studyTime": 27960,
+      "frames": 186,
+      "meanFps": 37.08,
+      "p50Ms": 33.3,
+      "p95Ms": 33.4,
+      "p99Ms": 50.1,
+      "maxMs": 166.6,
+      "overBudgetPercent": 81.72,
+      "overOneAndHalfBudgetsPercent": 55.91,
+      "mainThreadMilliseconds": {
+        "TaskDuration": 5098.83,
+        "ScriptDuration": 78.88,
+        "LayoutDuration": 1.65,
+        "RecalcStyleDuration": 3.13
+      },
+      "scriptMsPerFrame": 0.42
+    },
+    {
+      "name": "all-national-rail",
+      "studyTime": 27950,
+      "frames": 18,
+      "meanFps": 3.33,
+      "p50Ms": 166.7,
+      "p95Ms": 2100,
+      "p99Ms": 2100,
+      "maxMs": 2100,
+      "overBudgetPercent": 100,
+      "overOneAndHalfBudgetsPercent": 100,
+      "mainThreadMilliseconds": {
+        "TaskDuration": 6431.82,
+        "ScriptDuration": 30.81,
+        "LayoutDuration": 0.89,
+        "RecalcStyleDuration": 1.24
+      },
+      "scriptMsPerFrame": 1.71
+    },
+    {
+      "name": "london-bridge-pulse",
+      "studyTime": 27950,
+      "frames": 92,
+      "meanFps": 18.1,
+      "p50Ms": 33.3,
+      "p95Ms": 200.1,
+      "p99Ms": 516.8,
+      "maxMs": 516.8,
+      "overBudgetPercent": 89.13,
+      "overOneAndHalfBudgetsPercent": 71.74,
+      "mainThreadMilliseconds": {
+        "TaskDuration": 5205.97,
+        "ScriptDuration": 59.6,
+        "LayoutDuration": 2.03,
+        "RecalcStyleDuration": 3.65
+      },
+      "scriptMsPerFrame": 0.65
+    }
+  ],
+  "scope": "Short headless 390x844 DPR3 sequential rail diagnostic with controls open; not physical-device, thermal or leak acceptance.",
+  "applicationCommit": "9d0607ba567f28701d7188717bb538204467aa13",
+  "profileToolCommit": "ecb4000"
+}

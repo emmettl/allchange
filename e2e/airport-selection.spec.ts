@@ -12,6 +12,11 @@ test('airport labels and marker margins select the airport, while a drag pans', 
     await page.getByRole('button', { name: 'Pause motion', exact: true }).click()
     await page.getByRole('button', { name: 'Show observed aircraft', exact: true }).click()
     await expect(page.locator('.london-experience')).toHaveClass(/has-air-layer/)
+    await expect(page.getByRole('button', { name: 'Hide observed aircraft', exact: true })).toHaveAttribute('aria-busy', 'false')
+    // Enabling AIR precedes its lazy data and the label/camera frame callbacks.
+    await page.evaluate(async () => {
+      for (let i = 0; i < 3; i++) await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+    })
     await page.screenshot({ path: info.outputPath('airport-targets.png') })
   }
   const experience = page.locator('.london-experience')

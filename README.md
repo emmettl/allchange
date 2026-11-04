@@ -131,3 +131,6 @@ The **After midnight** preset explores **Thursday night into Friday 4 September,
 ## Where does the morning go?
 
 Choose **People** to explore directional Central line demand from Leyton to St Paul’s. Compare **07:30**, **08:30** and **17:30**, switch between geography and diagram, or scrub the shared clock. Twelve directional links use one fixed dot scale; seven selectable stations show Central line boarders and alighters. The independently loaded study uses typical autumn 2025 Friday NUMBAT demand, not tracked passengers or individual train occupancy. It preserves the selected place when returning to the transport map. See [the source audit and reproduction](docs/MORNING-FLOW.md).
+
+Stable Fiber 9 renderer API preparation and its validation are recorded in
+[the alpha.50 adoption notes](docs/RENDERER-ALPHA-50.md).

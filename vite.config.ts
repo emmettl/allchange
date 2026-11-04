@@ -7,5 +7,15 @@ export default defineConfig({
     include: ['@react-three/fiber', 'three'],
   },
   base: './',
-  build: { manifest: true, target: 'es2022' },
+  build: {
+    manifest: true,
+    target: 'es2022',
+    rolldownOptions: {
+      output: {
+        // These runtime modules are all needed at startup. Compress them
+        // together while leaving edition scenes and optional layers lazy.
+        codeSplitting: { groups: [{ name: 'react-runtime', test: /node_modules[\\/](?:react|react-dom|scheduler)[\\/]/ }] },
+      },
+    },
+  },
 })

@@ -1,5 +1,6 @@
 import { useEffect, useEffectEvent, useMemo } from 'react'
-import { useThree } from '@react-three/fiber'
+import { useWebGLStudyState } from '@motionstudies/three/webgl-study'
+import { frameRenderer } from '@motionstudies/three/frame-state'
 import type { NetworkTrain, StationIndexEntry } from '@motionstudies/core/domain/network'
 import type { StudyAirport } from '@motionstudies/core/domain/airport'
 import { MapTapGesture, pickMapTarget, type MapSelection } from './map-selection.ts'
@@ -15,7 +16,9 @@ export function LondonMapSelection({ stations, onSelectStation, onSelectTrain, o
   onSelectStation?: (station: StationIndexEntry) => void
   disabled?: boolean
 }) {
-  const { scene, camera, gl } = useThree()
+  const state = useWebGLStudyState()
+  const { scene, camera } = state
+  const renderer = frameRenderer(state)
   const airportEnabled = Boolean(onSelectAirport)
   const byStop = useMemo(() => new Map(stations.flatMap(station => station.stopIndexes.map(index => [index, station] as const))), [stations])
   // Playback callbacks change with the clock; keep the gesture/listeners intact.
@@ -27,7 +30,7 @@ export function LondonMapSelection({ stations, onSelectStation, onSelectTrain, o
   })
   useEffect(() => {
     if (disabled && !airportEnabled) return
-    const canvas = gl.domElement
+    const canvas = renderer.domElement
     const previousCursor = canvas.style.cursor
     const gesture = new MapTapGesture()
     const down = (event: PointerEvent) => {
@@ -59,6 +62,6 @@ export function LondonMapSelection({ stations, onSelectStation, onSelectTrain, o
       canvas.removeEventListener('pointercancel', cancel)
       canvas.removeEventListener('lostpointercapture', cancel)
     }
-  }, [byStop, camera, disabled, gl, scene, airportEnabled])
+  }, [byStop, camera, disabled, renderer, scene, airportEnabled])
   return null
 }

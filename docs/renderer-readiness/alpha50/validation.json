@@ -1,0 +1,59 @@
+{
+  "recordedAt": "2026-11-02T19:32:15.065195+00:00",
+  "sourceCommit": "2a40748d96a28da9dc6b0c89ba39ad11a361ce3a",
+  "applicationCodeCommit": "ab64285",
+  "node": "v24.22.0",
+  "npm": "11.21.1",
+  "unitTestsPassed": 277,
+  "staticChecks": [
+    "boundary",
+    "typecheck",
+    "lint",
+    "unit",
+    "worker:check",
+    "worker:build (dry-run)",
+    "build",
+    "bundle"
+  ],
+  "browser": {
+    "scope": "Focused production suite, one worker and zero retries, local macOS Chromium and WebKit; CI unset, so existing strict local cadence thresholds apply.",
+    "initial": {
+      "stats": {
+        "startTime": "2026-11-02T19:25:29.966Z",
+        "duration": 127034.185,
+        "expected": 20,
+        "skipped": 1,
+        "unexpected": 1,
+        "flaky": 0
+      },
+      "projects": {
+        "desktop-chromium": {
+          "passed": 10,
+          "skipped": 1
+        },
+        "iphone-webkit": {
+          "failed": 1,
+          "passed": 10
+        }
+      },
+      "reportSha256": "e21b1ecf92c30c6028440378393877a95ef03bf5759ddc7287ef7a50922547e4"
+    },
+    "airportRepeat": {
+      "stats": {
+        "startTime": "2026-11-02T19:29:00.133Z",
+        "duration": 53583.51,
+        "expected": 6,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "reportSha256": "08b87409f316f151bc945a65b14737320f2db614a652b0208653ce3e4fae8f0e"
+    },
+    "note": "Initial 20 pass / 1 fail / 1 existing desktop skip. The airport test clicked while AIR loading was still displayed and targets were absent. It now waits for aria-busy=false and three rendered frames, preserving the original coordinates, assertions and timeouts. All six repeated Chromium/WebKit airport cases then pass. The strict local phone WebKit frame-cadence case passed. Hosted CI independently runs the complete suite.",
+    "strictLocalPhoneCadencePassed": true,
+    "playwright": "1.64.1"
+  },
+  "renderer": "WebGL2",
+  "physicalDeviceAcceptance": "open",
+  "authorVisualAcceptance": "open"
+}
