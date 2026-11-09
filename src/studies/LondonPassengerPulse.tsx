@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import { useMediaQuery } from '@motionstudies/web/use-media-query'
+import { useEffect, useRef } from 'react'
 import { usePassengerDemand } from '../data/use-passenger-demand.ts'
 import { advancePassengerClock, FLOW_COLOURS, flowMarkPosition, passengerFlows } from './passenger-pulse.ts'
 import { passengerInterval } from '../data/passenger-demand.ts'
@@ -12,14 +13,8 @@ export default function LondonPassengerPulse({ stationName, hubId, time, isPlayi
 }) {
   const { selection, loading, failed, retry } = usePassengerDemand(stationName, time >= 0 && time < 18000)
   const localTime = useRef(time)
-  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)')
   useEffect(() => { localTime.current = time }, [time])
-  useEffect(() => {
-    const query = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const update = () => setReducedMotion(query.matches)
-    query.addEventListener('change', update)
-    return () => query.removeEventListener('change', update)
-  }, [])
   useEffect(() => {
     if (!isPlaying) return
     let frame = 0, last = performance.now(), report = last

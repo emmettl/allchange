@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@motionstudies/web/use-media-query'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { flowDots, flowInterval, flowPosition, loadMorningFlow, type FlowPoint, type MorningFlow } from '../data/morning-flow.ts'
 import { advancePassengerClock } from './passenger-pulse.ts'
@@ -15,7 +16,7 @@ export default function LondonMorningFlow({ time, isPlaying, playbackRate, mix, 
 }) {
   const [data,setData] = useState<MorningFlow>(), [failed,setFailed] = useState(false), [attempt,setAttempt] = useState(0)
   const [selected,setSelected] = useState('BNKu'), [chapter,setChapter] = useState(1), [zoom,setZoom] = useState(1)
-  const [reduced,setReduced] = useState(() => matchMedia('(prefers-reduced-motion: reduce)').matches)
+  const reduced = useMediaQuery('(prefers-reduced-motion: reduce)')
   const clock = useRef(time)
   useEffect(() => { clock.current = time }, [time])
   useEffect(() => {
@@ -23,10 +24,6 @@ export default function LondonMorningFlow({ time, isPlaying, playbackRate, mix, 
     loadMorningFlow().then(value => { if (active) { setData(value); setFailed(false) } }).catch(() => { if(active) setFailed(true) })
     return () => { active = false }
   }, [attempt])
-  useEffect(() => {
-    const query = matchMedia('(prefers-reduced-motion: reduce)'), update = () => setReduced(query.matches)
-    query.addEventListener('change',update); return () => query.removeEventListener('change',update)
-  }, [])
   useEffect(() => {
     if (!isPlaying) return
     let frame = 0, last = performance.now(), report = last

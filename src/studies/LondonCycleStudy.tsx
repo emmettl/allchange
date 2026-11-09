@@ -1,3 +1,4 @@
+import { useMediaQuery } from '@motionstudies/web/use-media-query'
 import { TimelineScrubber } from '@motionstudies/web/components/TimelineScrubber'
 import '@motionstudies/web/timeline-scrubber.css'
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
@@ -33,7 +34,7 @@ export default function LondonCycleStudy({ time, onTime, isPlaying, onPlaying, r
   const [query, setQuery] = useState('')
   const [choice, setChoice] = useState(0)
   const [zoom, setZoom] = useState(1)
-  const [reduced, setReduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  const reduced = useMediaQuery('(prefers-reduced-motion: reduce)')
   const canvas = useRef<HTMLCanvasElement>(null)
   const search = useRef<HTMLInputElement>(null)
   const positions = useRef<[number, number][]>([])
@@ -45,12 +46,6 @@ export default function LondonCycleStudy({ time, onTime, isPlaying, onPlaying, r
     loadCycleDay(date).then(value => { if (active) setResult({ key: requestKey, value }) }).catch(() => { if (active) setResult({ key: requestKey, failed: true }) })
     return () => { active = false }
   }, [date, requestKey])
-  useEffect(() => {
-    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
-    const update = () => setReduced(media.matches)
-    media.addEventListener('change', update)
-    return () => media.removeEventListener('change', update)
-  }, [])
   useEffect(() => {
     if (!isPlaying || !day) return
     let frame = 0, last = performance.now(), report = last
