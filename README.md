@@ -10,11 +10,11 @@ This is the independent London edition. It owns the London application, styles, 
 
 ## Run and check
 
-Use Node 24 LTS (`nvm use`) and npm 12.2.2, then `npm ci` and `npm run dev`. The app is served at the root. `npm run build` stages only London artifacts and builds a single entry point.
+Use Node 26 (`nvm use`) and npm 12.2.2, then `npm ci` and `npm run dev`. The app is served at the root. `npm run build` stages only London artifacts and builds a single entry point.
 
 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run check:boundary`, `npm run build` and `npm run check:bundle`. Install browser engines with `npx playwright install chromium webkit`, then run `npm run test:e2e:ci`. `npm run worker:check` and `npm run worker:build` validate the existing London observation adapter without deploying it.
 
-Run transfer checks on Node 24 as CI does: gzip measurements can differ between Node releases. The opening JavaScript budget is 366 KiB, including direct airport marker/label picking with 44-pixel mouse and 56-pixel touch targets and the shared renderer's budgeted vehicle scheduler from `@motionstudies/three`. The interchange pulse loads after interaction and has a separate 5 KiB JavaScript / 2 KiB CSS budget; shared dependencies remain counted in the opening. Browser checks verify that its renderer is absent at startup and fetched when the pulse opens.
+Run transfer checks on Node 26 as CI does: gzip measurements can differ between Node releases. The opening JavaScript budget is 366 KiB, including direct airport marker/label picking with 44-pixel mouse and 56-pixel touch targets and the shared renderer's budgeted vehicle scheduler from `@motionstudies/three`. The interchange pulse loads after interaction and has a separate 5 KiB JavaScript / 2 KiB CSS budget; shared dependencies remain counted in the opening. Browser checks verify that its renderer is absent at startup and fetched when the pulse opens.
 
 CI builds once and tests that artifact on three parallel runners: two Ubuntu Chromium shards and one native macOS iPhone WebKit job, each with one worker to avoid software WebGL contention. Chromium shards divide individual tests, including those within large spec files. Frame cadence runs once on the WebKit runner after its functional tests. Browser jobs have a 20-minute limit; a newer main push cancels the superseded Pages run. Deployment waits for all three runners. Each runner uploads its own `e2e-report-<project>-<shard>` artifact and lists wall time and the slowest tests in the Actions summary.
 
