@@ -12,9 +12,9 @@ export default defineConfig({
     target: 'es2022',
     rolldownOptions: {
       output: {
-        // These runtime modules are all needed at startup. Compress them
+        // React and Fiber runtime modules are all needed at startup. Compress them
         // together while leaving edition scenes and optional layers lazy.
-        codeSplitting: { groups: [{ name: 'react-runtime', test: /node_modules[\\/](?:react|react-dom|scheduler)[\\/]/ }] },
+        codeSplitting: { groups: [{ name: 'react-runtime', test: /node_modules[\\/](?:react|react-dom|react-reconciler|scheduler|@react-three[\\/]fiber)[\\/]/ }] },
       },
     },
   },
