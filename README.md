@@ -10,11 +10,11 @@ This is the independent London edition. It owns the London application, styles, 
 
 ## Run and check
 
-Use Node 24 LTS (`nvm use`) and npm 11.21.1, then `npm ci` and `npm run dev`. The app is served at the root. `npm run build` stages only London artifacts and builds a single entry point.
+Use Node 26 (`nvm use`) and npm 12.2.2, then `npm ci` and `npm run dev`. The app is served at the root. `npm run build` stages only London artifacts and builds a single entry point.
 
 Run `npm test`, `npm run typecheck`, `npm run lint`, `npm run check:boundary`, `npm run build` and `npm run check:bundle`. Install browser engines with `npx playwright install chromium webkit`, then run `npm run test:e2e:ci`. `npm run worker:check` and `npm run worker:build` validate the existing London observation adapter without deploying it.
 
-Run transfer checks on Node 24 as CI does: gzip measurements can differ between Node releases. The opening JavaScript budget is 366 KiB, including direct airport marker/label picking with 44-pixel mouse and 56-pixel touch targets and the shared renderer's budgeted vehicle scheduler from `@motionstudies/three`. The interchange pulse loads after interaction and has a separate 5 KiB JavaScript / 2 KiB CSS budget; shared dependencies remain counted in the opening. Browser checks verify that its renderer is absent at startup and fetched when the pulse opens.
+Run transfer checks on Node 26 as CI does: gzip measurements can differ between Node releases. The opening JavaScript budget is 366 KiB, including direct airport marker/label picking with 44-pixel mouse and 56-pixel touch targets and the shared renderer's budgeted vehicle scheduler from `@motionstudies/three`. The interchange pulse loads after interaction and has a separate 5 KiB JavaScript / 2 KiB CSS budget; shared dependencies remain counted in the opening. Browser checks verify that its renderer is absent at startup and fetched when the pulse opens.
 
 CI builds once and tests that artifact on three parallel runners: two Ubuntu Chromium shards and one native macOS iPhone WebKit job, each with one worker to avoid software WebGL contention. Chromium shards divide individual tests, including those within large spec files. Frame cadence runs once on the WebKit runner after its functional tests. Browser jobs have a 20-minute limit; a newer main push cancels the superseded Pages run. Deployment waits for all three runners. Each runner uploads its own `e2e-report-<project>-<shard>` artifact and lists wall time and the slowest tests in the Actions summary.
 
@@ -70,7 +70,7 @@ Every catalogue station has arrivals/departures boards and its own pulse, combin
 
 The pipeline reconciles 31 Network Rail working-timetable spreadsheets by service UID and originating date, including midnight continuations. Public passenger timetables restore 1,051 omitted calls at Waterloo East, Brent Cross West and Lea Bridge. Connected OpenStreetMap geometry follows the timed route and fades beyond the GLA boundary. The catalogue, per-family data, board and renderer load on demand; failed families can retry independently.
 
-Run `npm run data:london:national-rail` to rebuild from cached/public sources. Node 24+, `unzip` and Poppler’s `pdftotext` are required; `RAIL_CACHE` overrides `/tmp/allchange-rail-complete`. The build stages the resulting `network-*.json` files. The [rail completion record](docs/RAIL-COMPLETION.md) describes coverage, source audits, validation and the reproducible pipeline.
+Run `npm run data:london:national-rail` to rebuild from cached/public sources. Node 26+, `unzip` and Poppler’s `pdftotext` are required; `RAIL_CACHE` overrides `/tmp/allchange-rail-complete`. The build stages the resulting `network-*.json` files. The [rail completion record](docs/RAIL-COMPLETION.md) describes coverage, source audits, validation and the reproducible pipeline.
 
 This is a published timetable study with interpolated movement. Live Darwin data, temporary alterations, freight and empty stock are outside this phase. Eurostar now has a separate dated integration: **55 St Pancras calls and 40 supported London HS1 movements**, with the other 15 calls explicitly timetable only. See [Eurostar sources, clocks and coverage](docs/EUROSTAR.md); rebuild its pinned sources with `npm run data:london:eurostar`. A later server-side Darwin adapter can use the retained CRS, UID and originating-date identities.
 
@@ -134,3 +134,5 @@ Choose **People** to explore directional Central line demand from Leyton to St P
 
 Stable Fiber 9 renderer API preparation and its validation are recorded in
 [the alpha.50 adoption notes](docs/RENDERER-ALPHA-50.md).
+
+Development targets Node 26 and npm 12.2.2. Shared Motion Studies packages are pinned to 1.0.0; `npm run check:stack` validates the adopted baseline through `@motionstudies/tooling`. Edition-specific data, boundary and publication checks remain local.
